@@ -9,7 +9,8 @@ Curated, high-yield interview preparation modules for Software Engineering, Full
 | Topic | Questions Sheet | Answers Master Key | Status |
 | :--- | :--- | :--- | :--- |
 | **🍃 MongoDB** | [Questions](file:///e:/CSE/interview%20prep/mongodb/mongodb-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/mongodb/mongodb-interview-answers.md) | ✅ Complete (100 Qs) |
-| **🗄️ Relational DBMS & SQL** | *[Upcoming]* | *[Upcoming]* | ⏳ Next |
+| **🗄️ Relational DBMS & SQL** | [Questions](file:///e:/CSE/interview%20prep/dbms/dbms-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/dbms/dbms-interview-answers.md) | ✅ Complete (70 Qs) |
+| **⚛️ React** | [Questions](file:///e:/CSE/interview%20prep/react/react-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/react/react-interview-answers.md) | ✅ Complete (75 Qs) |
 
 ---
 
@@ -21,7 +22,12 @@ Interview-Prep/
 ├── mongodb/                               <-- MongoDB NoSQL Module
 │   ├── mongodb-interview-questions.md     <-- 100-Question Master List
 │   └── mongodb-interview-answers.md       <-- Comprehensive 4-Part Answer Key
-└── dbms/                                  <-- Relational DBMS & SQL Module (Next Topic)
+├── dbms/                                  <-- Relational DBMS & SQL Module
+│   ├── dbms-interview-questions.md        <-- 70-Question Master List
+│   └── dbms-interview-answers.md          <-- Comprehensive 4-Part Answer Key
+└── react/                                 <-- React Frontend Module
+    ├── react-interview-questions.md       <-- 75-Question Master List
+    └── react-interview-answers.md         <-- Comprehensive 4-Part Answer Key
 ```
 
 ---
