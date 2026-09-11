@@ -1,9 +1,10 @@
-# JavaScript Technical Interview Master List (180 Questions)
+# JavaScript & TypeScript Technical Interview Master List (104 Questions)
+
 **Track:** Fresher → 0–1 YOE → Junior Full Stack / Backend / Frontend / Startup
 
 ## Legend
 
-**Priority** — 🔴 P0 Essential (Highest startup/interview ROI) · 🟠 P1 Important · 🟡 P2 Depth / Advanced
+**Priority** — 🔴 P0 Essential (Highest startup/interview ROI) · 🟠 P1 Important
 
 **Type** — [C] Conceptual · [Q] Code/Mechanism · [D] Architecture/Design · [P] Performance/Optimization
 
@@ -11,225 +12,165 @@
 
 ## Fundamentals
 
-### 1. 🟠 P1 [C] What is JavaScript and what are its key characteristics?
-### 2. 🟠 P1 [C] What is ECMAScript and how is it related to JavaScript?
-### 3. 🟠 P1 [C] Is JavaScript interpreted, compiled, or both?
-### 4. 🔴 P0 [C] What are the primitive data types in JavaScript?
-### 5. 🔴 P0 [C] What are reference/non-primitive data types?
-### 6. 🔴 P0 [Q] What is the difference between primitive and reference values?
-### 7. 🟠 P1 [C] Is JavaScript statically or dynamically typed?
-### 8. 🟠 P1 [C] What does typeof do?
-### 9. 🔴 P0 [C] Why does typeof null return "object"?
-### 10. 🟠 P1 [C] What is undefined?
-### 11. 🟠 P1 [C] What is null?
-### 12. 🟠 P1 [Q] What is the difference between null, undefined, and an undeclared variable?
-### 13. 🟠 P1 [C] What is NaN and why is NaN !== NaN?
-### 14. 🟠 P1 [C] What are truthy and falsy values?
-### 15. 🟠 P1 [C] What are all the falsy values in JavaScript?
-### 16. 🟠 P1 [C] What is type coercion?
-### 17. 🟠 P1 [C] What is implicit vs explicit type conversion?
-### 18. 🟠 P1 [Q] What is the difference between == and ===?
-### 19. 🟠 P1 [C] Why is === generally preferred?
-### 20. 🟠 P1 [Q] How does type coercion work with ==?
-### 21. 🟠 P1 [Q] What is the difference between Object.is() and ===?
-### 22. 🟠 P1 [C] What is short-circuit evaluation?
-### 23. 🟠 P1 [C] How do && and || work?
-### 24. 🟠 P1 [Q] What is the difference between || and ???
-### 25. 🟠 P1 [C] What is optional chaining (?.)?
+1. 🔴 P0 [Q] What is the difference between primitive and reference types in how they are stored, copied, and compared?
+2. 🟠 P1 [C] What does typeof do, and why does typeof null return "object"?
+3. 🟠 P1 [Q] What is the difference between null, undefined, and an undeclared variable?
+4. 🟠 P1 [C] What is NaN, why is NaN !== NaN, and how do Number.isNaN() and Object.is() differ from ===?
+5. 🟠 P1 [C] What are truthy and falsy values, and what are all the falsy values in JavaScript?
+6. 🔴 P0 [Q] What is type coercion (implicit vs explicit), and how does == differ from ===?
+7. 🟠 P1 [Q] How do &&, ||, ??, and ?. work, and what is short-circuit evaluation?
+8. 🟠 P1 [C] What are JavaScript's key characteristics (dynamically typed, single-threaded, garbage-collected, multi-paradigm), and how is it related to ECMAScript?
+
+## How JavaScript Works
+
+9. 🔴 P0 [C] What is a JavaScript engine (e.g., V8), what happens between writing code and running it (parsing, AST, bytecode interpreter, JIT-optimized machine code), and is JavaScript interpreted, compiled, or both?
+10. 🔴 P0 [D] What is the difference between the JavaScript engine and the runtime environment (browser vs Node.js), what does "single-threaded" actually mean, and what are the parts of the runtime (memory heap, call stack, Web APIs/libuv, task queues, event loop)?
+11. 🔴 P0 [Q] What is an execution context, what happens in its creation (memory) phase and execution phase, what is a lexical environment, and how does the call stack manage global and function execution contexts?
+12. 🟠 P1 [C] How is memory managed in JavaScript (stack vs heap, garbage collection via mark-and-sweep and reachability), and what causes memory leaks (closures, forgotten event listeners, timers)?
 
 ## Scope & Hoisting
 
-### 26. 🟠 P1 [Q] What is the difference between var, let, and const?
-### 27. 🟠 P1 [C] What is global scope?
-### 28. 🟠 P1 [C] What is function scope?
-### 29. 🟠 P1 [C] What is block scope?
-### 30. 🟠 P1 [C] What is lexical scope?
-### 31. 🟠 P1 [C] What is the scope chain?
-### 32. 🔴 P0 [C] What is hoisting?
-### 33. 🟠 P1 [C] What exactly gets hoisted in JavaScript?
-### 34. 🔴 P0 [Q] How does var behave during hoisting?
-### 35. 🔴 P0 [Q] How do let and const behave during hoisting?
-### 36. 🔴 P0 [C] What is the Temporal Dead Zone (TDZ)?
-### 37. 🟠 P1 [C] Why does accessing let before declaration throw an error?
-### 38. 🟠 P1 [C] Are function declarations hoisted?
-### 39. 🟠 P1 [C] Are function expressions hoisted?
-### 40. 🟠 P1 [C] What is variable shadowing?
-### 41. 🟠 P1 [Q] What is the difference between redeclaration and reassignment?
-### 42. 🟠 P1 [C] Can a const object be modified?
-### 43. 🟠 P1 [C] What is an execution context?
-### 44. 🟠 P1 [Q] What happens when a function is called?
-### 45. 🟠 P1 [C] What is the call stack?
+13. 🔴 P0 [Q] What is the difference between var, let, and const in scope, redeclaration, and reassignment, and can a const object be modified?
+14. 🟠 P1 [C] What are global, function, block, and lexical scope, and how do the scope chain and variable shadowing work?
+15. 🔴 P0 [Q] What is hoisting, how do var, let/const, function declarations, and function expressions each behave, and what is the Temporal Dead Zone?
 
 ## Functions & Closures
 
-### 46. 🟠 P1 [C] What are first-class functions?
-### 47. 🟠 P1 [C] What is a callback function?
-### 48. 🟠 P1 [C] What is a higher-order function?
-### 49. 🟠 P1 [Q] What is the difference between a function declaration and expression?
-### 50. 🔴 P0 [C] What is an arrow function?
-### 51. 🔴 P0 [C] What are the differences between arrow functions and regular functions?
-### 52. 🔴 P0 [C] Do arrow functions have their own this?
-### 53. 🔴 P0 [C] Do arrow functions have their own arguments?
-### 54. 🔴 P0 [C] Can arrow functions be used as constructors?
-### 55. 🟠 P1 [C] What is the arguments object?
-### 56. 🟠 P1 [C] What are default parameters?
-### 57. 🟠 P1 [C] What are rest parameters?
-### 58. 🟠 P1 [Q] What is the difference between rest and spread syntax?
-### 59. 🟠 P1 [C] What is an IIFE?
-### 60. 🟠 P1 [C] What is a pure function?
-### 61. 🟠 P1 [C] What is a side effect?
-### 62. 🟠 P1 [C] What is recursion?
-### 63. 🔴 P0 [C] What is function composition?
-### 64. 🔴 P0 [C] What is currying?
-### 65. 🔴 P0 [C] What is a closure?
-### 66. 🔴 P0 [Q] How does a closure work?
-### 67. 🔴 P0 [C] What are practical uses of closures?
+16. 🟠 P1 [C] What are first-class functions, higher-order functions, and callback functions?
+17. 🔴 P0 [Q] What is the difference between function declarations, function expressions, and arrow functions, including whether arrow functions have their own this and arguments and whether they can be constructors?
+18. 🟠 P1 [Q] What are rest parameters, spread syntax, default parameters, and the arguments object?
+19. 🔴 P0 [Q] What is a closure, how does it work, and what are its practical uses (including IIFEs)?
+20. 🟠 P1 [C] What is a pure function, and what is a side effect?
+21. 🟠 P1 [C] What are currying and function composition?
 
 ## this & Binding
 
-### 68. 🟠 P1 [C] What is this in JavaScript?
-### 69. 🔴 P0 [C] How is the value of this determined?
-### 70. 🟠 P1 [C] What is this inside a regular function?
-### 71. 🟠 P1 [C] What is this inside an object method?
-### 72. 🔴 P0 [C] What is this inside an arrow function?
-### 73. 🟠 P1 [C] What is this inside a constructor?
-### 74. 🔴 P0 [Q] What happens to this when a method is passed as a callback?
-### 75. 🟠 P1 [C] What is implicit binding?
-### 76. 🟠 P1 [C] What is explicit binding?
-### 77. 🟠 P1 [C] What is call()?
-### 78. 🟠 P1 [C] What is apply()?
-### 79. 🟠 P1 [C] What is bind()?
-### 80. 🔴 P0 [Q] What is the difference between call(), apply(), and bind()?
+22. 🔴 P0 [C] How is the value of this determined: default binding (and the effect of strict mode), implicit binding, explicit binding, new, and arrow functions?
+23. 🔴 P0 [Q] What happens to this when a method is passed as a callback, and how do you fix it?
+24. 🔴 P0 [Q] What is the difference between call(), apply(), and bind()?
 
 ## Objects & Prototypes
 
-### 81. 🟠 P1 [C] How are objects created in JavaScript?
-### 82. 🟠 P1 [Q] What is the difference between dot and bracket notation?
-### 83. 🟠 P1 [C] What is object destructuring?
-### 84. 🟠 P1 [C] What is object spread?
-### 85. 🟠 P1 [C] What is a shallow copy?
-### 86. 🟠 P1 [C] What is a deep copy?
-### 87. 🟠 P1 [C] Why doesn't {...obj} create a deep copy?
-### 88. 🟠 P1 [C] What does Object.assign() do?
-### 89. 🟠 P1 [C] Is Object.assign() shallow or deep?
-### 90. 🔴 P0 [C] What are the limitations of JSON.parse(JSON.stringify(obj))?
-### 91. 🔴 P0 [C] What is structuredClone()?
-### 92. 🟠 P1 [C] What is object mutation?
-### 93. 🟠 P1 [C] What does immutability mean?
-### 94. 🟠 P1 [C] What does Object.freeze() do?
-### 95. 🟠 P1 [C] Does Object.freeze() deeply freeze an object?
-### 96. 🟠 P1 [C] What do Object.keys(), Object.values(), and Object.entries() do?
-### 97. 🟠 P1 [C] What is a prototype?
-### 98. 🔴 P0 [C] What is the prototype chain?
-### 99. 🟠 P1 [Q] How does prototypal inheritance work?
-### 100. 🟠 P1 [Q] What is the difference between prototype and __proto__?
+25. 🟠 P1 [C] How are objects created and accessed (dot vs bracket notation), how does destructuring work for objects and arrays, and what do Object.keys(), Object.values(), and Object.entries() do?
+26. 🔴 P0 [Q] What is the difference between a shallow and a deep copy, and what are the limitations of spread, Object.assign(), JSON.parse(JSON.stringify(obj)), and structuredClone()?
+27. 🟠 P1 [C] What are object mutation and immutability, and why does Object.freeze() not deeply freeze an object?
+28. 🔴 P0 [Q] What is the prototype chain, how does prototypal inheritance work, and what is the difference between prototype and \_\_proto\_\_?
 
 ## Classes & Structures
 
-### 101. 🟠 P1 [C] What is a constructor function?
-### 102. 🟠 P1 [C] What does the new keyword do?
-### 103. 🟠 P1 [Q] What happens internally when new is used?
-### 104. 🟠 P1 [C] What is Object.create()?
-### 105. 🟠 P1 [C] What is the relationship between JavaScript classes and prototypes?
-### 106. 🟠 P1 [C] What does extends do?
-### 107. 🟠 P1 [C] What does super do?
-### 108. 🟠 P1 [C] What is method overriding?
-### 109. 🟠 P1 [Q] What is the difference between static and instance methods?
-### 110. 🟠 P1 [Q] What is the difference between an array and an object?
-### 111. 🟠 P1 [C] What is a Map and when would you use it?
-### 112. 🟠 P1 [C] What is a Set and when would you use it?
+29. 🟠 P1 [Q] What happens internally when new is used, and how do constructor functions and Object.create() relate to it?
+30. 🟠 P1 [C] How do classes relate to prototypes, and how do extends, super, static methods, method overriding, getters/setters, and #private fields work?
+31. 🟠 P1 [Q] When would you use a Map or Set instead of an object or array, and how do you remove duplicates from an array with a Set?
 
-## Array Methods
+## Array Methods & Iteration
 
-### 113. 🟠 P1 [C] What does map() do?
-### 114. 🟠 P1 [Q] What is the difference between map() and forEach()?
-### 115. 🟠 P1 [C] What does filter() do?
-### 116. 🟠 P1 [C] What does reduce() do?
-### 117. 🟠 P1 [C] When would you use reduce()?
-### 118. 🟠 P1 [Q] What is the difference between find() and filter()?
-### 119. 🟠 P1 [Q] What is the difference between some() and every()?
-### 120. 🟠 P1 [Q] What is the difference between slice() and splice()?
-### 121. 🟠 P1 [Q] How does sort() work and why does numeric sorting cause problems?
-### 122. 🟠 P1 [C] Which common array methods mutate the original array?
-### 123. 🟠 P1 [C] What does flat() do?
-### 124. 🟠 P1 [Q] How does array destructuring work?
-### 125. 🟠 P1 [C] How would you remove duplicates from an array?
+32. 🟠 P1 [Q] When would you use map(), filter(), reduce(), forEach(), find(), some(), and every(), and how do they differ?
+33. 🟠 P1 [Q] Which array methods mutate the original array, including slice() vs splice(), the numeric sort() pitfall, flat(), and the non-mutating toSorted() and toReversed()?
+34. 🟠 P1 [Q] What is the difference between for...in and for...of?
+
+## Error Handling
+
+35. 🟠 P1 [C] How do try/catch/finally work, and when would you create a custom Error class?
 
 ## Async & Event Loop
 
-### 126. 🟠 P1 [C] What is synchronous vs asynchronous JavaScript?
-### 127. 🟠 P1 [C] Is JavaScript single-threaded?
-### 128. 🟠 P1 [C] What does "single-threaded" actually mean?
-### 129. 🟠 P1 [D] What is the JavaScript runtime?
-### 130. 🟠 P1 [C] What is the call stack?
-### 131. 🟠 P1 [D] What are Web APIs?
-### 132. 🟠 P1 [C] What is the task/macrotask queue?
-### 133. 🔴 P0 [C] What is the microtask queue?
-### 134. 🔴 P0 [C] What is the event loop?
-### 135. 🔴 P0 [Q] How does the event loop work?
-### 136. 🔴 P0 [Q] What is the difference between microtasks and macrotasks?
-### 137. 🔴 P0 [C] Why do Promise callbacks execute before setTimeout() callbacks?
-### 138. 🟠 P1 [C] Does setTimeout(fn, 0) execute immediately?
-### 139. 🟠 P1 [Q] What happens when the call stack is busy?
-### 140. 🟠 P1 [C] What is callback hell?
-### 141. 🟠 P1 [C] What are the limitations of callback-based asynchronous programming?
-### 142. 🔴 P0 [P] What is concurrency?
-### 143. 🔴 P0 [Q] What is the difference between concurrency and parallelism?
+36. 🔴 P0 [Q] How does the event loop work, what is the difference between microtasks and macrotasks, why do Promise callbacks run before setTimeout(fn, 0), and what happens when the call stack is busy?
+37. 🔴 P0 [C] What is the difference between concurrency and parallelism?
+38. 🟠 P1 [C] What is callback hell, what are the limitations of callbacks, and why were Promises introduced?
 
 ## Promises & Async/Await
 
-### 144. 🔴 P0 [C] What is a Promise?
-### 145. 🔴 P0 [C] Why were Promises introduced?
-### 146. 🔴 P0 [C] What are the three states of a Promise?
-### 147. 🟠 P1 [C] What does .then() do?
-### 148. 🟠 P1 [C] What does .catch() do?
-### 149. 🟠 P1 [C] What does .finally() do?
-### 150. 🔴 P0 [C] What is Promise chaining?
-### 151. 🔴 P0 [Q] What happens when a .then() callback returns a value?
-### 152. 🔴 P0 [Q] What happens when a .then() callback returns another Promise?
-### 153. 🔴 P0 [Q] What happens when a Promise callback throws an error?
-### 154. 🔴 P0 [C] What is Promise.resolve()?
-### 155. 🔴 P0 [C] What is Promise.reject()?
-### 156. 🔴 P0 [C] What is Promise.all()?
-### 157. 🔴 P0 [Q] What is the difference between Promise.all(), allSettled(), race(), and any()?
-### 158. 🟠 P1 [C] What does async do and what does an async function return?
-### 159. 🔴 P0 [C] What does await do and how is it related to Promises?
+39. 🔴 P0 [C] What is a Promise, what are its three states, and what do .then(), .catch(), and .finally() do?
+40. 🔴 P0 [Q] How does Promise chaining work when a .then() callback returns a value, returns another Promise, or throws an error?
+41. 🔴 P0 [Q] What do Promise.resolve() and Promise.reject() do, and what is the difference between Promise.all(), allSettled(), race(), and any()?
+42. 🔴 P0 [C] What does an async function return, and how is await related to Promises?
+43. 🔴 P0 [Q] How do you handle errors with async/await, and what is an unhandled Promise rejection?
+44. 🔴 P0 [Q] Why doesn't await work as expected inside forEach(), and what is the difference between sequential and parallel awaits?
+45. 🟠 P1 [Q] How do async race conditions cause stale results, and how do AbortController and AbortSignal cancel in-flight requests to prevent them?
 
 ## DOM & Web APIs
 
-### 160. 🟠 P1 [D] What is the DOM?
-### 161. 🟠 P1 [Q] How does JavaScript interact with the DOM?
-### 162. 🟠 P1 [C] What is event bubbling?
-### 163. 🟠 P1 [C] What is event capturing?
-### 164. 🔴 P0 [C] What is event delegation and why is it useful?
-### 165. 🟠 P1 [Q] What is the difference between event.target and event.currentTarget?
-### 166. 🟠 P1 [Q] What is the difference between preventDefault() and stopPropagation()?
-### 167. 🟠 P1 [Q] What is the difference between innerHTML, innerText, and textContent?
-### 168. 🟠 P1 [Q] What is the difference between localStorage, sessionStorage, and cookies?
-### 169. 🟠 P1 [C] What is fetch() and what does it return?
-### 170. 🔴 P0 [C] What is CORS and why does it exist?
+46. 🟠 P1 [Q] What is the DOM, and how does JavaScript interact with it?
+47. 🔴 P0 [Q] How do event bubbling, capturing, and delegation work, and what are the differences between event.target and event.currentTarget, and between preventDefault() and stopPropagation()?
+48. 🟠 P1 [Q] What is the difference between innerHTML, innerText, and textContent, and what is the XSS risk with innerHTML?
+49. 🟠 P1 [Q] What is the difference between localStorage, sessionStorage, and cookies, how do XSS and CSRF differ as risks, and what do the HttpOnly, Secure, and SameSite cookie flags do?
+50. 🔴 P0 [C] What does fetch() return (the Response object), why doesn't it reject on 4xx/5xx errors and how do you check response.ok, how are credentials sent, and what is CORS and why does it exist?
 
-## Output Trick Questions
+## Modules
 
-### 171. 🔴 P0 [Q] Predict the output of a var hoisting example and explain why.
-### 172. 🔴 P0 [Q] Predict the output of a closure inside a loop and explain why.
-### 173. 🔴 P0 [Q] Predict the output of this with regular vs arrow functions.
-### 174. 🔴 P0 [Q] Predict the output of Promise + setTimeout() code and explain the event loop.
-### 175. 🔴 P0 [Q] Predict the output of async/await + Promise code and explain microtask behavior.
+51. 🟠 P1 [Q] What is the difference between ES modules and CommonJS?
+
+## Output & Debugging Questions
+
+52. 🔴 P0 [Q] Predict the output of a var hoisting example and explain why.
+53. 🔴 P0 [Q] Predict the output of a closure inside a loop and explain why.
+54. 🔴 P0 [Q] Predict the output of this with regular vs arrow functions.
+55. 🔴 P0 [Q] Predict the output of Promise + setTimeout() code and explain the event loop.
+56. 🔴 P0 [Q] Predict the output of async/await + Promise code and explain microtask behavior.
+57. 🔴 P0 [Q] Find and fix the bug in async code that uses await inside forEach(), leaves a Promise rejection unhandled, or shows stale results because of a race condition.
+58. 🔴 P0 [Q] Find and fix the bug in code that loses this in a callback or reads a stale closure value.
 
 ## Coding Challenges
 
-### 176. 🔴 P0 [Q] Implement map(), filter(), and reduce() from scratch.
-### 177. 🔴 P0 [Q] Implement debounce() and explain exactly how it works.
-### 178. 🔴 P0 [Q] Implement throttle() and explain the difference from debounce.
-### 179. 🔴 P0 [Q] Implement Promise.all() from scratch.
-### 180. 🔴 P0 [Q] Implement a deep-clone utility and explain the limitations of your approach.
+59. 🔴 P0 [Q] Implement map(), filter(), and reduce() from scratch.
+60. 🔴 P0 [Q] Implement debounce() and explain exactly how it works.
+61. 🔴 P0 [Q] Implement throttle() and explain the difference from debounce.
+62. 🔴 P0 [Q] Implement Promise.all() from scratch.
+63. 🟠 P1 [Q] Implement a deep-clone utility and explain the limitations of your approach.
+64. 🔴 P0 [Q] Implement a bind() polyfill.
+65. 🔴 P0 [Q] Implement memoize() and explain how closures make it work.
+66. 🟠 P1 [Q] Implement a retry function with exponential backoff.
+67. 🟠 P1 [Q] Implement flat(depth) recursively.
+68. 🟠 P1 [Q] Implement a function that runs async tasks with a concurrency limit.
+69. 🟠 P1 [Q] Implement an EventEmitter with on(), off(), once(), and emit().
+
+## DSA in JavaScript
+
+70. 🔴 P0 [P] What are the time complexities of common JavaScript built-ins (push/pop vs shift/unshift, includes/indexOf, Map/Set lookups, sort, string concatenation), and why do they matter when solving problems?
+71. 🟠 P1 [Q] How do you implement a stack and a queue in JavaScript, and why is shift() inefficient for a queue?
+72. 🔴 P0 [Q] Reverse a string and check whether it is a palindrome, with and without built-in methods.
+73. 🔴 P0 [Q] Check whether two strings are anagrams.
+74. 🔴 P0 [Q] Count character frequencies in a string and find the first non-repeating character.
+75. 🟠 P1 [Q] Reverse the words in a sentence and capitalize the first letter of each word.
+76. 🟠 P1 [Q] Check whether a string of brackets is valid using a stack.
+77. 🔴 P0 [Q] Find the largest and second-largest numbers in an array without sorting.
+78. 🔴 P0 [Q] Solve Two Sum using a hash map, and explain why it beats the nested-loop approach.
+79. 🟠 P1 [Q] Find the missing number in an array containing 1 to n.
+80. 🟠 P1 [Q] Move all zeros to the end of an array in place while preserving order.
+81. 🟠 P1 [Q] Rotate an array by k positions.
+82. 🟠 P1 [Q] Merge two sorted arrays into one sorted array.
+83. 🟠 P1 [Q] Find the intersection of two arrays.
+84. 🟠 P1 [Q] Split an array into chunks of size n.
+85. 🟠 P1 [Q] Implement binary search on a sorted array.
+86. 🟠 P1 [Q] Compute Fibonacci recursively, iteratively, and with memoization, and compare their time complexities.
+87. 🟠 P1 [Q] Implement a singly linked list and reverse it.
+
+## TypeScript
+
+88. 🔴 P0 [C] What is TypeScript, how does it relate to JavaScript, and why doesn't it check types at runtime (type erasure)?
+89. 🔴 P0 [C] How does type inference work, and when should you add explicit type annotations?
+90. 🔴 P0 [Q] What is the difference between type and interface, and when would you use each?
+91. 🟠 P1 [C] What is structural typing, and how does it differ from nominal typing?
+92. 🔴 P0 [Q] What is the difference between any, unknown, and never?
+93. 🔴 P0 [Q] What are union and intersection types, and how do literal types work?
+94. 🟠 P1 [Q] How do optional properties, null/undefined, and strictNullChecks work, what does strict mode enable, and what does readonly do?
+95. 🔴 P0 [Q] What is type narrowing, and how do typeof, instanceof, in, and custom type predicates (x is T) narrow types?
+96. 🟠 P1 [Q] What is a discriminated union, and how do you use never for exhaustive checks?
+97. 🟠 P1 [Q] How do you type function parameters, return values, optional/default parameters, and callbacks, and what are function overloads?
+98. 🔴 P0 [Q] What are generics, how do you write generic functions, interfaces, and types, and how do generic constraints (extends) work?
+99. 🟠 P1 [Q] How do keyof and indexed access types (T[K]) work, and how do they combine with generics (e.g., a type-safe getProperty function)?
+100.  🔴 P0 [Q] What do Partial, Required, Pick, Omit, and Record do, and when would you use each?
+101.  🟠 P1 [Q] What do ReturnType and Parameters do, and when are they useful?
+102.  🟠 P1 [Q] What is the difference between an enum and a union of string literals, and what does as const do?
+103.  🟠 P1 [Q] How do you type an async function that fetches API data, and why should you still validate the response at runtime?
+104.  🟠 P1 [Q] What are type assertions (as), what are their risks, and how do you safely handle unknown errors in catch blocks?
 
 ---
 
 ## Revision Modes
 
-- **Core Interview Fast-Sweep:** all 🔴 P0 questions (Essential concepts, Event Loop, Closures, `this`, Promises, Polyfills)
-- **Full JavaScript Mastery:** 🔴 P0 + 🟠 P1
-- **Senior / Deep Engine Round:** 🔴 P0 + 🟠 P1 + 🟡 P2
-- **Machine Coding / Output Round:** Focus on Section 11 (Output Trick Questions) & Section 12 (Coding Challenges & Polyfills)
+- **Core Interview Fast-Sweep:** all 🔴 P0 questions (Essential concepts, How JavaScript Works, Event Loop, Closures, `this`, Promises, Polyfills, core DSA, core TypeScript)
+- **Full Coverage:** 🔴 P0 + 🟠 P1
+- **Machine Coding / Output Round:** Focus on the Output & Debugging Questions and Coding Challenges sections
+- **JS DSA Round:** Focus on the DSA in JavaScript section
+- **TypeScript Round:** Focus on the TypeScript section

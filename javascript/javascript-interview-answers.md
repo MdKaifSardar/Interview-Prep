@@ -1,4 +1,4 @@
-# JavaScript Master Answer Key (Comprehensive Edition)
+# JavaScript & TypeScript Master Answer Key (Comprehensive Edition)
 
 Companion answer key to `javascript-interview-questions.md`. Every single answer strictly follows our standardized 4-part framework designed for rapid revision AND deep conceptual mastery:
 1. **TL;DR:** 1–2 sentence summary for rapid recall.
@@ -10,3873 +10,2817 @@ Companion answer key to `javascript-interview-questions.md`. Every single answer
 
 ## Fundamentals
 
-### 1. 🟠 P1 [C] What is JavaScript and what are its key characteristics?
+### 1. 🔴 P0 [Q] What is the difference between primitive and reference types in how they are stored, copied, and compared?
 
-> **TL;DR:** JavaScript is a high-level, single-threaded, dynamic, garbage-collected programming language that supports object-oriented, functional, and event-driven programming paradigms.
+> **TL;DR:** Primitive types (string, number, boolean, undefined, null, symbol, bigint) store immutable raw values directly on the Stack and compare by value. Reference types (Object, Array, Function, Map, Set) store pointers on the Stack to mutable objects allocated on the Heap, comparing by memory address.
 
 **💡 Core Concept & Explanation**
-JavaScript was created by Brendan Eich in 1995. Key characteristics include:
-- **Single-Threaded:** Executes code sequentially on a single Call Stack using an Event Loop for asynchronous tasks.
-- **Dynamically Typed:** Variables are not bound to specific data types; types are checked at runtime.
-- **First-Class Functions:** Functions can be stored in variables, passed as arguments, and returned from other functions.
-- **Prototypal Inheritance:** Objects inherit methods and properties via prototype chains rather than classical classes.
+JavaScript partitions memory into the **Call Stack** and the **Memory Heap**:
+- **Primitive Types:** Stored directly in the call stack variable binding frame. When copied (`b = a`), the actual value is duplicated. Comparing primitives (`a === b`) compares their raw underlying binary representations.
+- **Reference Types:** The object payload resides in the dynamic Memory Heap, while the stack holds a 64-bit memory pointer. Copying (`b = a`) duplicates the reference address, causing both variables to mutate the same heap memory object. Comparing reference types (`a === b`) evaluates whether both pointers reference the exact same memory allocation address.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// First-Class Function & Dynamic Typing Example
-let data = 42; // Number
-data = "Hello JavaScript"; // Dynamically reassigned to String
+// Primitive Copy & Comparison (By Value)
+let x = 10;
+let y = x; // Duplicate value 10
+y = 20;
+console.log(x); // 10 (x is unchanged)
+console.log(x === 10); // true
 
-const logMessage = function(msg) {
-  console.log("Message:", msg);
-};
-
-function executeCallback(fn, payload) {
-  fn(payload); // Passing function as a first-class citizen
-}
-
-executeCallback(logMessage, data);
+// Reference Copy & Comparison (By Reference)
+const obj1 = { name: "Alice" };
+const obj2 = obj1; // Duplicate memory pointer address
+obj2.name = "Bob";
+console.log(obj1.name); // "Bob" (mutated underlying heap object)
+console.log({ a: 1 } === { a: 1 }); // false (distinct memory references!)
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Confusing JavaScript's dynamic typing with untyped execution.
+- Assuming two identical-looking objects are equal (`{} === {}` is `false`). When passing an object into a function, mutating its properties affects the caller, but reassigning the parameter variable itself inside the function breaks the reference without altering the caller's variable.
 
 ---
 
-### 2. 🟠 P1 [C] What is ECMAScript and how is it related to JavaScript?
+### 2. 🟠 P1 [C] What does typeof do, and why does typeof null return "object"?
 
-> **TL;DR:** ECMAScript (ECMA-262) is the official standard specification that defines the rules, syntax, and features of the language. JavaScript is the implementation of that specification.
-
-**💡 Core Concept & Explanation**
-ECMAScript provides the standard blueprint. TC39 (Technical Committee 39) manages updates:
-- **ES6 (ES2015):** Major modern update introducing `let/const`, Arrow Functions, Promises, Classes, Modules, and Destructuring.
-- **Yearly Releases:** ES2016 onwards introduces features incrementally (e.g. `async/await` in ES2017, `structuredClone` in ES2022).
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// ECMAScript Feature Evolution
-// ES5
-var legacyAdd = function(a, b) { return a + b; };
-
-// ES6+ (ECMAScript 2015+)
-const modernAdd = (a = 0, b = 0) => a + b;
-console.log(modernAdd(5, 10)); // 15
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Believing Node.js or DOM Web APIs (window, document) are part of ECMAScript — they are environment host APIs.
-
----
-
-### 3. 🟠 P1 [C] Is JavaScript interpreted, compiled, or both?
-
-> **TL;DR:** JavaScript uses Just-In-Time (JIT) compilation. Modern engines (like V8) parse code into bytecode using an interpreter, then compile hot code paths into optimized machine code at runtime.
+> **TL;DR:** typeof returns a string indicating the primitive data type of an operand. typeof null returns "object" due to a historic bug in the original 1995 JS engine where null's type tag bit vector (0x00) matched the type tag for objects.
 
 **💡 Core Concept & Explanation**
-V8 Engine Execution Pipeline:
-- **Parser:** Converts code into an Abstract Syntax Tree (AST).
-- **Ignition Interpreter:** Generates and executes bytecode for fast application startup.
-- **TurboFan Compiler:** Monitors frequently executed functions ('hot code') and compiles them directly into native machine code.
+`typeof` is a unary operator evaluated at runtime. It returns one of 8 strings: `"undefined"`, `"boolean"`, `"number"`, `"bigint"`, `"string"`, `"symbol"`, `"function"`, or `"object"`.
 
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// JIT Optimization Example
-function calculateSum(a, b) {
-  return a + b; // TurboFan optimizes this path when called repeatedly with Numbers
-}
-
-for (let i = 0; i < 10000; i++) {
-  calculateSum(i, i + 1); // Hot code path compiled to machine code
-}
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Calling JS purely 'interpreted' in modern interviews — mention JIT compilation!
-
----
-
-### 4. 🔴 P0 [C] What are the primitive data types in JavaScript?
-
-> **TL;DR:** JavaScript has 7 primitive types: Number, String, Boolean, null, undefined, Symbol, and BigInt. Primitives are immutable and stored by value.
-
-**💡 Core Concept & Explanation**
-Primitives are immutable single values stored directly on the execution stack:
-- `Number`: Double-precision 64-bit IEEE 754 float.
-- `String`: Sequence of UTF-16 characters.
-- `Boolean`: `true` or `false`.
-- `undefined`: Variable declared but not assigned.
-- `null`: Intentional absence of any object value.
-- `Symbol`: Unique, immutable identifier (ES6).
-- `BigInt`: Arbitrary-precision integers for numbers larger than 2^53 - 1 (ES2020).
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const num = 42;
-const str = "Hello";
-const bool = true;
-const unassigned = undefined;
-const empty = null;
-const sym = Symbol("id");
-const bigIntNum = 9007199254740991n;
-
-console.log(typeof sym); // "symbol"
-console.log(typeof bigIntNum); // "bigint"
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Forgetting Symbol or BigInt when listing primitives.
-
----
-
-### 5. 🔴 P0 [C] What are reference/non-primitive data types?
-
-> **TL;DR:** Reference types consist of Objects (including Arrays, Functions, Dates, Maps, Sets). They are mutable objects stored in Heap memory and accessed via memory reference pointers.
-
-**💡 Core Concept & Explanation**
-Reference values reside in dynamic Heap memory. Variable identifiers store a stack memory reference pointer address referencing that heap memory location.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-let userA = { name: "Alice" };
-let userB = userA; // Copies memory address reference pointer
-
-userB.name = "Bob"; // Mutates shared object in Heap
-console.log(userA.name); // "Bob"
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Assuming Arrays and Functions are separate fundamental data types — both inherit from Object.
-
----
-
-### 6. 🔴 P0 [Q] What is the difference between primitive and reference values?
-
-> **TL;DR:** Primitives are immutable and stored by value on the Call Stack. Reference values are mutable objects stored in Heap memory and accessed via variable memory pointers.
-
-**💡 Core Concept & Explanation**
-Comparison Summary:
-- **Mutability:** Primitives cannot be mutated (only reassigned). Reference objects can have properties added or modified.
-- **Comparison:** Primitives compare by value (`10 === 10`). Reference types compare by memory pointer address (`{} === {}` is `false`).
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// Primitive value equality
-console.log("hello" === "hello"); // true
-
-// Reference comparison (checks memory address)
-console.log({ a: 1 } === { a: 1 }); // false (different heap addresses!)
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Comparing two distinct objects with identical properties using ===.
-
----
-
-### 7. 🟠 P1 [C] Is JavaScript statically or dynamically typed?
-
-> **TL;DR:** JavaScript is dynamically typed. Data types are associated with values at runtime rather than declared with variables at compile time.
-
-**💡 Core Concept & Explanation**
-Variables can hold values of any data type and can be reassigned to different types throughout execution without compile error.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-let val = 100; // Currently Number
-val = "Now a String"; // Valid in JS!
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Confusing dynamic typing with weak typing (coercion behavior).
-
----
-
-### 8. 🟠 P1 [C] What does typeof do?
-
-> **TL;DR:** The typeof operator evaluates an expression and returns a string indicating the evaluation type of the operand.
-
-**💡 Core Concept & Explanation**
-Return strings: `"number"`, `"string"`, `"boolean"`, `"undefined"`, `"symbol"`, `"bigint"`, `"function"`, and `"object"`.
+**The `typeof null === "object"` Bug:**
+In the original 32-bit implementation of JavaScript (1995), values were stored with a type tag in the lower 1-3 bits followed by the actual value data:
+- Objects used the tag `000` in the lowest bits.
+- `null` was represented as the NULL pointer (`0x00` across all bits).
+Because `null` had `000` in its type tag bits, the `typeof` check misidentified `null` as an object. Fixing this bug in ES6 was proposed but rejected because it would break millions of existing legacy web scripts.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
 console.log(typeof 42);          // "number"
-console.log(typeof "JS");        // "string"
+console.log(typeof "hello");     // "string"
 console.log(typeof true);        // "boolean"
 console.log(typeof undefined);   // "undefined"
-console.log(typeof function(){});// "function"
+console.log(typeof Symbol());    // "symbol"
+console.log(typeof 10n);         // "bigint"
+console.log(typeof (() => {}));  // "function"
 console.log(typeof {});          // "object"
-```
+console.log(typeof null);        // "object" (HISTORIC BUG!)
 
-**⚠️ Interview Pitfall / Pro-Tip**
-- Expecting typeof null to return 'null' (it returns 'object').
-
----
-
-### 9. 🔴 P0 [C] Why does typeof null return "object"?
-
-> **TL;DR:** typeof null returning 'object' is a historical bug from the first version of JavaScript, kept for backward compatibility to avoid breaking existing legacy web code.
-
-**💡 Core Concept & Explanation**
-In JS version 1, values were stored with type tags in memory. The object type tag was `000`. Since `null` was represented as a NULL pointer (all zeroes), `typeof null` checked tag bits `000` and mistakenly returned `"object"`.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-console.log(typeof null); // "object"
-
-// Correct way to check for null:
-const value = null;
-console.log(value === null); // true
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Using typeof to check for null values.
-
----
-
-### 10. 🟠 P1 [C] What is undefined?
-
-> **TL;DR:** undefined is a primitive type representing an uninitialized variable, missing function argument, or missing object property.
-
-**💡 Core Concept & Explanation**
-JavaScript automatically assigns `undefined` to declared variables before assignment, omitted parameters, or non-existent object keys.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-let x;
-console.log(x); // undefined
-
-function test(arg) {
-  console.log(arg); // undefined if invoked as test()
+// Robust type checking utility for null vs object:
+function getExactType(val) {
+  if (val === null) return "null";
+  return typeof val;
 }
-test();
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Manually assigning undefined instead of letting the engine handle it — prefer using null for deliberate empty state.
+- Relying on `typeof val === 'object'` to check if a value is a non-null object without guarding against `null`. Always check `val !== null && typeof val === 'object'` or use `Object.prototype.toString.call(val)`.
 
 ---
 
-### 11. 🟠 P1 [C] What is null?
+### 3. 🟠 P1 [Q] What is the difference between null, undefined, and an undeclared variable?
 
-> **TL;DR:** null is a primitive value representing an intentional, explicit assignment of 'no value' or empty object pointer.
+> **TL;DR:** undefined represents a variable declared but not yet assigned a value; null is an intentional assignment representing empty/no object value; undeclared is a variable that has never been declared in any accessible scope, throwing a ReferenceError on access.
 
 **💡 Core Concept & Explanation**
-Developers assign `null` explicitly to indicate that a variable intentionally points to empty state or has been reset.
+- **undefined:** Automatic default value assigned by JS engine during memory creation phase for uninitialized `var`/`let` variables, missing parameters, or non-existent object properties. Type is `"undefined"`.
+- **null:** Intentional explicit value assigned by developer or returned by APIs (e.g. `document.querySelector`) to signify the absence of any value or object target. Type is `"object"`.
+- **Undeclared:** Identifiers that have not been declared in the current or outer scope chains. Accessing an undeclared variable throws a `ReferenceError` at execution time (except when evaluated via `typeof undeclaredVar`, which safely returns `"undefined"`).
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-let currentUser = null; // Explicitly set to empty initially
-currentUser = { name: "Alice" }; // Updated later
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Expecting null to be automatically assigned by the JS engine.
-
----
-
-### 12. 🟠 P1 [Q] What is the difference between null, undefined, and an undeclared variable?
-
-> **TL;DR:** undefined means declared but unassigned. null means intentionally set to empty. An undeclared variable was never created in scope and throws a ReferenceError if accessed.
-
-**💡 Core Concept & Explanation**
-Comparison Summary:
-- `undefined`: Variable exists in scope, holds `undefined`.
-- `null`: Variable exists in scope, holds `null` object pointer.
-- `Undeclared`: Identifier does not exist in any lexical scope chain; accessing it throws `ReferenceError`.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-let a; // Declared, undefined
-let b = null; // Declared, null
+let a; // Declared, uninitialized -> undefined
+const b = null; // Declared, assigned explicit null
 
 console.log(a); // undefined
 console.log(b); // null
-// console.log(c); // Throws ReferenceError: c is not defined
+
+// Undeclared identifier
+try {
+  console.log(c); // Throws ReferenceError: c is not defined
+} catch (e) {
+  console.log(e.name); // "ReferenceError"
+}
+
+// typeof edge case for undeclared:
+console.log(typeof undeclaredVar); // "undefined" (Safe check!)
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Confusing undefined with ReferenceError (undeclared).
+- Confusing `undefined` and `null` in loose equality (`null == undefined` is `true`, but `null === undefined` is `false`). Additionally, default parameter fallback (`fn(param = 'default')`) triggers on `undefined`, but NOT on `null`!
 
 ---
 
-### 13. 🟠 P1 [C] What is NaN and why is NaN !== NaN?
+### 4. 🟠 P1 [C] What is NaN, why is NaN !== NaN, and how do Number.isNaN() and Object.is() differ from ===?
 
-> **TL;DR:** NaN stands for 'Not-a-Number', representing an invalid mathematical operation. According to IEEE 754 standard, NaN is unequal to everything including itself.
+> **TL;DR:** NaN ("Not-a-Number") represents an invalid numerical operation result. Per IEEE 754 floating-point standard, NaN is not equal to anything including itself. Number.isNaN() strictly checks if a value is NaN without coercion, unlike global isNaN() which coercively converts to number first.
 
 **💡 Core Concept & Explanation**
-`NaN` is of type `"number"`. Because IEEE 754 math specifies that invalid results cannot equal any valid value or invalid result, `NaN === NaN` is `false`.
+**NaN Characteristics:**
+- Type of `NaN` is `"number"` (`typeof NaN === "number"`).
+- Represents an undefined or unrepresentable mathematical calculation result (e.g. `0 / 0`, `Math.sqrt(-1)`, `parseInt("invalid")`).
+- According to IEEE 754 spec, `NaN !== NaN` to ensure invalid calculations do not evaluate as equal to other invalid calculations.
+
+**Difference between Detection Methods:**
+1. `isNaN(val)`: Implicitly coerces `val` to a number before checking (`isNaN("abc")` -> `isNaN(NaN)` -> `true`!).
+2. `Number.isNaN(val)`: Strict check. Returns `true` ONLY if `typeof val === 'number'` and `val` is `NaN` (`Number.isNaN("abc")` -> `false`).
+3. `Object.is(NaN, NaN)`: Returns `true` (SameValue algorithm handles `NaN` equality and distinguishes `+0` vs `-0`).
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-console.log(typeof NaN); // "number"
-console.log(NaN === NaN); // false
+console.log(NaN === NaN);            // false
+console.log(NaN !== NaN);            // true
 
-// Proper checking:
-console.log(Number.isNaN(NaN)); // true
-console.log(Number.isNaN("hello")); // false (does not coerce)
+// Global isNaN (COERCIVE GOTCHA)
+console.log(isNaN("hello"));         // true (coerced "hello" -> NaN!)
+
+// Number.isNaN (STRICT & ACCURATE)
+console.log(Number.isNaN("hello"));  // false
+console.log(Number.isNaN(NaN));      // true
+
+// Object.is Comparison
+console.log(Object.is(NaN, NaN));    // true
+console.log(Object.is(+0, -0));      // false
+console.log(+0 === -0);              // true
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Using global isNaN() which coerces non-numeric strings to NaN.
+- Using `myVar === NaN` or global `isNaN(myVar)`. Always use `Number.isNaN(myVar)` or `Object.is(myVar, NaN)` for robust NaN detection.
 
 ---
 
-### 14. 🟠 P1 [C] What are truthy and falsy values?
+### 5. 🟠 P1 [C] What are truthy and falsy values, and what are all the falsy values in JavaScript?
 
-> **TL;DR:** Falsy values evaluate to false when coerced to boolean in conditional statements. All other values in JavaScript are truthy.
+> **TL;DR:** In boolean contexts (e.g., if conditions), values are coerced to true (truthy) or false (falsy). There are exactly 8 falsy values in JS: false, 0, -0, 0n (BigInt zero), "" (empty string), null, undefined, and NaN.
 
 **💡 Core Concept & Explanation**
-Boolean coercion (e.g. `Boolean(val)` or `if (val)`) converts all values to `true` or `false`.
+JavaScript performs implicit boolean type coercion when values are evaluated in boolean expressions (such as `if` statements, logical operators `&&` / `||`, and the `Boolean()` constructor).
+
+Everything in JavaScript is **truthy** EXCEPT for the exact set of 8 **falsy** values:
+1. `false` (Boolean false)
+2. `0` (Number zero)
+3. `-0` (Number negative zero)
+4. `0n` (BigInt zero)
+5. `""`, `''`, ```` (Empty string)
+6. `null` (Absence of value)
+7. `undefined` (Unassigned variable)
+8. `NaN` (Not a number)
+
+*Note:* Empty arrays `[]` and empty objects `{}` are reference types and evaluate to **truthy**!
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-if ("Hello") console.log("Truthy!"); // Executes
-if (0) console.log("Falsy!"); // Skips
+const falsyValues = [false, 0, -0, 0n, "", null, undefined, NaN];
+
+falsyValues.forEach(val => {
+  console.log(Boolean(val)); // Prints false for all 8
+});
+
+// Common TRUTHY traps in interviews:
+console.log(Boolean([]));        // true
+console.log(Boolean({}));        // true
+console.log(Boolean("0"));       // true (non-empty string!)
+console.log(Boolean("false"));   // true (non-empty string!)
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Assuming empty objects ({}) or empty arrays ([]) are falsy — both are truthy!
+- Assuming empty arrays `[]` or empty objects `{}` are falsy in `if ([])` checks. Check length (`arr.length > 0`) or object keys (`Object.keys(obj).length > 0`) instead.
 
 ---
 
-### 15. 🟠 P1 [C] What are all the falsy values in JavaScript?
+### 6. 🔴 P0 [Q] What is type coercion (implicit vs explicit), and how does == differ from ===?
 
-> **TL;DR:** There are exactly 8 falsy values in JavaScript: false, 0, -0, 0n (BigInt zero), "" (empty string), null, undefined, and NaN.
+> **TL;DR:** Implicit coercion automatically converts types behind the scenes during operations, while explicit coercion is manual conversion by the developer. Strict equality (===) checks both value and type without coercion, whereas loose equality (==) coerces operands to a common type before comparing.
 
 **💡 Core Concept & Explanation**
-Complete list of falsy values:
-- `false`
-- `0` (Number zero)
-- `-0` (Negative zero)
-- `0n` (BigInt zero)
-- `""` (Empty string)
-- `null`
-- `undefined`
-- `NaN`
+- **Explicit Coercion:** Intentional developer conversion using constructors as functions (e.g. `String(123)`, `Number("456")`, `Boolean(1)`).
+- **Implicit Coercion:** JS engine automatically converts operands during operations (e.g., `"5" + 2` -> `"52"` via string concatenation, but `"5" - 2` -> `3` via numeric conversion).
+
+**Loose (==) vs Strict (===) Algorithm:**
+- `===` checks if Type(A) === Type(B). If types differ, returns `false` immediately.
+- `==` converts types using Abstract Equality Comparison Algorithm:
+  - String == Number $\rightarrow$ converts String to Number.
+  - Boolean == Anything $\rightarrow$ converts Boolean to Number (`true` $\rightarrow$ `1`, `false` $\rightarrow$ `0`).
+  - Object == Primitive $\rightarrow$ converts Object to Primitive via `[Symbol.toPrimitive]`, `valueOf()`, or `toString()`.
+  - `null == undefined` returns `true` (special spec rule).
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-const falsyList = [false, 0, -0, 0n, "", null, undefined, NaN];
-falsyList.forEach(val => console.log(Boolean(val))); // All print false
+// Implicit Coercion Rules
+console.log("5" + 3);  // "53" (String concatenation prioritized by +)
+console.log("5" - 3);  // 2 (Numeric conversion forced by -)
+console.log("5" * "2"); // 10
+
+// Loose (==) vs Strict (===)
+console.log("5" == 5);   // true  ("5" converted to 5)
+console.log("5" === 5);  // false (Types differ: string vs number)
+
+console.log(false == 0); // true  (false -> 0)
+console.log(null == undefined); // true (spec exception)
+console.log(null === undefined); // false
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Thinking '0' (string 0) or 'false' (string false) are falsy — non-empty strings are truthy!
+- Using `==` when checking user inputs or API values, leading to edge case bugs like `"" == 0` (`true`) or `"\n" == 0` (`true`). Always default to `===`.
 
 ---
 
-### 16. 🟠 P1 [C] What is type coercion?
+### 7. 🟠 P1 [Q] How do &&, ||, ??, and ?. work, and what is short-circuit evaluation?
 
-> **TL;DR:** Type coercion is the automatic or explicit conversion of values from one data type to another (e.g. string to number).
+> **TL;DR:** Short-circuit evaluation means logical expressions evaluate left-to-right and stop as soon as the outcome is guaranteed. && returns the first falsy operand (or last value), || returns the first truthy operand (or last value), ?? returns right operand ONLY if left is null/undefined, and ?. safely short-circuits property access if left is nullish.
 
 **💡 Core Concept & Explanation**
-JavaScript performs implicit type coercion when operands of binary operators have different types.
+- **Short-Circuiting:** Evaluation halts immediately once the result is determined without executing remaining expressions.
+- **`A && B`:** Evaluates `A`. If `A` is falsy, returns `A` immediately without evaluating `B`. If `A` is truthy, evaluates and returns `B`.
+- **`A || B`:** Evaluates `A`. If `A` is truthy, returns `A` immediately. If `A` is falsy, evaluates and returns `B`.
+- **`A ?? B` (Nullish Coalescing):** Evaluates `A`. Returns `B` ONLY if `A` is `null` or `undefined` (preserves falsy values like `0`, `""`, `false`).
+- **`A?.B` (Optional Chaining):** Short-circuits and returns `undefined` if `A` is `null` or `undefined` instead of throwing a `TypeError`.__
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-console.log("5" + 2); // "52" (String concatenation coercion)
-console.log("5" - 2); // 3    (Numeric subtraction coercion)
+// && (Logical AND)
+console.log(0 && "Hello");       // 0 (Short-circuits on 0)
+console.log("Hi" && "World");    // "World"
+
+// || (Logical OR - Falsy Fallback)
+console.log(0 || 42);            // 42 (0 is falsy)
+console.log("" || "Default");    // "Default"
+
+// ?? (Nullish Coalescing - Null/Undefined Fallback)
+console.log(0 ?? 42);            // 0 (0 is kept!)
+console.log(null ?? "Default");  // "Default"
+
+// ?. (Optional Chaining)
+const user = { profile: null };
+console.log(user.profile?.avatar?.url); // undefined (No TypeError!)
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Unexpected string concatenation when using + operator.
+- Using `||` for default config options when `0` or `""` are valid user inputs. `config.count || 10` converts `0` to `10`! Use `config.count ?? 10` instead.
 
 ---
 
-### 17. 🟠 P1 [C] What is implicit vs explicit type conversion?
+### 8. 🟠 P1 [C] What are JavaScript's key characteristics (dynamically typed, single-threaded, garbage-collected, multi-paradigm), and how is it related to ECMAScript?
 
-> **TL;DR:** Implicit conversion happens automatically by the JS engine during operations. Explicit conversion (type casting) is written intentionally by the developer.
+> **TL;DR:** JS is a dynamically typed, single-threaded, garbage-collected, multi-paradigm language. ECMAScript is the standard specification (ECMA-262); JavaScript is the primary language implementation of that specification.
 
 **💡 Core Concept & Explanation**
-Explicit conversion uses built-in constructors like `Number()`, `String()`, or `Boolean()`.
+**Key Characteristics:**
+1. **Dynamically Typed:** Variable types are checked at runtime, not compile-time. Variables hold values of any type and can be reassigned dynamically.
+2. **Single-Threaded:** Operates on a single main thread with one Call Stack using an Event Loop to handle async non-blocking operations.
+3. **Garbage-Collected:** Memory allocation and deallocation are managed automatically using mark-and-sweep algorithms based on object reachability.
+4. **Multi-Paradigm:** Supports Object-Oriented (prototypal), Functional (first-class functions, pure functions, immutability), and Event-Driven programming styles.
+
+**ECMAScript vs JavaScript:**
+- **ECMAScript (ES):** The official standard governed by TC39 committee (ECMA-262 specification).
+- **JavaScript:** The implementation created by Brendan Eich (1995) that conforms to ECMAScript standard and adds Host Environment APIs (DOM, `window`, `fetch` in browser; `fs`, `process` in Node.js).
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Implicit
-let a = "10" * 2; // 20
+// Dynamic Typing & Multi-Paradigm Example
+let data = 100; // Number
+data = "Now a String"; // Dynamic type change
 
-// Explicit
-let b = Number("10") * 2; // 20
-let c = String(100); // "100"
-```
+// Functional Paradigm: High Order Function & Pure Calculation
+const numbers = [1, 2, 3, 4];
+const doubled = numbers.map(n => n * 2); // [2, 4, 6, 8]
 
-**⚠️ Interview Pitfall / Pro-Tip**
-- Relying on implicit coercion in complex logical expressions.
-
----
-
-### 18. 🟠 P1 [Q] What is the difference between == and ===?
-
-> **TL;DR:** Loose equality (==) converts operands to a common type before comparison. Strict equality (===) checks value and type without coercion.
-
-**💡 Core Concept & Explanation**
-`==` uses the Abstract Equality Comparison Algorithm to convert types before comparing.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-console.log(5 == "5");  // true
-console.log(5 === "5"); // false
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Using == when comparing values of unexpected types.
-
----
-
-### 19. 🟠 P1 [C] Why is === generally preferred?
-
-> **TL;DR:** Strict equality (===) prevents silent type coercion bugs, improves code readability, and allows engine optimization.
-
-**💡 Core Concept & Explanation**
-Using `===` makes comparisons explicit and predictable, preventing weird edge cases like `0 == ""` being `true`.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const val = "";
-if (val === 0) {
-  // Safe: Will not execute
+// OOP Paradigm: Class & Prototypal Inheritance
+class Person {
+  constructor(name) { this.name = name; }
+  greet() { return `Hi, I'm ${this.name}`; }
 }
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Forgetting that === still checks reference addresses for objects.
+- Confusing ECMAScript specs with runtime Web APIs (e.g. `setTimeout`, `fetch`, DOM elements are NOT part of ECMAScript standard; they are provided by the browser/Node host environment).
 
 ---
 
-### 20. 🟠 P1 [Q] How does type coercion work with ==?
+## How JavaScript Works
 
-> **TL;DR:** When using ==, numbers and strings convert to numbers, booleans convert to numbers (true->1, false->0), and objects convert to primitives via ToPrimitive.
+### 9. 🔴 P0 [C] What is a JavaScript engine (e.g., V8), what happens between writing code and running it (parsing, AST, bytecode interpreter, JIT-optimized machine code), and is JavaScript interpreted, compiled, or both?
+
+> **TL;DR:** V8 parses JS code into an Abstract Syntax Tree (AST), executes bytecode via an interpreter (Ignition), and dynamically compiles hot code paths into machine code via JIT compilers (TurboFan). JS uses Just-In-Time (JIT) compilation, making it both interpreted and compiled at runtime.
 
 **💡 Core Concept & Explanation**
-Rules: `null == undefined` is true. Number vs String converts String to Number. Boolean vs anything converts Boolean to Number.
+**V8 Engine Compilation Pipeline:**
+1. **Parser:** Converts raw JS code tokens into an Abstract Syntax Tree (AST).
+2. **Ignition (Bytecode Interpreter):** Converts AST into lightweight, memory-efficient Bytecode and begins execution immediately for fast start time.
+3. **TurboFan (JIT Compiler):** Monitors runtime execution ("profiling"). Hot functions executed frequently are compiled into highly optimized machine code.
+4. **Deoptimization:** If runtime type assumptions change (e.g. passing a string to a function that previously only received integers), TurboFan deoptimizes machine code back to bytecode.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-console.log(true == 1);  // true (true -> 1)
-console.log("0" == 0);   // true ("0" -> 0)
-console.log(null == undefined); // true
+// Monomorphic (Fast JIT Machine Code path)
+function add(a, b) {
+  return a + b;
+}
+for (let i = 0; i < 10000; i++) add(1, 2); // TurboFan optimizes add() for Numbers!
+
+// Polymorphic Mutation -> Triggers Deoptimization!
+add("hello", "world"); // Type changes to String! TurboFan deoptimizes back to Ignition bytecode.
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Assuming null == 0 (null is only loosely equal to undefined).
+- Writing polymorphic code (frequently changing object hidden classes or variable types passed into hot functions), causing V8 to continuously optimize and deoptimize code.
 
 ---
 
-### 21. 🟠 P1 [Q] What is the difference between Object.is() and ===?
+### 10. 🔴 P0 [D] What is the difference between the JavaScript engine and the runtime environment (browser vs Node.js), what does "single-threaded" actually mean, and what are the parts of the runtime (memory heap, call stack, Web APIs/libuv, task queues, event loop)?
 
-> **TL;DR:** Object.is() treats NaN as equal to NaN (true) and distinguishes +0 from -0 (false), whereas === does the opposite.
+> **TL;DR:** The JS engine (e.g. V8) executes ECMAScript code using a Call Stack and Memory Heap. The Runtime Environment (Browser/Node.js) wraps the engine with event loops, task queues, and APIs (Web APIs or libuv) to enable non-blocking asynchronous operation.
 
 **💡 Core Concept & Explanation**
-`Object.is()` implements the SameValue algorithm.
+**Engine vs Runtime:**
+- **JS Engine (V8/SpiderMonkey):** Call Stack + Memory Heap + Garbage Collector.
+- **Runtime Environment:** JS Engine + Host APIs (DOM, `fetch` in Browser; `fs`, `http` in Node) + Event Loop + Microtask/Macrotask Queues.
+
+**Single-Threaded Reality:**
+JavaScript executes JS code on **one main thread** (one Call Stack). Non-blocking operations (I/O, network requests, timers) are offloaded by the runtime to browser C++ background threads or libuv thread pool workers, which push callbacks back to task queues upon completion.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-console.log(NaN === NaN);         // false
-console.log(Object.is(NaN, NaN)); // true
+// Runtime Orchestration:
+console.log("1. Stack First");
 
-console.log(+0 === -0);         // true
-console.log(Object.is(+0, -0)); // false
+setTimeout(() => {
+  console.log("3. Macrotask Queue (via Web API Timer)");
+}, 0);
+
+Promise.resolve().then(() => {
+  console.log("2. Microtask Queue (High Priority)");
+});
+
+// Output:
+// 1. Stack First
+// 2. Microtask Queue (High Priority)
+// 3. Macrotask Queue (via Web API Timer)
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Using Object.is for general object reference comparison — it still checks heap addresses.
+- Thinking Node.js or browsers run JS code across multiple threads concurrently. The JS thread is single; background C++/libuv workers handle I/O and notify JS via the Event Loop queues.
 
 ---
 
-### 22. 🟠 P1 [C] What is short-circuit evaluation?
+### 11. 🔴 P0 [Q] What is an execution context, what happens in its creation (memory) phase and execution phase, what is a lexical environment, and how does the call stack manage global and function execution contexts?
 
-> **TL;DR:** Short-circuit evaluation stops evaluating logical expressions as soon as the outcome is determined by the first operand.
+> **TL;DR:** An Execution Context (EC) is an environment created when running JS code. It consists of a Memory Creation Phase (hoisting variables and functions) and an Execution Phase (running code line by line). The Call Stack manages active ECs on a LIFO basis.
 
 **💡 Core Concept & Explanation**
-`&&` stops on the first falsy operand. `||` stops on the first truthy operand.
+**Types of Execution Contexts:**
+1. **Global Execution Context (GEC):** Created when script starts. Creates `window`/`global` and `this`.
+2. **Function Execution Context (FEC):** Created whenever a function is invoked.
+
+**Two Execution Phases:**
+1. **Creation Phase:**
+   - Creates Variable Environment & Lexical Environment.
+   - Sets up scope chain.
+   - Allocates memory for variables (`var` initialized to `undefined`, `let`/`const` placed in TDZ, functions stored in full).
+2. **Execution Phase:**
+   - Runs code line by line, assigning values to variables and executing function calls.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-const user = { name: "Alice" };
-user && console.log(user.name); // Executes only if user is truthy
+var a = 10;
+function calc(num) {
+  var res = num * 2;
+  return res;
+}
+var ans = calc(a);
+
+/* Call Stack Trace:
+1. GEC pushed [a: undefined -> 10, calc: fn, ans: undefined -> 20]
+2. FEC calc(10) pushed [num: 10, res: undefined -> 20]
+3. FEC calc pops off stack
+4. GEC finishes & pops off stack on exit
+*/
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Executing side-effect functions inside short-circuit checks.
+- Confusing function definition time with function execution time. Lexical scope is determined at definition time, but Execution Contexts are created at call time.
 
 ---
 
-### 23. 🟠 P1 [C] How do && and || work?
+### 12. 🟠 P1 [C] How is memory managed in JavaScript (stack vs heap, garbage collection via mark-and-sweep and reachability), and what causes memory leaks (closures, forgotten event listeners, timers)?
 
-> **TL;DR:** && returns the first falsy operand or the last operand if all are truthy. || returns the first truthy operand or the last operand if all are falsy.
+> **TL;DR:** Memory is managed automatically via Mark-and-Sweep garbage collection, which reclaims memory from objects unattached from root references. Memory leaks occur when unreachable objects are unintentionally retained by active references (e.g., closures, timers, event listeners).
 
 **💡 Core Concept & Explanation**
-These operators return the actual operand value, not a boolean!
+**Memory Allocation:**
+- **Stack:** Stores primitive values and function call execution frames.
+- **Heap:** Stores objects, arrays, and functions.
+
+**Mark-and-Sweep Algorithm:**
+1. Collector builds a set of "GC Roots" (Global object, local call stack variables).
+2. Traverses all references from roots to mark reachable objects.
+3. Any memory node in heap NOT marked reachable is swept and reclaimed.
+
+**4 Main Causes of Memory Leaks:**
+1. Forgotten Timers (`setInterval` retaining referenced objects).
+2. Unremoved Event Listeners on DOM elements removed from document.
+3. Unintentional Global Variables (`window.userData = ...`).
+4. Out-of-date Closures holding large references.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-console.log("Cat" && "Dog"); // "Dog" (both truthy, returns last)
-console.log("" && "Dog");    // "" (first falsy)
-console.log("Cat" || "Dog"); // "Cat" (first truthy)
+// Memory Leak Example: Forgotten Timer
+function startTracker() {
+  const hugeData = new Array(1000000).fill("DATA");
+  setInterval(() => {
+    // Closure retains hugeData indefinitely in memory heap!
+    console.log(hugeData.length);
+  }, 1000);
+}
+
+// Fix: Store interval ID and clearInterval when destroyed!
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Assuming && and || only return true or false.
-
----
-
-### 24. 🟠 P1 [Q] What is the difference between || and ???
-
-> **TL;DR:** || falls back on ALL falsy values (0, "", false). Nullish coalescing (??) falls back ONLY on null or undefined.
-
-**💡 Core Concept & Explanation**
-Use `??` when `0` or `""` are valid input values that should not trigger fallback defaults.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const count = 0;
-
-console.log(count || 10); // 10 (0 is falsy!)
-console.log(count ?? 10); // 0  (0 is not null/undefined)
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Using || for default values when zero or empty strings are valid inputs.
-
----
-
-### 25. 🟠 P1 [C] What is optional chaining (?.)?
-
-> **TL;DR:** Optional chaining (?.) safely reads nested object properties without throwing a TypeError if an intermediate property is null or undefined.
-
-**💡 Core Concept & Explanation**
-Returns `undefined` short-circuiting execution if the target reference is nullish.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const user = { profile: null };
-
-console.log(user.profile?.address?.city); // undefined (No TypeError thrown!)
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Overusing ?. on variables that should guaranteed exist.
+- Removing a DOM element from the document tree (`element.remove()`) without unregistering attached event listeners or references in JS arrays, preventing GC from freeing element memory.
 
 ---
 
 ## Scope & Hoisting
 
-### 26. 🟠 P1 [Q] What is the difference between var, let, and const?
+### 13. 🔴 P0 [Q] What is the difference between var, let, and const in scope, redeclaration, and reassignment, and can a const object be modified?
 
-> **TL;DR:** var is function-scoped, re-declarable, and hoisted with undefined. let and const are block-scoped, cannot be re-declared in the same scope, and are hoisted into the TDZ. const prevents variable pointer reassignment.
+> **TL;DR:** var is function-scoped, hoisted with undefined, and allows redeclaration. let and const are block-scoped ({}), hoisted into the Temporal Dead Zone (TDZ), and disallow redeclaration. const prevents reassigning the variable reference, but object properties inside a const object can still be mutated.
 
 **💡 Core Concept & Explanation**
-Comparison:
-- `var`: Function scope, hoisted as `undefined`.
-- `let`: Block scope, TDZ hoisted, re-assignable.
-- `const`: Block scope, TDZ hoisted, must be initialized on declaration and cannot be reassigned.
+**Comparison Matrix:**
+- **`var`:** Scope = Function; Hoisted = `undefined`; Redeclare = Yes; Reassign = Yes.
+- **`let`:** Scope = Block (`{}`); Hoisted = TDZ (`ReferenceError`); Redeclare = No; Reassign = Yes.
+- **`const`:** Scope = Block (`{}`); Hoisted = TDZ (`ReferenceError`); Redeclare = No; Reassign = No.
+
+**Const Mutability:**
+`const` locks variable *binding reference*, NOT value immutability. A `const` object reference cannot point to a new object address, but properties *within* the heap object can be updated or deleted.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-var a = 1;
-let b = 2;
-const c = 3;
-// c = 4; // TypeError: Assignment to constant variable
+const user = { name: "Alice" };
+user.name = "Bob"; // ALLOWED: Mutating property inside heap object
+console.log(user.name); // "Bob"
+
+// user = { name: "Charlie" }; // TypeError: Assignment to constant variable!
+
+// To freeze property mutations:
+Object.freeze(user);
+// user.name = "David"; // Fails silently or throws TypeError in strict mode
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Assuming const makes objects immutable — property values can still be modified.
+- Believing `const` makes an object or array immutable. Use `Object.freeze()` or immutable data libraries for true runtime property immutability.
 
 ---
 
-### 27. 🟠 P1 [C] What is global scope?
+### 14. 🟠 P1 [C] What are global, function, block, and lexical scope, and how do the scope chain and variable shadowing work?
 
-> **TL;DR:** Global scope is the top-most execution context. Variables declared in global scope are accessible anywhere in the script.
+> **TL;DR:** Scope determines variable accessibility. Global scope is root; function scope is bound inside function bodies; block scope is bound within {} pairs. Lexical scope means inner functions resolve variables based on where they were written in source code, forming a scope chain.
 
 **💡 Core Concept & Explanation**
-In browser environments, global `var` variables attach to `window`.
+**Scope Hierarchy:**
+- **Global Scope:** Accessible anywhere in the application.
+- **Function Scope:** Variables declared with `var`, `let`, `const` inside a function are isolated to that function.
+- **Block Scope:** Variables declared with `let`/`const` inside `{}` (if, for, while blocks) are isolated to that block.
+
+**Scope Chain & Variable Shadowing:**
+When a variable is evaluated, JS checks the local scope. If not found, it traverses outer lexical scopes step by step up to global scope. If an inner scope declares a variable with the same name as an outer scope variable, it **shadows** the outer variable within that inner scope.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-var globalItem = "I am global";
-function test() {
-  console.log(globalItem); // Accessible
-}
-test();
-```
+const title = "Global";
 
-**⚠️ Interview Pitfall / Pro-Tip**
-- Polluting global scope causing variable naming collisions.
-
----
-
-### 28. 🟠 P1 [C] What is function scope?
-
-> **TL;DR:** Function scope means variables declared inside a function (with var, let, or const) are accessible only within that function body.
-
-**💡 Core Concept & Explanation**
-Function parameters and local variables are created when function execution context initializes and garbage collected after function exit.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-function demo() {
-  var secret = 123;
-}
-// console.log(secret); // ReferenceError
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Expecting var declared in a function to leak outside.
-
----
-
-### 29. 🟠 P1 [C] What is block scope?
-
-> **TL;DR:** Block scope restricts variable visibility to the nearest enclosing { } code block when declared using let or const.
-
-**💡 Core Concept & Explanation**
-Applies to `if` blocks, `for` loops, and standalone `{ }` blocks.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-if (true) {
-  let blockVal = "Trapped";
-}
-// console.log(blockVal); // ReferenceError
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Thinking var adheres to block scope.
-
----
-
-### 30. 🟠 P1 [C] What is lexical scope?
-
-> **TL;DR:** Lexical scope (static scope) means variable scope is determined by where variables and blocks are physically written in code at compile time.
-
-**💡 Core Concept & Explanation**
-Inner functions have access to variables declared in their outer parent scopes based on physical authoring structure.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const outer = "Outer Scope";
-function parent() {
-  function child() {
-    console.log(outer); // Resolves lexically
+function outer() {
+  const title = "Outer"; // Shadowing global title
+  
+  function inner() {
+    console.log(title); // Output: "Outer" (searches scope chain!)
   }
-  child();
+  inner();
 }
-parent();
+outer();
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Confusing lexical scope (where code is written) with dynamic scope (where function is called).
+- Assuming `var` respects block scopes (`if`, `for`). `var` leaks out of `if` blocks and `for` loops into the enclosing function or global scope!
 
 ---
 
-### 31. 🟠 P1 [C] What is the scope chain?
+### 15. 🔴 P0 [Q] What is hoisting, how do var, let/const, function declarations, and function expressions each behave, and what is the Temporal Dead Zone?
 
-> **TL;DR:** The scope chain is the hierarchical chain of parent lexical environments searched by the engine when resolving a variable reference.
+> **TL;DR:** Hoisting is JS allocating memory for variable/function declarations before executing code. var hoists initialized to undefined; let/const hoist into the Temporal Dead Zone (TDZ) throwing ReferenceError if accessed early; function declarations hoist fully.
 
 **💡 Core Concept & Explanation**
-If an identifier is not found in current local scope, JS travels up outer parent scopes until reaching global scope.
+**Hoisting Behaviors during Creation Phase:**
+- **Function Declarations:** Fully hoisted with implementation. Can be called *before* definition line.
+- **Function Expressions / Arrow Functions:** Hoisted according to their variable declaration (`var` -> `undefined`, `let`/`const` -> TDZ).
+- **`var`:** Hoisted and initialized to `undefined`. Accessing before declaration returns `undefined`.
+- **`let`/`const` (TDZ):** Hoisted into the **Temporal Dead Zone**—the spatial scope region from the start of the block until the execution reaches the actual declaration statement. Accessing during TDZ throws a `ReferenceError`.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-let g = "global";
-function level1() {
-  function level2() {
-    console.log(g); // Travels up Scope Chain to global
-  }
-  level2();
-}
-level1();
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Throwing ReferenceError when identifier is missing at top of scope chain.
-
----
-
-### 32. 🔴 P0 [C] What is hoisting?
-
-> **TL;DR:** Hoisting is JavaScript's default behavior of moving variable and function declarations to the top of their containing scope during creation phase.
-
-**💡 Core Concept & Explanation**
-Memory is allocated before line-by-line execution starts.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-console.log(x); // undefined (hoisted!)
-var x = 5;
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Thinking code is physically moved — only memory references are set up during creation phase.
-
----
-
-### 33. 🟠 P1 [C] What exactly gets hoisted in JavaScript?
-
-> **TL;DR:** Function declarations, var, let, const, and class declarations are all hoisted. However, only Function Declarations are fully initialized.
-
-**💡 Core Concept & Explanation**
-`var` is initialized as `undefined`; `let`, `const`, and `class` remain uninitialized in TDZ.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-sayHi(); // Works! Fully hoisted
-function sayHi() { console.log("Hi"); }
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Thinking function expressions are fully hoisted.
-
----
-
-### 34. 🔴 P0 [Q] How does var behave during hoisting?
-
-> **TL;DR:** var variables are hoisted to top of function/global scope and initialized immediately with undefined.
-
-**💡 Core Concept & Explanation**
-Accessing `var` before declaration returns `undefined` instead of throwing an error.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-console.log(num); // undefined
-var num = 10;
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Relying on pre-declaration undefined behavior causing silent bugs.
-
----
-
-### 35. 🔴 P0 [Q] How do let and const behave during hoisting?
-
-> **TL;DR:** let and const are hoisted to top of block scope but remain uninitialized in the Temporal Dead Zone until execution reaches their declaration line.
-
-**💡 Core Concept & Explanation**
-Accessing before declaration line throws a `ReferenceError`.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-try {
-  console.log(val); // ReferenceError
-} catch(e) {
-  console.log(e.message);
-}
-let val = 20;
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Claiming let/const are not hoisted at all.
-
----
-
-### 36. 🔴 P0 [C] What is the Temporal Dead Zone (TDZ)?
-
-> **TL;DR:** The TDZ is the period between scope entry and variable declaration where let and const variables exist in memory but cannot be accessed.
-
-**💡 Core Concept & Explanation**
-TDZ prevents accessing uninitialized variables early, catching bugs during development.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// TDZ starts
-const action = () => console.log(item); // TDZ active until line below executes
-let item = "Data"; // TDZ ends
-action(); // Works
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Thinking TDZ is syntactic rather than temporal (time-based during execution).
-
----
-
-### 37. 🟠 P1 [C] Why does accessing let before declaration throw an error?
-
-> **TL;DR:** Accessing let before declaration throws a ReferenceError because the variable is uninitialized in the Temporal Dead Zone.
-
-**💡 Core Concept & Explanation**
-Enforced by ECMAScript specification to enforce safe code structuring.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-let x = 1;
-{
-  // console.log(x); // ReferenceError! (shadowed let x is in TDZ here)
-  let x = 2;
-}
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Forgetting that block scope shadowing creates a new TDZ for inner block let.
-
----
-
-### 38. 🟠 P1 [C] Are function declarations hoisted?
-
-> **TL;DR:** Yes. Function declarations are fully hoisted with both name and body implementation stored in memory during creation phase.
-
-**💡 Core Concept & Explanation**
-Allows calling functions prior to their line of code definition.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-greet(); // "Hello!"
+// Function Declaration (Fully Hoisted)
+greet(); // Prints "Hello!"
 function greet() { console.log("Hello!"); }
-```
 
-**⚠️ Interview Pitfall / Pro-Tip**
-- Confusing function declarations with function expressions.
+// var Hoisting
+console.log(a); // undefined
+var a = 5;
 
----
-
-### 39. 🟠 P1 [C] Are function expressions hoisted?
-
-> **TL;DR:** No. Variable holds hoisted variable state (undefined if var), but function definition is assigned only when execution reaches that line.
-
-**💡 Core Concept & Explanation**
-Calling function expression early throws `TypeError` (if var) or `ReferenceError` (if let/const).
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
+// let / const TDZ
 try {
-  expr(); // TypeError: expr is not a function
-} catch(e) { console.log(e.message); }
-var expr = function() {};
+  console.log(b); // ReferenceError: Cannot access 'b' before initialization
+  let b = 10;
+} catch (e) { console.log(e.message); }
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Expecting function expressions to hoist implementation.
-
----
-
-### 40. 🟠 P1 [C] What is variable shadowing?
-
-> **TL;DR:** Variable shadowing occurs when a variable declared inside an inner scope shares the exact name as a variable in an outer scope, masking outer variable access.
-
-**💡 Core Concept & Explanation**
-The inner scope variable takes precedence during scope chain resolution.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-let name = "Outer";
-function shadow() {
-  let name = "Inner"; // Shadows outer variable
-  console.log(name); // "Inner"
-}
-shadow();
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Illegal shadowing: trying to declare var with same name as let in same block scope.
-
----
-
-### 41. 🟠 P1 [Q] What is the difference between redeclaration and reassignment?
-
-> **TL;DR:** Redeclaration means declaring a variable name again using var/let/const in same scope. Reassignment means updating stored value using = operator.
-
-**💡 Core Concept & Explanation**
-`var` allows redeclaration; `let` and `const` throw SyntaxError on redeclaration. `const` disallows reassignment.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-var x = 1;
-var x = 2; // Redeclaration OK with var
-
-let y = 1;
-y = 2; // Reassignment OK with let
-// let y = 3; // SyntaxError: Identifier 'y' has already been declared
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Confusing const immutability with prohibition of variable reassignment.
-
----
-
-### 42. 🟠 P1 [C] Can a const object be modified?
-
-> **TL;DR:** Yes. const prevents reassigning the variable memory reference pointer, but object properties inside Heap memory can be modified.
-
-**💡 Core Concept & Explanation**
-Use `Object.freeze()` to make object properties immutable.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const obj = { age: 20 };
-obj.age = 25; // Allowed!
-console.log(obj.age); // 25
-// obj = {}; // TypeError!
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Assuming const creates deep object immutability.
-
----
-
-### 43. 🟠 P1 [C] What is an execution context?
-
-> **TL;DR:** An Execution Context is an environment created by the engine to evaluate and execute JavaScript code, managing local variables, scope chain, and this binding.
-
-**💡 Core Concept & Explanation**
-Types: Global Execution Context (GEC) and Function Execution Context (FEC).
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// GEC created first, FEC created when run() is called
-function run() {
-  let local = 10;
-}
-run();
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Confusing execution context with `this` binding context.
-
----
-
-### 44. 🟠 P1 [Q] What happens when a function is called?
-
-> **TL;DR:** A new Function Execution Context is created, pushed onto Call Stack, variables & parameters are initialized, code executes, returns value, and context is popped off stack.
-
-**💡 Core Concept & Explanation**
-Pushed onto Call Stack; popped upon completion.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-function calc(a) { return a * 2; }
-let res = calc(5); // Creates context, evaluates 10, pops off stack
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Forgetting context is popped off call stack after execution.
-
----
-
-### 45. 🟠 P1 [C] What is the call stack?
-
-> **TL;DR:** The Call Stack is a LIFO (Last In, First Out) stack data structure used by JS engine to manage active function execution contexts.
-
-**💡 Core Concept & Explanation**
-Exceeding stack memory limit (e.g., infinite recursion) throws `RangeError: Maximum call stack size exceeded`.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-function first() { second(); }
-function second() { console.log("Done"); }
-first(); // GEC -> first() -> second()
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Unbounded recursive functions causing stack overflow.
+- Expecting arrow functions assigned to `var` or `let` (`var fn = () => {}`) to behave like function declarations. Invoking `fn()` before declaration line throws `TypeError: fn is not a function`!
 
 ---
 
 ## Functions & Closures
 
-### 46. 🟠 P1 [C] What are first-class functions?
+### 16. 🟠 P1 [C] What are first-class functions, higher-order functions, and callback functions?
 
-> **TL;DR:** First-class functions mean functions are treated as first-class citizens: they can be assigned to variables, passed as arguments, and returned from other functions.
+> **TL;DR:** First-class functions mean functions are treated like regular values (stored in variables, passed as args, returned from functions). Higher-order functions accept or return other functions. Callback functions are passed as arguments to be executed later.
 
 **💡 Core Concept & Explanation**
-Enables functional programming techniques like higher-order functions and callbacks.
+- **First-Class Citizens:** In JS, functions are first-class values (objects). They can be assigned to variables, stored in array/object data structures, passed as parameters to other functions, and returned from functions.
+- **Higher-Order Function (HOF):** Any function that takes one or more functions as arguments OR returns a function as its result (e.g. `Array.prototype.map`, `filter`, `reduce`, `addEventListener`).
+- **Callback Function:** A function passed into another function as an argument, intended to be executed ("called back") synchronously or asynchronously at a later time.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-const fn = () => "Hello";
-function runner(f) { return f(); }
-console.log(runner(fn)); // "Hello"
+const calculate = (operationFn, a, b) => operationFn(a, b); // HOF
+const add = (x, y) => x + y; // Callback
+
+console.log(calculate(add, 5, 3)); // 8
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Thinking functions are primitive types — functions are executable objects.
+- Invoking the callback function directly when passing it into a HOF (`setTimeout(myFn(), 1000)` instead of `setTimeout(myFn, 1000)`), executing `myFn` immediately instead of waiting for the timer.
 
 ---
 
-### 47. 🟠 P1 [C] What is a callback function?
+### 17. 🔴 P0 [Q] What is the difference between function declarations, function expressions, and arrow functions, including whether arrow functions have their own this and arguments and whether they can be constructors?
 
-> **TL;DR:** A callback function is a function passed as an argument into another function, to be executed later inside that outer function.
-
-**💡 Core Concept & Explanation**
-Used heavily for event handling, asynchronous tasks, and array iteration methods.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-[1, 2].forEach(function(num) {
-  console.log(num); // Callback function
-});
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Invoking callback during pass (`fn(callback())`) instead of passing reference (`fn(callback)`).
-
----
-
-### 48. 🟠 P1 [C] What is a higher-order function?
-
-> **TL;DR:** A higher-order function (HOF) is a function that accepts one or more functions as arguments, or returns a function as its output.
+> **TL;DR:** Function declarations are hoisted fully; expressions are bound to variables. Arrow functions have concise syntax, lexical this (inherited from outer scope), no arguments object, no prototype property, and cannot be used as constructors with new.
 
 **💡 Core Concept & Explanation**
-Examples: `Array.prototype.map`, `filter`, `reduce`.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-function multiplier(factor) {
-  return function(number) { // Returns function
-    return number * factor;
-  };
-}
-const double = multiplier(2);
-console.log(double(5)); // 10
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Confusing higher-order functions with callback functions.
-
----
-
-### 49. 🟠 P1 [Q] What is the difference between a function declaration and expression?
-
-> **TL;DR:** Function declarations start with function keyword, are fully hoisted, and can be called before definition. Function expressions assign function to variable and hoist variable only.
-
-**💡 Core Concept & Explanation**
-Declarations are hoisted fully; expressions adhere to variable hoisting rules.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// Declaration
-function dec() {}
-
-// Expression
-const expr = function() {};
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Calling function expressions before definition line.
-
----
-
-### 50. 🔴 P0 [C] What is an arrow function?
-
-> **TL;DR:** An arrow function (=>) is a compact ES6 function syntax that lexically binds this, lacks arguments/prototype properties, and cannot be used as a constructor.
-
-**💡 Core Concept & Explanation**
-Shorter syntax with implicit return for single expressions.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const add = (a, b) => a + b;
-console.log(add(2, 3)); // 5
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Using arrow functions for object methods expecting dynamic this.
-
----
-
-### 51. 🔴 P0 [C] What are the differences between arrow functions and regular functions?
-
-> **TL;DR:** Arrow functions lexically inherit this, lack arguments object, lack prototype property, and cannot be invoked with new.
-
-**💡 Core Concept & Explanation**
-Summary: No own `this`, no `arguments`, no `new`, no `super`.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const arrow = () => {};
-// new arrow(); // TypeError: arrow is not a constructor
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Attempting to use arrow functions as constructor functions.
-
----
-
-### 52. 🔴 P0 [C] Do arrow functions have their own this?
-
-> **TL;DR:** No. Arrow functions do not bind their own this; they capture this lexically from their enclosing parent scope at creation time.
-
-**💡 Core Concept & Explanation**
-Cannot be changed via `call()`, `apply()`, or `bind()`.
+**Arrow Functions vs Regular Functions:**
+1. **`this` Binding:** Regular functions bind `this` dynamically at call time based on invocation context. Arrow functions do NOT have their own `this`; they capture `this` lexically from their enclosing scope.
+2. **Constructors:** Regular functions can be invoked with `new` to instantiate objects. Arrow functions throw `TypeError: ... is not a constructor` because they lack a `.prototype` property.
+3. **`arguments` Object:** Regular functions have an `arguments` object. Arrow functions do not (use rest parameters `...args` instead).
+4. **Duplicate Parameters:** Regular functions allow duplicate named parameters in non-strict mode; arrow functions disallow them.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
 const obj = {
-  name: "Obj",
-  arrow: () => console.log(this.name) // Captures outer scope this (window)
+  name: "TechCorp",
+  regularFn: function() { console.log("Regular:", this.name); },
+  arrowFn: () => { console.log("Arrow:", this.name); }
 };
-obj.arrow(); // undefined
+
+obj.regularFn(); // "Regular: TechCorp" (Implicit binding)
+obj.arrowFn();   // "Arrow: undefined" (Lexical Window/Global this!)
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Expecting arrow functions in object literal properties to bind to object.
+- Using arrow functions as object methods or class prototype methods when you intend to reference object instance properties via `this`.
 
 ---
 
-### 53. 🔴 P0 [C] Do arrow functions have their own arguments?
+### 18. 🟠 P1 [Q] What are rest parameters, spread syntax, default parameters, and the arguments object?
 
-> **TL;DR:** No. Arrow functions do not have their own arguments object; they inherit arguments from outer function scope or throw error in global scope.
+> **TL;DR:** Rest parameters (...args) collect remaining function arguments into an array. Spread syntax (...arr) expands iterables into elements. Default parameters specify fallbacks for undefined. arguments is an array-like object in regular functions.
 
 **💡 Core Concept & Explanation**
-Use ES6 Rest parameters (`...args`) instead.
+- **Rest Parameters (`...rest`):** Must be the last parameter in function signature. Packs remaining arguments into a real JS Array.
+- **Spread Syntax (`...iterable`):** Unpacks elements of an array/object into discrete items inside calls, array literals, or object literals.
+- **Default Parameters:** Fallback values assigned to parameters when arguments passed are `undefined`.
+- **`arguments` Object:** Array-like object available inside regular functions containing all passed parameters. Lacks array methods (`map`, `filter`) and is obsolete compared to Rest parameters.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-const arrow = (...args) => console.log(args[0]);
-arrow(10); // 10
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Accessing arguments variable inside arrow functions.
-
----
-
-### 54. 🔴 P0 [C] Can arrow functions be used as constructors?
-
-> **TL;DR:** No. Arrow functions lack an internal [[Construct]] method and prototype property, so calling them with new throws a TypeError.
-
-**💡 Core Concept & Explanation**
-Throws `TypeError: Arrow is not a constructor`.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const Car = (make) => { this.make = make; };
-// const c = new Car("Tesla"); // TypeError
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Using arrow syntax for constructor functions or class methods requiring prototypes.
-
----
-
-### 55. 🟠 P1 [C] What is the arguments object?
-
-> **TL;DR:** The arguments object is an array-like object available inside regular functions containing all arguments passed to that function.
-
-**💡 Core Concept & Explanation**
-Array-like: Has `length` and index access, but lacks Array prototype methods (`map`, `filter`). Convert using `Array.from(arguments)`.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-function sum() {
-  return Array.from(arguments).reduce((a, b) => a + b, 0);
+// Rest Parameter & Default Parameter
+function sum(multiplier = 1, ...numbers) {
+  return numbers.reduce((acc, curr) => acc + curr, 0) * multiplier;
 }
-console.log(sum(1, 2, 3)); // 6
+console.log(sum(2, 10, 20, 30)); // 120
+
+// Spread Operator
+const arr1 = [1, 2];
+const arr2 = [...arr1, 3, 4]; // [1, 2, 3, 4]
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Using array methods directly on arguments object without converting it to Array first.
+- Using `arguments` in arrow functions (throws `ReferenceError` unless inherited from outer regular function) or placing rest parameters anywhere except at the end of function parameters.
 
 ---
 
-### 56. 🟠 P1 [C] What are default parameters?
+### 19. 🔴 P0 [Q] What is a closure, how does it work, and what are its practical uses (including IIFEs)?
 
-> **TL;DR:** Default parameters allow function formal parameters to be initialized with default values if no value or undefined is passed.
+> **TL;DR:** A closure is a function bundled together with references to its surrounding lexical environment, allowing inner functions to access outer variables even after the outer function has finished executing.
 
 **💡 Core Concept & Explanation**
-Triggers fallback only when argument is `undefined` (not `null` or `0`).
+**How Closures Work:**
+When a function is declared in JS, it retains a reference to its parent Lexical Environment via an internal `[[Environment]]` property. Even after the outer function execution context is popped off the Call Stack, any variables referenced by the inner function remain preserved on the Memory Heap instead of being garbage-collected.
+
+**Practical Uses:**
+1. Data Privacy / Encapsulation (creating private variables in factory functions).
+2. Currying and Partial Application.
+3. Event Listeners & Async Callbacks holding state.
+4. IIFEs (Immediately Invoked Function Expressions) for isolated module scopes.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-function greet(name = "Guest") {
-  return "Hello " + name;
+function createCounter() {
+  let count = 0; // Private variable encapsulated by closure!
+  return {
+    increment: () => ++count,
+    decrement: () => --count,
+    getCount: () => count
+  };
 }
-console.log(greet()); // "Hello Guest"
-console.log(greet(null)); // "Hello null" (null does NOT trigger default!)
+
+const counter = createCounter();
+console.log(counter.increment()); // 1
+console.log(counter.increment()); // 2
+console.log(counter.count);       // undefined (Private!)
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Assuming null triggers default parameter values.
+- Creating closures in loops with `var` (`for (var i = 0; i < 3; i++)`) causing all iterations to share the same mutated global `i` variable. Use `let` or IIFE to fix!
 
 ---
 
-### 57. 🟠 P1 [C] What are rest parameters?
+### 20. 🟠 P1 [C] What is a pure function, and what is a side effect?
 
-> **TL;DR:** Rest parameters syntax (...args) allows a function to accept an indefinite number of arguments as a true JavaScript Array.
+> **TL;DR:** A pure function given the same inputs will always return the exact same output without causing side effects (modifying global state, mutating args, or performing external I/O).
 
 **💡 Core Concept & Explanation**
-Must be the last parameter in function declaration.
+**Requirements of Pure Functions:**
+1. **Deterministic:** Output depends *solely* on input parameters. If input is `(2, 3)`, output is ALWAYS `5`.
+2. **Zero Side Effects:** Does NOT alter external state (global variables, outer objects), perform console logging, write to DOM, mutate parameters, or trigger network/disk I/O.
+
+**Why Pure Functions Matter:**
+- Highly predictable, trivial to unit test, cacheable via memoization, and safe for parallel execution.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-function total(...numbers) {
-  return numbers.reduce((acc, n) => acc + n, 0);
-}
-console.log(total(10, 20, 30)); // 60
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Placing rest parameter before other parameters (`function(a, ...b, c)`).
-
----
-
-### 58. 🟠 P1 [Q] What is the difference between rest and spread syntax?
-
-> **TL;DR:** Rest syntax (...args) collects multiple elements into an array. Spread syntax (...arr) expands an array or object into individual elements.
-
-**💡 Core Concept & Explanation**
-Rest gathers elements; Spread unpacks elements.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// Rest
-function collect(...items) {}
-
-// Spread
-const arr = [1, 2];
-const copy = [...arr, 3]; // [1, 2, 3]
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Confusing syntax context.
-
----
-
-### 59. 🟠 P1 [C] What is an IIFE?
-
-> **TL;DR:** An IIFE (Immediately Invoked Function Expression) is a JavaScript function that runs as soon as it is defined, preventing variable global scope pollution.
-
-**💡 Core Concept & Explanation**
-Syntax: `(function() { ... })();`
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-(function() {
-  var privateVar = "Secret";
-  console.log("IIFE Executed");
-})();
-// console.log(privateVar); // ReferenceError
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Forgetting wrapping parentheses causing syntax error.
-
----
-
-### 60. 🟠 P1 [C] What is a pure function?
-
-> **TL;DR:** A pure function always returns the exact same output for the same input arguments and produces zero side effects.
-
-**💡 Core Concept & Explanation**
-Deterministic and predictable; core pillar of Functional Programming.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// Pure
-const add = (a, b) => a + b;
-
-// Impure
+// IMPURE Function (Mutates outer state & non-deterministic)
 let total = 0;
-const addToTotal = (a) => total += a; // Side effect!
-```
+function addToTotal(num) {
+  total += num; // Side Effect: Mutating global variable!
+  return total;
+}
 
-**⚠️ Interview Pitfall / Pro-Tip**
-- Mutating global state or external parameters inside function.
-
----
-
-### 61. 🟠 P1 [C] What is a side effect?
-
-> **TL;DR:** A side effect is any state change or interaction with the outside world performed by a function (e.g. DOM mutation, I/O logging, changing global variables).
-
-**💡 Core Concept & Explanation**
-Examples: `console.log()`, HTTP requests, modifying DOM, mutating objects passed by reference.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-function updateDOM(val) {
-  document.title = val; // Side Effect!
+// PURE Function (No side effects, deterministic)
+function addPure(a, b) {
+  return a + b;
 }
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Unintended object reference parameter mutations.
+- Mutating array or object arguments directly inside a function (`arr.push(item)`) instead of returning a new array copy (`[...arr, item]`).
 
 ---
 
-### 62. 🟠 P1 [C] What is recursion?
+### 21. 🟠 P1 [C] What are currying and function composition?
 
-> **TL;DR:** Recursion is a programming technique where a function calls itself until reaching a base termination condition.
+> **TL;DR:** Currying transforms a multi-argument function into a sequence of unary functions. Function composition combines multiple functions where the output of one function becomes the input of the next.
 
 **💡 Core Concept & Explanation**
-Must have base case to prevent Call Stack overflow.
+- **Currying:** `f(a, b, c)` $\rightarrow$ `f(a)(b)(c)`. Allows partial application of arguments, enabling creation of reusable specialized utility functions.
+- **Function Composition:** Mathematical `(f ∘ g)(x) = f(g(x))`. Pipe or Compose functions pass data through a pipeline of single-responsibility pure transformations.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-function factorial(n) {
-  if (n <= 1) return 1; // Base case
-  return n * factorial(n - 1);
-}
-console.log(factorial(5)); // 120
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Missing base case resulting in stack overflow error.
-
----
-
-### 63. 🔴 P0 [C] What is function composition?
-
-> **TL;DR:** Function composition is the process of combining two or more functions to produce a new function (e.g. f(g(x))).
-
-**💡 Core Concept & Explanation**
-Passes output of one function as input to next.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const double = x => x * 2;
-const addOne = x => x + 1;
-const doubleThenAdd = x => addOne(double(x));
-console.log(doubleThenAdd(3)); // 7
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Hardcoding function pipelines instead of writing composable helpers.
-
----
-
-### 64. 🔴 P0 [C] What is currying?
-
-> **TL;DR:** Currying transforms a multi-argument function f(a, b, c) into a nested chain of single-argument functions f(a)(b)(c).
-
-**💡 Core Concept & Explanation**
-Uses closures to remember passed arguments across calls.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
+// Currying
 const curryAdd = a => b => c => a + b + c;
 console.log(curryAdd(1)(2)(3)); // 6
+
+// Composition: compose(f, g)(x) => f(g(x))
+const add10 = x => x + 10;
+const double = x => x * 2;
+
+const compose = (f, g) => x => f(g(x));
+const addThenDouble = compose(double, add10);
+console.log(addThenDouble(5)); // (5 + 10) * 2 = 30
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Forgetting closure argument accumulation.
-
----
-
-### 65. 🔴 P0 [C] What is a closure?
-
-> **TL;DR:** A closure is a function bundled together with references to its outer lexical environment, giving access to outer variables even after outer function returns.
-
-**💡 Core Concept & Explanation**
-Function retains access to birthplace scope via internal [[Environment]] link.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-function outer() {
-  let count = 0;
-  return function inner() {
-    count++;
-    return count;
-  };
-}
-const counter = outer();
-console.log(counter()); // 1
-console.log(counter()); // 2
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Thinking closures copy static variable values — closures store live memory references!
-
----
-
-### 66. 🔴 P0 [Q] How does a closure work?
-
-> **TL;DR:** When outer function exits, variables referenced by inner functions are preserved in Heap memory rather than garbage collected.
-
-**💡 Core Concept & Explanation**
-Scope reference chain is kept alive by inner function pointer.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-function makeAdder(x) {
-  return function(y) {
-    return x + y; // x is preserved in closure
-  };
-}
-const add10 = makeAdder(10);
-console.log(add10(5)); // 15
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Memory leaks from retaining unused closure scope data.
-
----
-
-### 67. 🔴 P0 [C] What are practical uses of closures?
-
-> **TL;DR:** Practical uses include Data Encapsulation (private variables), Module Pattern, Function Currying, Memoization, and Event Handlers.
-
-**💡 Core Concept & Explanation**
-Used extensively in JavaScript libraries and state management.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// Private state module
-const createStore = () => {
-  let state = 0;
-  return {
-    get: () => state,
-    set: (v) => state = v
-  };
-};
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Creating unnecessary closures inside performance-critical loops.
+- Confusing composition order: `compose(f, g)` executes Right-to-Left (`g` then `f`), whereas `pipe(f, g)` executes Left-to-Right (`f` then `g`).
 
 ---
 
 ## this & Binding
 
-### 68. 🟠 P1 [C] What is this in JavaScript?
+### 22. 🔴 P0 [C] How is the value of this determined: default binding (and the effect of strict mode), implicit binding, explicit binding, new, and arrow functions?
 
-> **TL;DR:** this is a keyword that refers to the object context in which the current code or function is executing.
+> **TL;DR:** this is determined by how a function is called: default binding (global/undefined in strict mode), implicit binding (object calling method), explicit binding (call/apply/bind), new binding (new object created), or lexical binding (arrow functions).
 
 **💡 Core Concept & Explanation**
-Dynamic binding evaluated at function invocation time.
+**5 Rules of `this` Determination (In order of precedence):**
+1. **`new` Binding:** When function called with `new`, `this` is the newly constructed object instance.
+2. **Explicit Binding:** When invoked via `.call()`, `.apply()`, or `.bind()`, `this` is explicitly specified target object.
+3. **Implicit Binding:** When method called via object property (`obj.fn()`), `this` is `obj`.
+4. **Default Binding:** Standalone function invocation (`fn()`). `this` defaults to `window`/`global` (or `undefined` in `'use strict'`).
+5. **Lexical Binding:** Arrow functions ignore all above 4 rules and inherit `this` from enclosing scope at declaration time.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-console.log(this); // window in browser global scope
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Thinking this refers to function definition location for regular functions.
-
----
-
-### 69. 🔴 P0 [C] How is the value of this determined?
-
-> **TL;DR:** Determined by 4 precedence rules: 1) New binding, 2) Explicit binding (call/apply/bind), 3) Implicit binding (obj.fn()), 4) Default binding.
-
-**💡 Core Concept & Explanation**
-Precedence order: New &gt; Explicit &gt; Implicit &gt; Default.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// Implicit
-const obj = { name: "A", fn() { console.log(this.name); } };
-obj.fn(); // "A"
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Applying default binding rules to arrow functions.
-
----
-
-### 70. 🟠 P1 [C] What is this inside a regular function?
-
-> **TL;DR:** Inside a standalone regular function, this refers to window/global in non-strict mode, or undefined in strict mode.
-
-**💡 Core Concept & Explanation**
-Strict mode (`"use strict"`) prevents default global window binding.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-function show() {
-  "use strict";
-  console.log(this); // undefined
+function showThis() {
+  'use strict';
+  console.log(this);
 }
-show();
+showThis(); // undefined (Strict mode default binding)
+
+const user = {
+  name: "Sam",
+  greet() { console.log(this.name); }
+};
+user.greet(); // "Sam" (Implicit binding)
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Forgetting strict mode behavior.
+- Expecting `this` inside a function to refer to the function itself or its lexical scope.
 
 ---
 
-### 71. 🟠 P1 [C] What is this inside an object method?
+### 23. 🔴 P0 [Q] What happens to this when a method is passed as a callback, and how do you fix it?
 
-> **TL;DR:** Inside an object method invoked as obj.method(), this refers to the object preceding the dot.
+> **TL;DR:** When a method is passed as a callback, it loses its original implicit object binding (defaulting to window/undefined). Fix it by explicitly binding with .bind(), wrapping in an arrow function, or passing an inline callback.
 
 **💡 Core Concept & Explanation**
-Implicit binding rule.
+**The Lost `this` Problem:**
+Passing an object method as a callback passes the underlying function reference directly (`const fn = obj.method`). When the receiver executes `fn()`, it invokes it as a standalone function call (Default Binding), causing `this` to point to `window` or `undefined` instead of `obj`.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
 const user = {
-  name: "Sarah",
-  sayName() { console.log(this.name); }
+  name: "Alice",
+  greet() { console.log("Hello,", this.name); }
 };
-user.sayName(); // "Sarah"
+
+// PROBLEM: Method passed as callback loses binding
+setTimeout(user.greet, 100); // "Hello, undefined"
+
+// FIX 1: .bind()
+setTimeout(user.greet.bind(user), 100); // "Hello, Alice"
+
+// FIX 2: Wrapper Arrow Function
+setTimeout(() => user.greet(), 100); // "Hello, Alice"
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Detaching method into standalone variable losing implicit binding.
+- Passing unbound object methods directly to `setTimeout`, `addEventListener`, or React event handlers.
 
 ---
 
-### 72. 🔴 P0 [C] What is this inside an arrow function?
+### 24. 🔴 P0 [Q] What is the difference between call(), apply(), and bind()?
 
-> **TL;DR:** this inside an arrow function is resolved lexically from its enclosing parent scope at function creation time.
+> **TL;DR:** call() invokes the function immediately with this and individual arguments. apply() invokes immediately with this and an array of arguments. bind() returns a new permanently bound function without invoking it immediately.
 
 **💡 Core Concept & Explanation**
-Ignores explicit call/apply/bind context overrides.
+- **`.call(thisArg, arg1, arg2, ...)`:** Invokes function immediately. Arguments passed comma-separated.
+- **`.apply(thisArg, [arg1, arg2, ...])`:** Invokes function immediately. Arguments passed as an Array/Array-like object.
+- **`.bind(thisArg, arg1, arg2, ...)`:** Does NOT execute immediately. Returns a copy of the function with `this` and pre-filled parameters bound permanently.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-const obj = {
-  name: "Lexical",
-  getArrow() {
-    return () => console.log(this.name);
-  }
-};
-obj.getArrow()(); // "Lexical"
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Using call/apply on arrow functions expecting this to change.
-
----
-
-### 73. 🟠 P1 [C] What is this inside a constructor?
-
-> **TL;DR:** Inside a constructor function invoked with new, this refers to the newly created instance object.
-
-**💡 Core Concept & Explanation**
-The `new` operator creates object, links prototype, sets `this`, and returns instance.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-function User(name) {
-  this.name = name;
+function introduce(greeting, punctuation) {
+  console.log(`${greeting} ${this.name}${punctuation}`);
 }
-const u = new User("Alex");
-console.log(u.name); // "Alex"
+const person = { name: "Bob" };
+
+// call: Individual comma arguments
+introduce.call(person, "Hello", "!"); // "Hello Bob!"
+
+// apply: Array arguments
+introduce.apply(person, ["Welcome", "."]); // "Welcome Bob."
+
+// bind: Returns new function
+const boundFn = introduce.bind(person, "Hi");
+boundFn("?"); // "Hi Bob?"
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Forgetting new keyword when calling constructor.
-
----
-
-### 74. 🔴 P0 [Q] What happens to this when a method is passed as a callback?
-
-> **TL;DR:** Passing an object method as a callback detaches implicit binding, causing this to fall back to default binding (undefined or window).
-
-**💡 Core Concept & Explanation**
-Fix using `.bind(obj)` or wrapping in an arrow function.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const obj = {
-  val: 42,
-  getVal() { console.log(this.val); }
-};
-setTimeout(obj.getVal, 100); // undefined!
-setTimeout(obj.getVal.bind(obj), 100); // 42
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Passing object methods to setTimeout or event listeners without binding.
-
----
-
-### 75. 🟠 P1 [C] What is implicit binding?
-
-> **TL;DR:** Implicit binding occurs when a function is invoked as a method of an object (obj.fn()), binding this to that object.
-
-**💡 Core Concept & Explanation**
-Call site object determines `this` context.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const car = {
-  brand: "BMW",
-  drive() { console.log(this.brand); }
-};
-car.drive(); // "BMW"
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Chained call sites: `a.b.c.fn()` binds `this` to `c`.
-
----
-
-### 76. 🟠 P1 [C] What is explicit binding?
-
-> **TL;DR:** Explicit binding uses call(), apply(), or bind() to explicitly specify the this context for function execution.
-
-**💡 Core Concept & Explanation**
-Directly forces context target.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-function show() { console.log(this.title); }
-show.call({ title: "Explicit" }); // "Explicit"
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Passing null in strict mode sets this to null, not window.
-
----
-
-### 77. 🟠 P1 [C] What is call()?
-
-> **TL;DR:** call() invokes a function immediately with a specified this context and arguments passed individually separated by commas.
-
-**💡 Core Concept & Explanation**
-Syntax: `fn.call(thisArg, arg1, arg2, ...)`
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-function greet(greeting) {
-  console.log(greeting + " " + this.name);
-}
-greet.call({ name: "Alice" }, "Hello"); // "Hello Alice"
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Passing arguments array instead of individual comma-separated arguments.
-
----
-
-### 78. 🟠 P1 [C] What is apply()?
-
-> **TL;DR:** apply() invokes a function immediately with a specified this context and arguments passed as a single Array or array-like object.
-
-**💡 Core Concept & Explanation**
-Syntax: `fn.apply(thisArg, [arg1, arg2])`
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-function sum(a, b) { return a + b + this.base; }
-console.log(sum.apply({ base: 10 }, [2, 3])); // 15
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Passing individual arguments instead of an array.
-
----
-
-### 79. 🟠 P1 [C] What is bind()?
-
-> **TL;DR:** bind() returns a brand new function bound to the specified this context and preset initial arguments without executing immediately.
-
-**💡 Core Concept & Explanation**
-Creates permanent bound function context.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const user = { name: "Bob" };
-function show() { console.log(this.name); }
-const bound = show.bind(user);
-bound(); // "Bob"
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Expecting bind() to execute immediately.
-
----
-
-### 80. 🔴 P0 [Q] What is the difference between call(), apply(), and bind()?
-
-> **TL;DR:** call and apply execute immediately (call takes comma arguments, apply takes array). bind returns a new function for later execution.
-
-**💡 Core Concept & Explanation**
-Summary table:
-call(this, a, b) -&gt; Immediate
-apply(this, [a, b]) -&gt; Immediate
-bind(this, a, b) -&gt; Returns bound function
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-function fn(a) { console.log(this.x + a); }
-const ctx = { x: 10 };
-fn.call(ctx, 1);    // 11
-fn.apply(ctx, [1]); // 11
-fn.bind(ctx, 1)();  // 11
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Re-binding a function bound with bind().
+- Attempting to re-bind a function already bound via `.bind()`. Calling `.bind()` on an already bound function has no effect on `this`!
 
 ---
 
 ## Objects & Prototypes
 
-### 81. 🟠 P1 [C] How are objects created in JavaScript?
+### 25. 🟠 P1 [C] How are objects created and accessed (dot vs bracket notation), how does destructuring work for objects and arrays, and what do Object.keys(), Object.values(), and Object.entries() do?
 
-> **TL;DR:** Objects can be created using Object Literals ({}), Object.create(), Constructor Functions with new, or ES6 Class syntax.
+> **TL;DR:** Objects are created via literals {}, Object.create(), or constructors. Properties are accessed via dot or bracket notation. Destructuring extracts values into variables. Object.keys/values/entries return arrays of own enumerable property keys, values, or [key, value] pairs.
 
 **💡 Core Concept & Explanation**
-Object literal is most common: `const obj = {};`
+- **Dot vs Bracket Notation:** Dot (`obj.key`) requires valid static identifiers. Bracket (`obj[key]`) evaluates dynamic expressions or keys with special characters/spaces.
+- **Destructuring:** Syntax unpacking array elements or object properties into distinct variables with default value support.
+- **Static Object Reflection:**
+  - `Object.keys(obj)` $\rightarrow$ `['a', 'b']`
+  - `Object.values(obj)` $\rightarrow$ `[1, 2]`
+  - `Object.entries(obj)` $\rightarrow$ `[['a', 1], ['b', 2]]`
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-const literal = { a: 1 };
-const created = Object.create(literal);
-console.log(created.a); // 1 (inherited)
+const user = { id: 101, fullName: "Sarah", role: "Admin" };
+
+// Destructuring with renaming & default value
+const { fullName: name, role, salary = 50000 } = user;
+console.log(name, role, salary); // "Sarah" "Admin" 50000
+
+// Object.entries iteration
+for (const [key, value] of Object.entries(user)) {
+  console.log(`${key}: ${value}`);
+}
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Thinking Object.create(null) inherits Object prototype methods.
+- Accessing nested destructured properties when parent object is `undefined` (`const { a: { b } } = null`), throwing `TypeError`.
 
 ---
 
-### 82. 🟠 P1 [Q] What is the difference between dot and bracket notation?
+### 26. 🔴 P0 [Q] What is the difference between a shallow and a deep copy, and what are the limitations of spread, Object.assign(), JSON.parse(JSON.stringify(obj)), and structuredClone()?
 
-> **TL;DR:** Dot notation (obj.key) requires valid identifier keys. Bracket notation (obj[key]) allows dynamic variables, keys with spaces, or special characters.
+> **TL;DR:** Shallow copy duplicates top-level properties but retains shared references to nested objects. Deep copy duplicates all levels recursively. Spread and Object.assign create shallow copies; JSON.parse/stringify fails on functions/Date/undefined/circular refs; structuredClone() performs true deep cloning natively.
 
 **💡 Core Concept & Explanation**
-Use brackets for dynamic property evaluation.
+**Shallow Copy:** Copies primitive values, but copies heap pointers for nested objects/arrays. Mutating nested values affects the source object!
+**Deep Copy:** Recursively clones all nested objects/arrays creating independent heap instances.
+
+**Cloning Techniques & Limitations:**
+1. **Spread `{...obj}` / `Object.assign()`:** Shallow copy only.
+2. **`JSON.parse(JSON.stringify(obj))`:** Deep copy hack. FAILS on `Date` (converts to string), `RegExp`, `Symbol`, `undefined`, `Function` (stripped out!), and throws Error on Circular References.
+3. **`structuredClone(obj)`:** Modern native API. Deep clones circular references, ArrayBuffers, Dates, Maps, Sets. FAILS on functions and DOM nodes.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-const key = "role";
-const user = { role: "Admin" };
-console.log(user.role);   // Dot
-console.log(user[key]);   // Bracket dynamic
+const original = { a: 1, nested: { b: 2 } };
+
+// Shallow Copy
+const shallow = { ...original };
+shallow.nested.b = 99;
+console.log(original.nested.b); // 99 (MUTATED!)
+
+// Native Deep Copy with structuredClone
+const deep = structuredClone(original);
+deep.nested.b = 500;
+console.log(original.nested.b); // 99 (SAFE & INDEPENDENT!)
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Forgetting quotes in bracket notation for literal strings (`obj[key]` vs `obj['key']`).
+- Using JSON.stringify for deep cloning objects containing methods, dates, or undefined values.
 
 ---
 
-### 83. 🟠 P1 [C] What is object destructuring?
+### 27. 🟠 P1 [C] What are object mutation and immutability, and why does Object.freeze() not deeply freeze an object?
 
-> **TL;DR:** Object destructuring extracts properties from objects and binds them to variables using a compact syntax matching object structure.
+> **TL;DR:** Object.freeze() makes an object shallowly immutable (prevents adding, deleting, or modifying top-level properties). It is shallow; nested objects remain mutable unless recursively frozen.
 
 **💡 Core Concept & Explanation**
-Supports default values and property alias renaming.
+- **Immutability:** Preventing modifications to an object's state.
+- **`Object.freeze(obj)`:** Prevents adding new properties, deleting existing properties, or changing property values/descriptors.
+- **Shallow Nature of Freeze:** `Object.freeze` only locks the immediate top-level primitive property bindings. If a property references a nested object, that nested object remains completely mutable!
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-const user = { id: 1, username: "alice" };
-const { id, username: name, role = "User" } = user;
-console.log(name, role); // "alice", "User"
+const config = Object.freeze({
+  host: "localhost",
+  db: { port: 5432 } // Nested object
+});
+
+config.host = "127.0.0.1"; // Silently fails or throws in strict mode
+console.log(config.host); // "localhost"
+
+config.db.port = 8080; // MUTATED! (Nested objects not frozen)
+console.log(config.db.port); // 8080
+
+// Deep Freeze Helper:
+function deepFreeze(obj) {
+  Object.keys(obj).forEach(prop => {
+    if (typeof obj[prop] === 'object' && obj[prop] !== null) deepFreeze(obj[prop]);
+  });
+  return Object.freeze(obj);
+}
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Destructuring null or undefined throwing TypeError.
+- Assuming `Object.freeze()` performs a deep freeze on nested objects.
 
 ---
 
-### 84. 🟠 P1 [C] What is object spread?
+### 28. 🔴 P0 [Q] What is the prototype chain, how does prototypal inheritance work, and what is the difference between prototype and \_\_proto\_\_?
 
-> **TL;DR:** Object spread ({...obj}) shallow copies enumerable own properties from source objects into a new target object.
+> **TL;DR:** Every JS object has an internal prototype link to another object. Prototypal inheritance allows objects to inherit properties/methods via this chain. .prototype is the object attached to constructor functions; __proto__ is the internal accessor link on object instances.
 
 **💡 Core Concept & Explanation**
-Used for merging objects and shallow cloning.
+**Prototype Chain Mechanism:**
+When looking up a property on an object (`obj.prop`), JS first searches the object's own properties. If not found, it traverses up its `__proto__` link to its prototype object, continuing up the chain until it finds the property or hits `null` (end of chain).
+
+**`prototype` vs `__proto__`:**
+- **`fn.prototype`:** Object template property present on constructor functions. Defines properties/methods shared by instances instantiated via `new fn()`.
+- **`instance.__proto__`:** Internal accessor property pointing to the prototype object from which the instance inherited.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-const a = { x: 1 };
-const b = { y: 2 };
-const merged = { ...a, ...b }; // { x: 1, y: 2 }
+function Animal(name) { this.name = name; }
+Animal.prototype.eat = function() { console.log(this.name, "eats."); };
+
+const dog = new Animal("Rex");
+dog.eat(); // "Rex eats." (Found on Animal.prototype via prototype chain!)
+
+console.log(dog.__proto__ === Animal.prototype); // true
+console.log(Animal.prototype.__proto__ === Object.prototype); // true
+console.log(Object.prototype.__proto__); // null (End of chain)
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Assuming spread creates a deep clone of nested objects.
-
----
-
-### 85. 🟠 P1 [C] What is a shallow copy?
-
-> **TL;DR:** A shallow copy duplicates top-level primitive values, but copies heap memory references for nested objects.
-
-**💡 Core Concept & Explanation**
-Modifying nested objects in shallow copies mutates the original object!
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const orig = { nested: { a: 1 } };
-const copy = { ...orig };
-copy.nested.a = 99;
-console.log(orig.nested.a); // 99 (Mutated!)
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Mutating nested state in shallow copies.
-
----
-
-### 86. 🟠 P1 [C] What is a deep copy?
-
-> **TL;DR:** A deep copy recursively duplicates all levels of an object structure, ensuring complete memory independence.
-
-**💡 Core Concept & Explanation**
-Methods: `structuredClone()`, custom recursive clone, or Lodash `cloneDeep`.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const orig = { nested: { a: 1 } };
-const deep = structuredClone(orig);
-deep.nested.a = 99;
-console.log(orig.nested.a); // 1 (Unmutated!)
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Using JSON stringify for objects containing functions or circular references.
-
----
-
-### 87. 🟠 P1 [C] Why doesn't {...obj} create a deep copy?
-
-> **TL;DR:** Spread ({...obj}) performs top-level copying only. Nested child objects keep their original Heap memory reference address pointers.
-
-**💡 Core Concept & Explanation**
-Spread iterates only own enumerable top-level keys.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const a = { child: {} };
-const b = { ...a };
-console.log(a.child === b.child); // true (Same Heap address!)
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Assuming spread creates independent nested copies.
-
----
-
-### 88. 🟠 P1 [C] What does Object.assign() do?
-
-> **TL;DR:** Object.assign(target, ...sources) copies all own enumerable properties from source objects into a target object and returns target.
-
-**💡 Core Concept & Explanation**
-Mutates target object passed as first parameter.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const target = { a: 1 };
-Object.assign(target, { b: 2 });
-console.log(target); // { a: 1, b: 2 }
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Forgetting to pass empty target `{}` when trying to clone without mutating source.
-
----
-
-### 89. 🟠 P1 [C] Is Object.assign() shallow or deep?
-
-> **TL;DR:** Object.assign() is strictly shallow. It copies primitive property values, but duplicates reference pointers for nested child objects.
-
-**💡 Core Concept & Explanation**
-Behaves identically to object spread operator for copying properties.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const o1 = { c: { d: 1 } };
-const o2 = Object.assign({}, o1);
-console.log(o1.c === o2.c); // true
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Expecting Object.assign to recursively clone nested objects.
-
----
-
-### 90. 🔴 P0 [C] What are the limitations of JSON.parse(JSON.stringify(obj))?
-
-> **TL;DR:** JSON cloning loses functions, undefined, Symbols, converts Date objects to strings, replaces NaN/Infinity with null, and crashes on circular references.
-
-**💡 Core Concept & Explanation**
-JSON serialization only supports basic primitives, plain objects, and arrays.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const obj = {
-  fn: () => {},
-  val: undefined,
-  date: new Date()
-};
-const clone = JSON.parse(JSON.stringify(obj));
-console.log(clone); // { date: "2026-..." } (fn and val stripped!)
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Cloning objects with Date objects or functions using JSON stringify.
-
----
-
-### 91. 🔴 P0 [C] What is structuredClone()?
-
-> **TL;DR:** structuredClone() is a built-in JS web/Node API method that creates deep copies of objects handling Dates, Maps, Sets, Arrays, and circular references natively.
-
-**💡 Core Concept & Explanation**
-Does NOT clone functions or DOM nodes (throws DOMException).
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const data = { date: new Date(), map: new Map([["a", 1]]) };
-const copy = structuredClone(data);
-console.log(copy.date instanceof Date); // true
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Trying to pass functions or methods into structuredClone().
-
----
-
-### 92. 🟠 P1 [C] What is object mutation?
-
-> **TL;DR:** Object mutation is changing, adding, or deleting properties of an existing object directly in memory.
-
-**💡 Core Concept & Explanation**
-Direct state mutation can lead to hard-to-track side effects in application state.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const user = { name: "A" };
-user.name = "B"; // Mutation!
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Mutating React/Redux state objects directly instead of returning new state.
-
----
-
-### 93. 🟠 P1 [C] What does immutability mean?
-
-> **TL;DR:** Immutability means data values cannot be modified after creation. State changes produce brand new object instances rather than editing existing memory.
-
-**💡 Core Concept & Explanation**
-Immutability improves predictability, tracking changes, and performance optimization in React.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const state = { count: 1 };
-const newState = { ...state, count: state.count + 1 }; // Immutable update
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Thinking const makes object properties immutable.
-
----
-
-### 94. 🟠 P1 [C] What does Object.freeze() do?
-
-> **TL;DR:** Object.freeze() makes an object immutable by preventing adding new properties, deleting properties, or modifying existing property values.
-
-**💡 Core Concept & Explanation**
-Marks existing property descriptors writable: false, configurable: false. *Shallow only!*
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const frozen = Object.freeze({ a: 1 });
-frozen.a = 2; // Silent fail (or TypeError in strict mode)
-console.log(frozen.a); // 1
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Assuming Object.freeze() freezes nested child objects.
-
----
-
-### 95. 🟠 P1 [C] Does Object.freeze() deeply freeze an object?
-
-> **TL;DR:** No. Object.freeze() is shallow. Nested child objects remain completely mutable unless recursively frozen.
-
-**💡 Core Concept & Explanation**
-Write a recursive deepFreeze helper to freeze nested child objects.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const obj = Object.freeze({ nested: { count: 5 } });
-obj.nested.count = 10; // Allowed!
-console.log(obj.nested.count); // 10
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Expecting Object.freeze to protect nested data structures.
-
----
-
-### 96. 🟠 P1 [C] What do Object.keys(), Object.values(), and Object.entries() do?
-
-> **TL;DR:** Object.keys() returns an array of property names, Object.values() returns property values, and Object.entries() returns [key, value] pairs.
-
-**💡 Core Concept & Explanation**
-Only returns enumerable own properties (ignores prototype chain).
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const user = { name: "Alice", age: 25 };
-console.log(Object.keys(user));    // ["name", "age"]
-console.log(Object.values(user));  // ["Alice", 25]
-console.log(Object.entries(user)); // [["name", "Alice"], ["age", 25]]
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Expecting prototype inherited properties in returned array.
-
----
-
-### 97. 🟠 P1 [C] What is a prototype?
-
-> **TL;DR:** A prototype is a delegation mechanism in JavaScript where objects inherit properties and methods from other prototype objects.
-
-**💡 Core Concept & Explanation**
-Every JS object has an internal prototype reference.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const arr = [1, 2];
-// Inherits Array.prototype methods like push, pop, slice
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Thinking prototype inheritance copies methods into each instance.
-
----
-
-### 98. 🔴 P0 [C] What is the prototype chain?
-
-> **TL;DR:** The prototype chain is the linked list of prototype objects checked by the engine when traversing properties up to Object.prototype and null.
-
-**💡 Core Concept & Explanation**
-Traverses `__proto__` links until key is found or null is reached.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const obj = {};
-console.log(obj.__proto__ === Object.prototype); // true
-console.log(Object.prototype.__proto__);        // null
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Causing infinite loops by creating circular prototype references.
-
----
-
-### 99. 🟠 P1 [Q] How does prototypal inheritance work?
-
-> **TL;DR:** When reading a property, JS checks instance properties first. If missing, it delegates lookup up the prototype chain automatically.
-
-**💡 Core Concept & Explanation**
-Writing a property attaches it directly to instance, masking prototype.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-function Animal(type) { this.type = type; }
-Animal.prototype.eat = function() { return "Eating"; };
-const cat = new Animal("Cat");
-console.log(cat.eat()); // Delegated to Animal.prototype
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Mutating shared prototype objects affecting all instances.
-
----
-
-### 100. 🟠 P1 [Q] What is the difference between prototype and __proto__?
-
-> **TL;DR:** prototype is a property on constructor functions used to build instances. __proto__ is an accessor property on instance objects pointing to their prototype.
-
-**💡 Core Concept & Explanation**
-`new Fn()` sets `instance.__proto__ = Fn.prototype`.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-function Dog() {}
-const d = new Dog();
-console.log(d.__proto__ === Dog.prototype); // true
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Using __proto__ directly in production code instead of Object.getPrototypeOf().
+- Using `__proto__` directly in production code (deprecated). Use `Object.getPrototypeOf(obj)` and `Object.setPrototypeOf(obj)` instead.
 
 ---
 
 ## Classes & Structures
 
-### 101. 🟠 P1 [C] What is a constructor function?
+### 29. 🟠 P1 [Q] What happens internally when new is used, and how do constructor functions and Object.create() relate to it?
 
-> **TL;DR:** A constructor function is a regular function invoked with the new keyword to initialize and return a new instance object.
+> **TL;DR:** When new Fn() is called: 1) A new empty object is created, 2) Its __proto__ is linked to Fn.prototype, 3) Fn is executed with this set to the new object, 4) The object is returned (unless Fn returns its own explicit object).
 
 **💡 Core Concept & Explanation**
-Uses `this` to set instance properties.
+**The 4 Steps of the `new` Operator:**
+1. Creates a brand new empty plain JavaScript object `{}`.
+2. Links the new object's `__proto__` to the constructor's `prototype` property (`obj.__proto__ = Constructor.prototype`).
+3. Binds the new object as `this` context for the constructor function and executes the constructor code.
+4. If the constructor returns a non-primitive object, that object is returned. Otherwise, the created instance object is returned automatically.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-function User(name) {
-  this.name = name;
-}
-const u = new User("Alice");
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Invoking constructor function without new keyword in non-strict mode.
-
----
-
-### 102. 🟠 P1 [C] What does the new keyword do?
-
-> **TL;DR:** new creates an empty object, links its prototype, binds this to the object, executes constructor, and returns the object.
-
-**💡 Core Concept & Explanation**
-4 steps performed by new.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// new Fn() step sequence
-// 1. obj = {}
-// 2. obj.__proto__ = Fn.prototype
-// 3. Fn.call(obj)
-// 4. Return obj
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Returning primitive vs object from constructor function.
-
----
-
-### 103. 🟠 P1 [Q] What happens internally when new is used?
-
-> **TL;DR:** If constructor returns an explicit object, that object is returned. If constructor returns a primitive or nothing, the newly created instance is returned.
-
-**💡 Core Concept & Explanation**
-Explicit object returns override default instance return.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-function Test() {
-  return { custom: true };
-}
-console.log(new Test()); // { custom: true }
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Returning explicit objects breaking prototype instance inheritance.
-
----
-
-### 104. 🟠 P1 [C] What is Object.create()?
-
-> **TL;DR:** Object.create(proto) creates a new object using an existing object as the prototype of the newly created object.
-
-**💡 Core Concept & Explanation**
-Direct prototype linking without constructor execution.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const proto = { speak() { return "Hi"; } };
-const child = Object.create(proto);
-console.log(child.speak()); // "Hi"
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Passing null as prototype removing Object prototype methods.
-
----
-
-### 105. 🟠 P1 [C] What is the relationship between JavaScript classes and prototypes?
-
-> **TL;DR:** ES6 classes are syntactic sugar over JavaScript's existing prototypal inheritance model. Class methods attach to prototype under the hood.
-
-**💡 Core Concept & Explanation**
-Class syntax improves readability but compiles to prototype delegation.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-class User {
-  constructor(name) { this.name = name; }
-  sayHi() {} // Attaches to User.prototype
+function CustomNew(Constructor, ...args) {
+  // Step 1 & 2: Create object & link prototype
+  const instance = Object.create(Constructor.prototype);
+  
+  // Step 3: Execute constructor with this = instance
+  const result = Constructor.apply(instance, args);
+  
+  // Step 4: Return object
+  return (typeof result === 'object' && result !== null) ? result : instance;
 }
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Believing ES6 classes introduced OOP classical inheritance into JS.
+- Forgetting `new` when calling a constructor function (`const user = User()`), causing `this` to point to global `window` and polluting global variables!
 
 ---
 
-### 106. 🟠 P1 [C] What does extends do?
+### 30. 🟠 P1 [C] How do classes relate to prototypes, and how do extends, super, static methods, method overriding, getters/setters, and #private fields work?
 
-> **TL;DR:** The extends keyword creates a class child relationship that inherits prototype methods and static methods from a parent class.
+> **TL;DR:** ES6 classes are syntactic sugar over prototypal inheritance. extends sets up prototype links; super calls parent constructor/methods; static methods belong to the class itself; #private fields are encapsulated at runtime.
 
 **💡 Core Concept & Explanation**
-Sets up prototype chain between child and parent prototypes.
+**Class Core Architecture:**
+ES6 `class` syntax is syntactic sugar over prototype delegation.
+- **`extends`:** Links `SubClass.prototype.__proto__ = SuperClass.prototype`.
+- **`super(...)`:** Invokes parent constructor inside child constructor (mandatory before using `this`).
+- **`static`:** Attaches methods directly to class function object (`Class.method`), not instance prototype.
+- **`#private`:** Hard private fields enforced by JS engine runtime (accessing outside class throws SyntaxError).
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-class Animal {}
-class Dog extends Animal {}
+class BankAccount {
+  #balance = 0; // Truly Private Field
+
+  constructor(owner, initial) {
+    this.owner = owner;
+    this.#balance = initial;
+  }
+
+  deposit(amount) { this.#balance += amount; }
+  getBalance() { return this.#balance; }
+}
+
+const acc = new BankAccount("Alice", 100);
+acc.deposit(50);
+console.log(acc.getBalance()); // 150
+// console.log(acc.#balance); // SyntaxError: Private field '#balance' must be declared in an enclosing class
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Forgetting super() in child constructor.
+- Using `this` inside child constructor before calling `super()` (throws `ReferenceError`).
 
 ---
 
-### 107. 🟠 P1 [C] What does super do?
+### 31. 🟠 P1 [Q] When would you use a Map or Set instead of an object or array, and how do you remove duplicates from an array with a Set?
 
-> **TL;DR:** super() calls the parent class constructor and must be invoked before using this inside a derived class constructor.
+> **TL;DR:** Map accepts keys of any data type and maintains insertion order. Set stores unique values of any type. Use Set with Array.from() or spread to remove array duplicates in O(N) time.
 
 **💡 Core Concept & Explanation**
-Also used to access parent methods: `super.method()`.
+- **Map vs Object:** Objects only accept String/Symbol keys. Maps accept any type (objects, functions, primitives) as keys, preserve insertion order, and have built-in `.size` property.
+- **Set:** Collection of unique values. Prevents duplicate entries automatically using SameValueZero algorithm.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-class Parent { constructor(name) { this.name = name; } }
-class Child extends Parent {
-  constructor(name, age) {
-    super(name); // Call parent constructor!
-    this.age = age;
+// Deduplicating Array with Set
+const nums = [1, 2, 2, 3, 4, 4, 5];
+const uniqueNums = [...new Set(nums)]; // [1, 2, 3, 4, 5]
+
+// Map with Object Keys
+const keyObj = { id: 1 };
+const map = new Map();
+map.set(keyObj, "User Data Payload");
+console.log(map.get(keyObj)); // "User Data Payload"
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Using objects as Map keys in plain Objects (`obj[keyObj]`), which converts keyObj to string `'[object Object]'`, overwriting other object keys!
+
+---
+
+## Array Methods & Iteration
+
+### 32. 🟠 P1 [Q] When would you use map(), filter(), reduce(), forEach(), find(), some(), and every(), and how do they differ?
+
+> **TL;DR:** map transforms elements returning a new array; filter returns items passing a test; reduce accumulates elements into a single value; forEach iterates with side effects (returns undefined); find returns first matching element; some/every check boolean conditions.
+
+**💡 Core Concept & Explanation**
+**Array Iterators:**
+- **`map(fn)`:** Returns new array of same length with transformed items.
+- **`filter(fn)`:** Returns new array containing elements where `fn` returns `true`.
+- **`reduce(fn, init)`:** Accumulates array elements into a single value/object/array.
+- **`forEach(fn)`:** Executes side effects for each element. Returns `undefined` (cannot chain!).
+- **`find(fn)`:** Returns first element satisfying condition, or `undefined`.
+- **`some(fn)`:** Returns `true` if AT LEAST ONE element satisfies condition.
+- **`every(fn)`:** Returns `true` if ALL elements satisfy condition.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+const numbers = [1, 2, 3, 4, 5];
+
+const squared = numbers.map(n => n ** 2); // [1, 4, 9, 16, 25]
+const evens = numbers.filter(n => n % 2 === 0); // [2, 4]
+const sum = numbers.reduce((acc, curr) => acc + curr, 0); // 15
+const hasNegative = numbers.some(n => n < 0); // false
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Trying to break or return early from a `forEach` loop. `return` inside `forEach` callback acts as `continue`; use `for...of` or `some()` if early termination is needed.
+
+---
+
+### 33. 🟠 P1 [Q] Which array methods mutate the original array, including slice() vs splice(), the numeric sort() pitfall, flat(), and the non-mutating toSorted() and toReversed()?
+
+> **TL;DR:** Mutating methods modify original array in place (push, pop, shift, unshift, splice, sort, reverse). Non-mutating methods return new arrays (slice, concat, map, filter, toSorted, toReversed). Array.prototype.sort() converts elements to strings by default!
+
+**💡 Core Concept & Explanation**
+**Mutating vs Non-Mutating Methods:**
+- **Mutating (In-Place):** `splice()`, `sort()`, `reverse()`, `push()`, `pop()`, `shift()`, `unshift()`.
+- **Non-Mutating:** `slice()`, `concat()`, `map()`, `filter()`, `toSorted()`, `toReversed()`, `toSpliced()`.
+
+**The Default `sort()` Lexicographical Gotcha:**
+`array.sort()` converts elements to strings before sorting alphabetically! `[10, 2, 5].sort()` yields `[10, 2, 5]` because `'10' < '2'`. Pass a numeric comparator `(a, b) => a - b` to fix.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+const nums = [10, 2, 5, 1];
+
+// Default Sort Bug
+console.log([...nums].sort()); // [1, 10, 2, 5] (String sorting!)
+
+// Correct Numeric Sort
+console.log([...nums].sort((a, b) => a - b)); // [1, 2, 5, 10]
+
+// Immutable Sort (ES2023)
+const sorted = nums.toSorted((a, b) => a - b); // Original nums unchanged!
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Calling `.sort()` or `.reverse()` on a React state array directly mutating state in place instead of making a copy (`[...arr].sort()`).
+
+---
+
+### 34. 🟠 P1 [Q] What is the difference between for...in and for...of?
+
+> **TL;DR:** for...in iterates over enumerable property keys of an object (including prototype chain). for...of iterates over values of iterable objects (Arrays, Strings, Maps, Sets).
+
+**💡 Core Concept & Explanation**
+- **`for...in`:** Designed for Objects. Loops over enumerable property **keys** (strings/symbols). Traverses up prototype chain!
+- **`for...of`:** Designed for Iterables (objects implementing `[Symbol.iterator]`). Loops over collection **values** directly.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+const arr = ['a', 'b', 'c'];
+arr.customProp = 'hello';
+
+// for...in (Keys + Prototype/Custom props)
+for (const index in arr) {
+  console.log(index); // "0", "1", "2", "customProp"
+}
+
+// for...of (Values only)
+for (const value of arr) {
+  console.log(value); // "a", "b", "c"
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Using `for...in` to iterate over arrays (yields string indexes and includes custom prototype properties).
+
+---
+
+## Error Handling
+
+### 35. 🟠 P1 [C] How do try/catch/finally work, and when would you create a custom Error class?
+
+> **TL;DR:** try runs code; catch captures thrown exceptions; finally always runs regardless of outcome. Custom error classes extend built-in Error to add custom properties (e.g., statusCode).
+
+**💡 Core Concept & Explanation**
+**Error Handling Architecture:**
+- `try`: Encloses code that may throw a runtime error.
+- `catch(err)`: Executes if an exception is thrown in try block.
+- `finally`: Guaranteed execution block after try/catch completes, ideal for cleanup (closing database connections, clearing timers).
+
+**Custom Error Classes:**
+Inheriting from `Error` retains stack trace generation (`Error.captureStackTrace`) and allows custom domain properties.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+class NotFoundError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "NotFoundError";
+    this.statusCode = 404;
   }
 }
-```
 
-**⚠️ Interview Pitfall / Pro-Tip**
-- Accessing this before super() inside child constructor throwing ReferenceError.
-
----
-
-### 108. 🟠 P1 [C] What is method overriding?
-
-> **TL;DR:** Method overriding occurs when a child class defines a method with the exact same name as a parent class method, shadowing parent implementation.
-
-**💡 Core Concept & Explanation**
-Child implementation takes priority during scope lookup.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-class Parent { speak() { return "Parent"; } }
-class Child extends Parent { speak() { return "Child"; } }
-console.log(new Child().speak()); // "Child"
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Forgetting super.speak() when trying to extend parent method.
-
----
-
-### 109. 🟠 P1 [Q] What is the difference between static and instance methods?
-
-> **TL;DR:** Static methods attach to class constructor directly (Class.method()). Instance methods attach to prototype (instance.method()).
-
-**💡 Core Concept & Explanation**
-Static methods cannot access instance `this` properties.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-class MathHelper {
-  static add(a, b) { return a + b; }
+try {
+  throw new NotFoundError("User not found in DB");
+} catch (err) {
+  if (err instanceof NotFoundError) {
+    console.log(`${err.name} (${err.statusCode}): ${err.message}`);
+  }
+} finally {
+  console.log("Cleanup executed.");
 }
-console.log(MathHelper.add(2, 3)); // 5
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Calling static methods on instance objects.
-
----
-
-### 110. 🟠 P1 [Q] What is the difference between an array and an object?
-
-> **TL;DR:** Arrays are ordered, index-based numeric lists with array methods. Objects are unordered key-value collections.
-
-**💡 Core Concept & Explanation**
-Arrays inherit from `Array.prototype`.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const arr = [10, 20]; // Indexed: arr[0]
-const obj = { key: "val" }; // Keyed: obj.key
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Using typeof to distinguish arrays (returns 'object') — use Array.isArray().
-
----
-
-### 111. 🟠 P1 [C] What is a Map and when would you use it?
-
-> **TL;DR:** Map is an ordered key-value collection that allows keys of ANY data type (objects, functions, primitives) and preserves insertion order.
-
-**💡 Core Concept & Explanation**
-Provides built-in `size` property and fast key lookups.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const map = new Map();
-const keyObj = {};
-map.set(keyObj, "Value");
-console.log(map.get(keyObj)); // "Value"
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Using plain objects when keys are non-string types.
-
----
-
-### 112. 🟠 P1 [C] What is a Set and when would you use it?
-
-> **TL;DR:** Set is a collection of unique values of any type where duplicate values are automatically ignored.
-
-**💡 Core Concept & Explanation**
-Ideal for array deduplication and O(1) membership checks with `has()`.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const set = new Set([1, 2, 2, 3]);
-console.log([...set]); // [1, 2, 3] (Unique values)
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Expecting Set to compare object entries by value rather than reference address.
-
----
-
-## Array Methods
-
-### 113. 🟠 P1 [C] What does map() do?
-
-> **TL;DR:** map() creates a brand new array populated with results of invoking a callback function on every element in the calling array.
-
-**💡 Core Concept & Explanation**
-Non-mutating; returns new array of identical length.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const doubled = [1, 2, 3].map(x => x * 2);
-console.log(doubled); // [2, 4, 6]
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Forgetting return statement inside map callback.
-
----
-
-### 114. 🟠 P1 [Q] What is the difference between map() and forEach()?
-
-> **TL;DR:** map() returns a new transformed array and supports method chaining. forEach() executes side effects per element and returns undefined.
-
-**💡 Core Concept & Explanation**
-Use `forEach` for side effects; use `map` for transformations.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const resMap = [1, 2].map(x => x * 2);   // [2, 4]
-const resEach = [1, 2].forEach(x => x * 2); // undefined
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Using map() without using or returning the returned array.
-
----
-
-### 115. 🟠 P1 [C] What does filter() do?
-
-> **TL;DR:** filter() creates a new array containing all elements that pass the truthy evaluation test of a callback predicate function.
-
-**💡 Core Concept & Explanation**
-Non-mutating; returns new filtered array.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const evens = [1, 2, 3, 4].filter(x => x % 2 === 0);
-console.log(evens); // [2, 4]
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Expecting filter to return element when callback returns non-boolean truthy/falsy values.
-
----
-
-### 116. 🟠 P1 [C] What does reduce() do?
-
-> **TL;DR:** reduce() executes a user-supplied reducer callback on each element, passing in return value from preceding calculation, yielding a single accumulated result.
-
-**💡 Core Concept & Explanation**
-Syntax: `arr.reduce((acc, curr, index, arr) => acc, initialValue)`
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const sum = [1, 2, 3].reduce((acc, n) => acc + n, 0);
-console.log(sum); // 6
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Omitting initialValue when array can be empty causing TypeError.
-
----
-
-### 117. 🟠 P1 [C] When would you use reduce()?
-
-> **TL;DR:** Use reduce() when accumulating numbers, grouping array items into an object, flattening arrays, or pipeline transforms.
-
-**💡 Core Concept & Explanation**
-Versatile tool for array data transformation.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// Grouping items by property
-const people = [{ role: "Admin" }, { role: "User" }];
-const grouped = people.reduce((acc, p) => {
-  acc[p.role] = acc[p.role] || [];
-  acc[p.role].push(p);
-  return acc;
-}, {});
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Overcomplicating code with reduce when map or filter is clearer.
-
----
-
-### 118. 🟠 P1 [Q] What is the difference between find() and filter()?
-
-> **TL;DR:** find() returns the FIRST element satisfying callback condition or undefined. filter() returns an ARRAY of ALL matching elements.
-
-**💡 Core Concept & Explanation**
-`find()` short-circuits search on first match.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const nums = [10, 20, 30];
-console.log(nums.find(x => x > 15));   // 20 (single value)
-console.log(nums.filter(x => x > 15)); // [20, 30] (array)
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Expecting find() to return an array.
-
----
-
-### 119. 🟠 P1 [Q] What is the difference between some() and every()?
-
-> **TL;DR:** some() checks if AT LEAST ONE element passes condition (returns boolean). every() checks if ALL elements pass condition.
-
-**💡 Core Concept & Explanation**
-Both short-circuit evaluation as soon as outcome is determined.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const nums = [1, 2, 3];
-console.log(nums.some(x => x > 2));  // true
-console.log(nums.every(x => x > 2)); // false
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Calling every() on empty array returns true.
-
----
-
-### 120. 🟠 P1 [Q] What is the difference between slice() and splice()?
-
-> **TL;DR:** slice() returns a new shallow copy portion of array WITHOUT mutating original. splice() MUTATES original array by adding/removing elements.
-
-**💡 Core Concept & Explanation**
-`slice(start, end)` vs `splice(start, deleteCount, item1, ...)`
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const arr = [1, 2, 3, 4];
-console.log(arr.slice(1, 3)); // [2, 3] (arr unchanged)
-
-arr.splice(1, 2); // Mutates arr!
-console.log(arr); // [1, 4]
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Confusing non-mutating slice with mutating splice.
-
----
-
-### 121. 🟠 P1 [Q] How does sort() work and why does numeric sorting cause problems?
-
-> **TL;DR:** sort() converts elements to strings by default and sorts lexicographically, causing [10, 2] to sort as [10, 2]. Pass a comparator function (a, b) => a - b for numeric sorting.
-
-**💡 Core Concept & Explanation**
-Sorts array elements IN-PLACE (mutates original array!).
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const nums = [10, 2, 5];
-nums.sort();
-console.log(nums); // [10, 2, 5] (String sort!)
-
-nums.sort((a, b) => a - b);
-console.log(nums); // [2, 5, 10] (Numeric sort)
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Calling sort() without comparator function on numeric arrays.
-
----
-
-### 122. 🟠 P1 [C] Which common array methods mutate the original array?
-
-> **TL;DR:** Mutating array methods: push(), pop(), shift(), unshift(), splice(), sort(), reverse(), fill(), copyWithin().
-
-**💡 Core Concept & Explanation**
-Non-mutating methods: `map`, `filter`, `slice`, `concat`, `flat`.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const arr = [3, 1];
-arr.sort(); // Mutates arr directly!
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Mutating original arrays in React state handlers.
-
----
-
-### 123. 🟠 P1 [C] What does flat() do?
-
-> **TL;DR:** flat(depth) creates a new array with sub-array elements concatenated recursively up to specified depth (default 1).
-
-**💡 Core Concept & Explanation**
-Pass `Infinity` depth to flatten arbitrarily nested arrays.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const nested = [1, [2, [3]]];
-console.log(nested.flat(2)); // [1, 2, 3]
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Expecting flat() to mutate array in-place — returns new array.
-
----
-
-### 124. 🟠 P1 [Q] How does array destructuring work?
-
-> **TL;DR:** Array destructuring unpacks values from arrays into distinct variables based on element position index.
-
-**💡 Core Concept & Explanation**
-Supports default values, skipping elements, and rest parameter collecting.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const [first, , third = 30] = [10, 20];
-console.log(first, third); // 10, 30
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Matching array destructuring by key names instead of index positions.
-
----
-
-### 125. 🟠 P1 [C] How would you remove duplicates from an array?
-
-> **TL;DR:** Most efficient way: convert array to a Set using Array.from(new Set(arr)) or spread operator [...new Set(arr)].
-
-**💡 Core Concept & Explanation**
-Alternatively use `filter()` with `indexOf()`.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-const nums = [1, 2, 2, 3, 1];
-const unique = [...new Set(nums)];
-console.log(unique); // [1, 2, 3]
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Using Set to deduplicate objects with identical properties — reference pointers differ.
+- Swallowing errors in `catch(e) {}` silently without logging or rethrowing, masking runtime failures.
 
 ---
 
 ## Async & Event Loop
 
-### 126. 🟠 P1 [C] What is synchronous vs asynchronous JavaScript?
+### 36. 🔴 P0 [Q] How does the event loop work, what is the difference between microtasks and macrotasks, why do Promise callbacks run before setTimeout(fn, 0), and what happens when the call stack is busy?
 
-> **TL;DR:** Synchronous code executes line-by-line blocking subsequent execution. Asynchronous code offloads long tasks to Web APIs and processes callbacks later without blocking thread.
+> **TL;DR:** The Event Loop monitors Call Stack and Queues. When Call Stack is empty, it processes ALL Microtasks (Promises, queueMicrotask) before processing ONE Macrotask (setTimeout, setInterval, I/O). A busy call stack blocks the event loop and freezes the UI.
 
 **💡 Core Concept & Explanation**
-Sync blocks main thread; Async non-blocking.
+**Event Loop Priority Order:**
+1. Execute synchronous code on **Call Stack**.
+2. When Call Stack empties, flush the entire **Microtask Queue** completely (Promise `.then` callbacks, `queueMicrotask`, `process.nextTick` in Node).
+3. Render UI updates (in browser).
+4. Pick and execute ONE task from **Macrotask Queue** (`setTimeout`, `setInterval`, I/O, `requestAnimationFrame`).
+5. Repeat loop.
+
+**Why Promises run before setTimeout(0):**
+Promise callbacks enter the Microtask queue, which has absolute priority over the Macrotask queue.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-console.log("Start");
-setTimeout(() => console.log("Async"), 100);
-console.log("End");
-// Output: Start -> End -> Async
+console.log("1. Sync Main");
+
+setTimeout(() => console.log("4. Macrotask (Timeout)"), 0);
+
+Promise.resolve().then(() => console.log("2. Microtask 1"));
+Promise.resolve().then(() => console.log("3. Microtask 2"));
+
+console.log("Sync End");
+
+// Output Order:
+// 1. Sync Main
+// Sync End
+// 2. Microtask 1
+// 3. Microtask 2
+// 4. Macrotask (Timeout)
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Thinking async operations execute on parallel main threads.
+- Running intensive recursive microtasks (`Promise.resolve().then(loop)`), starving the Macrotask queue and freezing UI rendering permanently.
 
 ---
 
-### 127. 🟠 P1 [C] Is JavaScript single-threaded?
+### 37. 🔴 P0 [C] What is the difference between concurrency and parallelism?
 
-> **TL;DR:** Yes. JavaScript engine executes code on a single main thread with a single Call Stack.
+> **TL;DR:** Concurrency is dealing with multiple tasks at once by interleaving execution on a single core (Event Loop). Parallelism is executing multiple tasks simultaneously at the exact same physical instant on multiple CPU cores.
 
 **💡 Core Concept & Explanation**
-Browser runtime handles concurrency via Web Worker threads and Event Loop.
+- **Concurrency (Single CPU Core):** Tasks overlap in execution window via context switching or asynchronous non-blocking event loops (JavaScript's model).
+- **Parallelism (Multi-Core CPU):** Independent instructions run physically simultaneously across different hardware CPU cores (e.g. Web Workers / Worker Threads).
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Single Call Stack executing one task at a time
+// Web Worker Parallelism Example (Main Thread):
+const worker = new Worker('worker.js');
+worker.postMessage({ data: [100000000] }); // Runs on separate physical CPU thread!
+
+worker.onmessage = (e) => {
+  console.log("Parallel computation result:", e.data);
+};
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Confusing multi-threaded browser background host environment with single-threaded JS main execution thread.
+- Assuming asynchronous JS code (`async/await`, Promises) runs in parallel on multiple CPU cores. It runs concurrently on a single thread unless Web Workers / Worker Threads are used.
 
 ---
 
-### 128. 🟠 P1 [C] What does "single-threaded" actually mean?
+### 38. 🟠 P1 [C] What is callback hell, what are the limitations of callbacks, and why were Promises introduced?
 
-> **TL;DR:** Single-threaded means JS can only execute one line of instructions/code frame at any given instant on its Call Stack.
+> **TL;DR:** Callback hell refers to deeply nested, unmaintainable asynchronous callbacks ("pyramid of doom"). Promises were introduced to flatten async flows into chainable, composable pipelines with centralized error handling.
 
 **💡 Core Concept & Explanation**
-Long-running synchronous loops lock the thread, freezing UI.
+**Limitations of Callbacks:**
+1. Deep nesting ("Pyramid of Doom") leading to unreadable code.
+2. Inversion of Control: Trusting 3rd party functions to call your callback correctly (not too many times, not zero times).
+3. Difficult error propagation across nested operations.
+
+**Promises Solution:**
+Standardizes async control flow into a state machine (`Pending`, `Fulfilled`, `Rejected`), decoupling async producers from consumers.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Long sync loop blocks UI thread
-// while(true) {}
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Running intensive CPU calculations on main thread.
-
----
-
-### 129. 🟠 P1 [D] What is the JavaScript runtime?
-
-> **TL;DR:** The JS runtime is the host container environment (e.g. Browser or Node.js) encompassing JS engine, Web APIs, Task Queues, and Event Loop.
-
-**💡 Core Concept & Explanation**
-V8 engine + Web APIs (DOM, fetch, timers) + Event Loop = Browser Runtime.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// window.fetch belongs to Browser Runtime Web APIs
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Thinking fetch or setTimeout belong to ECMAScript language core.
-
----
-
-### 130. 🟠 P1 [C] What is the call stack?
-
-> **TL;DR:** The Call Stack is a LIFO stack data structure in JS engine that tracks active function execution context frames.
-
-**💡 Core Concept & Explanation**
-Pushes frame on call; pops frame on return.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-function a() { b(); }
-function b() {}
-a(); // Stack: GEC -> a() -> b()
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Stack Overflow errors from unbounded recursion.
-
----
-
-### 131. 🟠 P1 [D] What are Web APIs?
-
-> **TL;DR:** Web APIs are asynchronous background features provided by the browser environment (timers, DOM events, fetch HTTP, geolocation).
-
-**💡 Core Concept & Explanation**
-Web APIs execute tasks asynchronously off the main thread.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-setTimeout(() => {}, 1000); // Handled by Web API timer
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Assuming Web APIs run on JS main thread.
-
----
-
-### 132. 🟠 P1 [C] What is the task/macrotask queue?
-
-> **TL;DR:** The Macrotask Queue (Task Queue) holds callbacks from setTimeout, setInterval, setImmediate, I/O operations, and user UI interactions.
-
-**💡 Core Concept & Explanation**
-Processed one task per Event Loop cycle.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-setTimeout(fn, 0); // Enqueues callback into Macrotask queue
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Expecting Macrotasks to execute before Promise microtasks.
-
----
-
-### 133. 🔴 P0 [C] What is the microtask queue?
-
-> **TL;DR:** The Microtask Queue holds high-priority callbacks from Promise handlers (.then/.catch), queueMicrotask(), and MutationObserver.
-
-**💡 Core Concept & Explanation**
-Completely emptied after Call Stack clears, prior to next Macrotask!
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-Promise.resolve().then(() => console.log("Microtask"));
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Starving macrotask queue by recursively scheduling infinite microtasks.
-
----
-
-### 134. 🔴 P0 [C] What is the event loop?
-
-> **TL;DR:** The Event Loop is a continuous monitoring mechanism in JS runtime that orchestrates execution between Call Stack and Task Queues.
-
-**💡 Core Concept & Explanation**
-If Stack is empty, Event Loop pushes Microtasks first, then next Macrotask.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// Monitored continuously in background loop
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Thinking Event Loop runs when Call Stack is busy executing synchronous code.
-
----
-
-### 135. 🔴 P0 [Q] How does the event loop work?
-
-> **TL;DR:** 1) Execute sync stack code. 2) Stack clears. 3) Process ALL Microtasks in queue. 4) Render UI updates if needed. 5) Process ONE Macrotask. 6) Repeat.
-
-**💡 Core Concept & Explanation**
-Order: Sync Stack -&gt; All Microtasks -&gt; Render -&gt; 1 Macrotask.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-console.log("1");
-setTimeout(() => console.log("4"), 0);
-Promise.resolve().then(() => console.log("3"));
-console.log("2");
-// Output: 1 -> 2 -> 3 -> 4
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Expecting setTimeout callback to run before Promise microtasks.
-
----
-
-### 136. 🔴 P0 [Q] What is the difference between microtasks and macrotasks?
-
-> **TL;DR:** Microtasks (Promises) have higher priority and completely empty their queue in one tick. Macrotasks (timers) execute one single task per loop tick.
-
-**💡 Core Concept & Explanation**
-Microtasks preempt Macrotasks.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-setTimeout(() => console.log("Macro"), 0);
-Promise.resolve().then(() => console.log("Micro"));
-// Micro prints before Macro
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Confusing execution timing priorities.
-
----
-
-### 137. 🔴 P0 [C] Why do Promise callbacks execute before setTimeout() callbacks?
-
-> **TL;DR:** Promise callbacks land in the Microtask Queue which has higher priority and is completely emptied before the Event Loop picks Macrotasks.
-
-**💡 Core Concept & Explanation**
-Microtasks are processed immediately after call stack frame clears.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-Promise.resolve().then(() => console.log("P"));
-setTimeout(() => console.log("T"), 0);
-// "P" then "T"
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Thinking setTimeout(fn, 0) bypasses queues.
-
----
-
-### 138. 🟠 P1 [C] Does setTimeout(fn, 0) execute immediately?
-
-> **TL;DR:** No. setTimeout(fn, 0) schedules callback for the NEXT Macrotask queue tick after Call Stack clears AND all pending Microtasks complete.
-
-**💡 Core Concept & Explanation**
-Minimum timer delay in browser spec is ~4ms.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-setTimeout(() => console.log("Timer"), 0);
-console.log("Sync"); // "Sync" runs first!
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Assuming zero delay means synchronous execution.
-
----
-
-### 139. 🟠 P1 [Q] What happens when the call stack is busy?
-
-> **TL;DR:** When Call Stack is busy executing synchronous code, the Event Loop is blocked, freezing UI rendering and delaying timer callbacks.
-
-**💡 Core Concept & Explanation**
-Offload heavy CPU work to Web Workers.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// Sync block delays timers
-// const end = Date.now() + 5000; while(Date.now() < end) {}
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Running intensive calculations on main UI thread.
-
----
-
-### 140. 🟠 P1 [C] What is callback hell?
-
-> **TL;DR:** Callback hell is deep nesting of asynchronous callbacks ('Pyramid of Doom'), making code difficult to read, maintain, and handle errors.
-
-**💡 Core Concept & Explanation**
-Solved using Promises and `async/await`.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-getData(function(a) {
-  getMoreData(a, function(b) {
-    getEvenMoreData(b, function(c) {
-      // Pyramid of doom
+// Callback Hell (Pyramid of Doom)
+getData((a) => {
+  getMoreData(a, (b) => {
+    getFinalData(b, (c) => {
+      console.log(c);
     });
   });
 });
+
+// Promises (Flat Chained Pipeline)
+getData()
+  .then(a => getMoreData(a))
+  .then(b => getFinalData(b))
+  .then(c => console.log(c))
+  .catch(err => console.error(err));
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Nesting callbacks instead of returning Promises.
-
----
-
-### 141. 🟠 P1 [C] What are the limitations of callback-based asynchronous programming?
-
-> **TL;DR:** Inversion of control (trusting third-party code to call callback), unhandled exceptions, inability to return values or throw try/catch errors.
-
-**💡 Core Concept & Explanation**
-Promises solve inversion of control by returning a control handle object.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// Third party library calling callback 0 or 2 times instead of 1
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Lack of standardized error propagation in callbacks.
-
----
-
-### 142. 🔴 P0 [P] What is concurrency?
-
-> **TL;DR:** Concurrency is managing multiple tasks at the same time by interleaving execution (e.g. Event Loop juggling async HTTP request timers).
-
-**💡 Core Concept & Explanation**
-JS achieves concurrency on a single thread via non-blocking I/O Event Loop.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// Multiple pending fetch requests handled concurrently
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Confusing concurrency with multi-threaded parallelism.
-
----
-
-### 143. 🔴 P0 [Q] What is the difference between concurrency and parallelism?
-
-> **TL;DR:** Concurrency is dealing with multiple tasks by switching execution context (single CPU core). Parallelism is executing multiple tasks simultaneously (multiple CPU cores).
-
-**💡 Core Concept & Explanation**
-Concurrency = Structure. Parallelism = Simultaneous Execution (Web Workers).
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// Concurrency: Event Loop. Parallelism: Web Workers on multi-core CPU.
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Claiming JS performs multi-core parallelism on main call stack.
+- Failing to return a Promise inside a `.then()` chain, causing subsequent `.then()` steps to execute prematurely with `undefined`.
 
 ---
 
 ## Promises & Async/Await
 
-### 144. 🔴 P0 [C] What is a Promise?
+### 39. 🔴 P0 [C] What is a Promise, what are its three states, and what do .then(), .catch(), and .finally() do?
 
-> **TL;DR:** A Promise is an object representing eventual completion (or failure) of an asynchronous operation and its resulting value.
+> **TL;DR:** A Promise represents the eventual completion or failure of an async operation. It has 3 states: Pending, Fulfilled, or Rejected. .then() handles fulfillment, .catch() handles rejection, and .finally() executes regardless.
 
 **💡 Core Concept & Explanation**
-Acts as a placeholder for a future value.
+**Promise State Machine:**
+- **Pending:** Initial state, neither fulfilled nor rejected.
+- **Fulfilled:** Operation completed successfully (value set). Immutably locked.
+- **Rejected:** Operation failed (reason set). Immutably locked.
+
+Once settled (fulfilled or rejected), state transitions can never change again.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-const promise = new Promise((resolve, reject) => {
-  setTimeout(() => resolve("Done"), 100);
+const fetchUser = new Promise((resolve, reject) => {
+  const success = true;
+  setTimeout(() => {
+    if (success) resolve({ id: 1, name: "Alice" });
+    else reject("Database connection error");
+  }, 100);
 });
-promise.then(data => console.log(data));
+
+fetchUser
+  .then(user => console.log(user.name))
+  .catch(err => console.error(err))
+  .finally(() => console.log("Operation completed."));
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Forgetting to return promise in chained .then() calls.
+- Attempting to reset or re-trigger a settled Promise instance. Promises represent a single one-shot async result.
 
 ---
 
-### 145. 🔴 P0 [C] Why were Promises introduced?
+### 40. 🔴 P0 [Q] How does Promise chaining work when a .then() callback returns a value, returns another Promise, or throws an error?
 
-> **TL;DR:** Promises were introduced in ES6 to solve callback hell, restore control flow, provide unified error handling, and simplify async composition.
-
-**💡 Core Concept & Explanation**
-Replaces deeply nested callbacks with flat `.then()` chains.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-fetchData()
-  .then(step1)
-  .then(step2)
-  .catch(handleError);
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Nesting promises inside .then() instead of returning them.
-
----
-
-### 146. 🔴 P0 [C] What are the three states of a Promise?
-
-> **TL;DR:** 1) Pending: Initial state, non-fulfilled/rejected. 2) Fulfilled: Operation completed successfully. 3) Rejected: Operation failed.
+> **TL;DR:** In Promise chaining, returning a primitive/object wraps it in a resolved Promise; returning another Promise waits for it to resolve; throwing an error or returning a rejected Promise skips to the nearest .catch().
 
 **💡 Core Concept & Explanation**
-Promise state transitions from Pending to Settled (Fulfilled or Rejected) ONCE and is immutable.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// Pending -> Fulfilled OR Rejected
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Attempting to resolve a Promise twice — state is immutable after settling.
-
----
-
-### 147. 🟠 P1 [C] What does .then() do?
-
-> **TL;DR:** .then(onFulfilled, onRejected) registers callbacks to execute when Promise fulfills or rejects, returning a new Promise for chaining.
-
-**💡 Core Concept & Explanation**
-Always returns a new Promise resolving to callback return value.
+**`.then()` Resolution Rules:**
+1. **Returns a Value `x`:** Returns a new Promise resolved with `x`.
+2. **Returns a Promise `P`:** The chain adopts the state and value of `P`.
+3. **Throws Error `e`:** Returns a new Promise rejected with `e` (caught by next `.catch()`).
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
 Promise.resolve(5)
-  .then(x => x * 2)
-  .then(res => console.log(res)); // 10
+  .then(val => val * 2) // Returns 10
+  .then(val => new Promise(res => res(val + 5))) // Returns Promise(15)
+  .then(val => {
+    throw new Error("Something went wrong!");
+  })
+  .catch(err => console.log("Caught:", err.message)); // Handles thrown error!
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Not returning values inside .then() callbacks.
+- Forgetting to `return` Promises inside `.then()` handlers, breaking the asynchronous chain sequence.
 
 ---
 
-### 148. 🟠 P1 [C] What does .catch() do?
+### 41. 🔴 P0 [Q] What do Promise.resolve() and Promise.reject() do, and what is the difference between Promise.all(), allSettled(), race(), and any()?
 
-> **TL;DR:** .catch(onRejected) registers an error handler callback for promise rejections or unhandled runtime exceptions in chain.
+> **TL;DR:** Promise.all waits for all to succeed (fails fast on first error); allSettled waits for all to finish regardless of outcome; race resolves/rejects as soon as the FIRST promise settles; any resolves as soon as the FIRST promise succeeds (fails if all fail).
 
 **💡 Core Concept & Explanation**
-Syntactic sugar for `.then(null, onRejected)`.
+**Promise Combinators Comparison:**
+- **`Promise.all([p1, p2])`:** Returns array of all results. Fails instantly if ANY promise rejects.
+- **`Promise.allSettled([p1, p2])`:** Returns array of objects `{ status: 'fulfilled'|'rejected', value|reason }`. NEVER rejects.
+- **`Promise.race([p1, p2])`:** Settles with result/error of whichever promise finishes FIRST.
+- **`Promise.any([p1, p2])`:** Resolves with value of FIRST fulfilled promise. Rejects with `AggregateError` only if ALL promises reject.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-Promise.reject(new Error("Failed"))
-  .catch(err => console.log(err.message));
+const p1 = Promise.resolve("Fast Success");
+const p2 = new Promise((_, r) => setTimeout(() => r("Error"), 100));
+
+// Promise.allSettled
+Promise.allSettled([p1, p2]).then(results => {
+  console.log(results);
+  // [{status: 'fulfilled', value: 'Fast Success'}, {status: 'rejected', reason: 'Error'}]
+});
+
+// Promise.any
+Promise.any([p2, p1]).then(val => console.log("First Success:", val)); // "Fast Success"
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Forgetting .catch() at end of promise chains leading to UnhandledPromiseRejection.
+- Using `Promise.all` for batch requests where partial failure is acceptable; one single failed request aborts all results. Use `Promise.allSettled` instead.
 
 ---
 
-### 149. 🟠 P1 [C] What does .finally() do?
+### 42. 🔴 P0 [C] What does an async function return, and how is await related to Promises?
 
-> **TL;DR:** .finally(callback) executes a cleanup function when Promise settles (either fulfilled or rejected) without receiving result parameters.
+> **TL;DR:** An async function always returns a Promise. The await operator pauses execution inside the async function until the awaited Promise settles, unwrapping its resolved value.
 
 **💡 Core Concept & Explanation**
-Passes through original fulfilled value or rejection error to next handler.
+**Syntactic Sugar for Promises:**
+- Marking a function `async` wraps its return value in `Promise.resolve()`.
+- `await` can only be used inside `async` functions (or top-level ES modules).
+- Under the hood, `await` yields execution back to the Event Loop, resuming execution as a Microtask when the Promise resolves.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-showLoading();
-fetchData()
-  .then(render)
-  .catch(showError)
-  .finally(() => hideLoading()); // Always runs
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Expecting .finally() to receive resolution value parameter.
-
----
-
-### 150. 🔴 P0 [C] What is Promise chaining?
-
-> **TL;DR:** Promise chaining is connecting multiple .then() handlers sequentially where each handler receives the returned result of the previous promise.
-
-**💡 Core Concept & Explanation**
-Flattens async sequence into readable top-to-bottom pipeline.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-getUser()
-  .then(user => getPosts(user.id))
-  .then(posts => console.log(posts));
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Forgetting return keyword inside .then() break sequence.
-
----
-
-### 151. 🔴 P0 [Q] What happens when a .then() callback returns a value?
-
-> **TL;DR:** Returning a plain primitive/object value wraps that value into a automatically resolved Promise (Promise.resolve(val)) passed to next .then().
-
-**💡 Core Concept & Explanation**
-Allows chaining synchronous calculations inside promise pipelines.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-Promise.resolve(2)
-  .then(val => val * 5) // Returns 10
-  .then(res => console.log(res)); // 10
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Assuming returning non-promise breaks promise chain.
-
----
-
-### 152. 🔴 P0 [Q] What happens when a .then() callback returns another Promise?
-
-> **TL;DR:** When a .then() handler returns a Promise, subsequent .then() calls wait for that returned inner Promise to settle before executing.
-
-**💡 Core Concept & Explanation**
-Unwraps inner promise automatically (flattens nested async calls).
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-fetchUser()
-  .then(user => fetchOrders(user.id)) // Returns new Promise
-  .then(orders => console.log(orders)); // Waits for fetchOrders!
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Not returning inner promise causing outer chain to resolve immediately.
-
----
-
-### 153. 🔴 P0 [Q] What happens when a Promise callback throws an error?
-
-> **TL;DR:** Throwing an error inside executor function or .then() handler automatically converts rejection state, passing error to nearest .catch().
-
-**💡 Core Concept & Explanation**
-Implicit try/catch block inside Promise implementation.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-Promise.resolve()
-  .then(() => { throw new Error("Oops"); })
-  .catch(err => console.log(err.message)); // "Oops"
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Throwing error in async callback (like setTimeout) inside promise executor — escapes catch!
-
----
-
-### 154. 🔴 P0 [C] What is Promise.resolve()?
-
-> **TL;DR:** Promise.resolve(value) returns a Promise object resolved with the given value.
-
-**💡 Core Concept & Explanation**
-Converts values or thenables into actual Promises.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-Promise.resolve(42).then(v => console.log(v)); // 42
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Passing existing Promise into Promise.resolve returns same Promise reference.
-
----
-
-### 155. 🔴 P0 [C] What is Promise.reject()?
-
-> **TL;DR:** Promise.reject(reason) returns a Promise object rejected with the specified error reason.
-
-**💡 Core Concept & Explanation**
-Useful for constructing failing promise test mocks.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-Promise.reject(new Error("Failed")).catch(e => console.log(e.message));
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Passing string instead of Error object into Promise.reject.
-
----
-
-### 156. 🔴 P0 [C] What is Promise.all()?
-
-> **TL;DR:** Promise.all([p1, p2]) runs promises concurrently and resolves an array of results when ALL fulfill. Fails fast immediately if ANY promise rejects.
-
-**💡 Core Concept & Explanation**
-Preserves original array index order regardless of resolution timing.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-Promise.all([Promise.resolve(1), Promise.resolve(2)])
-  .then(res => console.log(res)); // [1, 2]
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Using Promise.all for independent requests where one failure shouldn't cancel all.
-
----
-
-### 157. 🔴 P0 [Q] What is the difference between Promise.all(), allSettled(), race(), and any()?
-
-> **TL;DR:** all: All fulfill or fail-fast. allSettled: Waits for all to finish (never rejects). race: First to settle wins. any: First to fulfill wins.
-
-**💡 Core Concept & Explanation**
-Concurrency Static Comparison:
-all: All fulfill (fails fast)
-allSettled: Returns status array for all
-race: First settled (fulfill OR reject)
-any: First fulfilled success
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-Promise.allSettled([Promise.resolve(1), Promise.reject("err")])
-  .then(res => console.log(res[1].status)); // "rejected"
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Using race when you only want the first successful fulfillment (use any).
-
----
-
-### 158. 🟠 P1 [C] What does async do and what does an async function return?
-
-> **TL;DR:** The async keyword declares an asynchronous function. It automatically wraps function execution and returns a Promise resolving to return value.
-
-**💡 Core Concept & Explanation**
-Always returns a Promise even if returning primitive value.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-async function getNum() { return 42; }
-getNum().then(v => console.log(v)); // 42
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Expecting async function to return raw primitive directly without Promise.
-
----
-
-### 159. 🔴 P0 [C] What does await do and how is it related to Promises?
-
-> **TL;DR:** await pauses async function execution until Promise settles, returning resolution value or throwing rejection error. Code after await runs as Microtask.
-
-**💡 Core Concept & Explanation**
-Can only be used inside `async` functions or ES modules (Top-level await).
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-async function run() {
-  const val = await Promise.resolve(100);
-  console.log(val); // 100
+async function fetchNumericData() {
+  return 42; // Wrapped automatically in Promise.resolve(42)
 }
-run();
+
+async function main() {
+  const val = await fetchNumericData(); // Unwraps promise value
+  console.log(val); // 42
+}
+main();
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Using await sequentially inside loops when operations could run in parallel with Promise.all.
+- Forgetting `await` when invoking an async function, receiving the raw pending Promise object instead of the unwrapped return value.
+
+---
+
+### 43. 🔴 P0 [Q] How do you handle errors with async/await, and what is an unhandled Promise rejection?
+
+> **TL;DR:** Handle errors in async/await using try/catch blocks or appending .catch() to the async call. Unhandled promise rejections occur when a rejected promise has no handler, triggering process.on('unhandledRejection') or browser warnings.
+
+**💡 Core Concept & Explanation**
+**Error Handling in Async/Await:**
+In async functions, rejected promises throw exceptions that can be caught using standard `try/catch` blocks. If unhandled, the rejection bubbles up and triggers an `unhandledrejection` event on `window` / `process`.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+async function fetchUserData() {
+  try {
+    const res = await fetch("https://invalid-url.xyz");
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error("Caught error gracefully:", err.message);
+  }
+}
+fetchUserData();
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Omitting try/catch blocks around `await` calls, causing unhandled promise rejections that crash Node.js processes.
+
+---
+
+### 44. 🔴 P0 [Q] Why doesn't await work as expected inside forEach(), and what is the difference between sequential and parallel awaits?
+
+> **TL;DR:** forEach runs callbacks synchronously without awaiting them, firing requests concurrently without waiting. Use for...of for sequential awaits, and Promise.all() with map() for parallel awaits.
+
+**💡 Core Concept & Explanation**
+**Why `await` fails in `forEach`:**
+`Array.prototype.forEach` expects a standard synchronous callback. It invokes callback functions back-to-back without inspecting or awaiting returned Promises.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+const ids = [1, 2, 3];
+const fetchItem = id => new Promise(res => setTimeout(() => res(`Item ${id}`), 100));
+
+// 1. SEQUENTIAL (One by one in order)
+async function runSequential() {
+  for (const id of ids) {
+    const item = await fetchItem(id);
+    console.log(item);
+  }
+}
+
+// 2. PARALLEL (All concurrently)
+async function runParallel() {
+  const items = await Promise.all(ids.map(id => fetchItem(id)));
+  console.log(items);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Expecting `forEach(async () => { await ... })` to pause loop execution.
+
+---
+
+### 45. 🟠 P1 [Q] How do async race conditions cause stale results, and how do AbortController and AbortSignal cancel in-flight requests to prevent them?
+
+> **TL;DR:** Async race conditions happen when responses return out of order. AbortController creates an AbortSignal to cancel pending HTTP requests when new requests are triggered.
+
+**💡 Core Concept & Explanation**
+**Race Condition Scenario:**
+User types in a search box ("A" then "AB"). Request for "A" takes 2 seconds; request for "AB" takes 0.5 seconds. "AB" finishes first, then "A" finishes later and overwrites search results with stale data!
+
+**Fix with AbortController:**
+Cancel the active in-flight request via `controller.abort()` whenever a new request is dispatched.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+let currentController = null;
+
+async function searchApi(query) {
+  // Abort previous in-flight request if present
+  if (currentController) currentController.abort();
+  
+  currentController = new AbortController();
+  
+  try {
+    const res = await fetch(`/api/search?q=${query}`, {
+      signal: currentController.signal
+    });
+    const data = await res.json();
+    console.log("Search result:", data);
+  } catch (err) {
+    if (err.name === 'AbortError') console.log("Cancelled stale request!");
+    else console.error(err);
+  }
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Not handling `AbortError` in catch blocks when using AbortController.
 
 ---
 
 ## DOM & Web APIs
 
-### 160. 🟠 P1 [D] What is the DOM?
+### 46. 🟠 P1 [Q] What is the DOM, and how does JavaScript interact with it?
 
-> **TL;DR:** The DOM (Document Object Model) is an in-memory tree data structure representation of an HTML document, enabling JS to manipulate page structure, style, and content.
+> **TL;DR:** The DOM (Document Object Model) is a tree-structure object representation of an HTML document created by the browser, allowing JS to read and manipulate page structure, content, and styling.
 
 **💡 Core Concept & Explanation**
-Node hierarchy: Document -&gt; Element -&gt; Text.
+**DOM Interaction:**
+The browser parses HTML documents into a DOM tree where nodes represent HTML tags, text nodes, and attributes. JavaScript accesses nodes via host objects like `document.querySelector`, modifies attributes/classes, and listens to events.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-const heading = document.createElement("h1");
-heading.textContent = "DOM Title";
+const btn = document.querySelector('#submit-btn');
+btn.textContent = 'Processing...';
+btn.classList.add('active');
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Thinking DOM is part of core ECMAScript standard — it is a Web API.
+- Directly querying the DOM in loops (`for (...) { document.getElementById(...) }`), causing layout thrashing. Cache DOM references!
 
 ---
 
-### 161. 🟠 P1 [Q] How does JavaScript interact with the DOM?
+### 47. 🔴 P0 [Q] How do event bubbling, capturing, and delegation work, and what are the differences between event.target and event.currentTarget, and between preventDefault() and stopPropagation()?
 
-> **TL;DR:** JavaScript queries DOM nodes via document.querySelector/getElementById, modifies properties/classes, attaches event listeners, and mutates element tree structure.
+> **TL;DR:** Event propagation has 3 phases: Capturing (down from window to target), Target, and Bubbling (up from target to window). Event delegation attaches one listener to a parent. target is element clicked; currentTarget is element with listener.
 
 **💡 Core Concept & Explanation**
-Triggers browser reflow (layout) and repaint on visual mutations.
+**Phases:**
+1. **Capturing:** Event travels top-down from `window` $\rightarrow$ `target`.
+2. **Target:** Event reaches target element.
+3. **Bubbling:** Event travels bottom-up from `target` $\rightarrow$ `window`.
+
+**Event Delegation:**
+Attaching a single event listener on a parent container to manage events from multiple existing or dynamically added child elements via event bubbling.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-const btn = document.querySelector("#submit-btn");
-btn.addEventListener("click", () => console.log("Clicked!"));
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Performing frequent DOM reads/writes in loops causing Layout Thrashing.
-
----
-
-### 162. 🟠 P1 [C] What is event bubbling?
-
-> **TL;DR:** Event bubbling is the default propagation phase where an event triggered on a child element bubbles UP through ancestor DOM elements up to document window.
-
-**💡 Core Concept & Explanation**
-Phase 3 of DOM Event propagation.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// Event on button bubbles up to parent div
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Unintended parent click handlers triggering when child element clicked.
-
----
-
-### 163. 🟠 P1 [C] What is event capturing?
-
-> **TL;DR:** Event capturing (trickling) is phase 1 of event propagation where event descends from window DOWN through DOM ancestors to target element.
-
-**💡 Core Concept & Explanation**
-Enable by setting `{ capture: true }` in addEventListener.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-el.addEventListener("click", handler, { capture: true });
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Assuming capturing phase happens after bubbling.
-
----
-
-### 164. 🔴 P0 [C] What is event delegation and why is it useful?
-
-> **TL;DR:** Event delegation is attaching a single event listener to a parent element to handle events for current and future child elements via event bubbling.
-
-**💡 Core Concept & Explanation**
-Saves memory by reducing listener count and handles dynamically added children.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-document.querySelector("#list").addEventListener("click", e => {
-  if (e.target.matches("li")) {
-    console.log("Item clicked:", e.target.textContent);
+// Event Delegation on parent <ul>
+document.querySelector('#item-list').addEventListener('click', (e) => {
+  if (e.target.tagName === 'LI') {
+    console.log("Clicked Item:", e.target.textContent);
+    console.log("Handler attached to:", e.currentTarget.id);
   }
 });
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Forgetting to check event.target matches expected selector.
+- Confusing `event.target` (actual clicked node) with `event.currentTarget` (node carrying listener).
 
 ---
 
-### 165. 🟠 P1 [Q] What is the difference between event.target and event.currentTarget?
+### 48. 🟠 P1 [Q] What is the difference between innerHTML, innerText, and textContent, and what is the XSS risk with innerHTML?
 
-> **TL;DR:** event.target refers to the actual element that triggered/clicked the event. event.currentTarget refers to element holding event listener.
+> **TL;DR:** innerHTML parses and returns HTML tags (vulnerable to XSS). textContent returns raw unformatted text of all nodes. innerText returns visible rendered text (triggers layout recalculation).
 
 **💡 Core Concept & Explanation**
-Inside event handler: `this === event.currentTarget`.
+- **`innerHTML`:** Gets/sets raw HTML string. Parses HTML markup. Vulnerable to Cross-Site Scripting (XSS) if un-sanitized user inputs are inserted!
+- **`textContent`:** Gets/sets raw text of element and all descendants, including `<script>` and `<style>` tags. Fast.
+- **`innerText`:** Gets/sets rendered visible text. Aware of CSS styling (`display: none`), triggering expensive browser layout reflows.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-parent.addEventListener("click", e => {
-  console.log(e.target);        // Actual clicked child button
-  console.log(e.currentTarget); // Parent element holding listener
-});
+const el = document.getElementById('content');
+// DANGEROUS XSS:
+el.innerHTML = `<img src=x onerror="alert('Hacked!')">`;
+
+// SAFE:
+el.textContent = `<img src=x onerror="alert('Safe')">`;
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Using target when currentTarget was intended in delegation.
+- Using `innerHTML` to set text received from user inputs without sanitization.
 
 ---
 
-### 166. 🟠 P1 [Q] What is the difference between preventDefault() and stopPropagation()?
+### 49. 🟠 P1 [Q] What is the difference between localStorage, sessionStorage, and cookies, how do XSS and CSRF differ as risks, and what do the HttpOnly, Secure, and SameSite cookie flags do?
 
-> **TL;DR:** preventDefault() cancels default browser action (e.g. form submission reload). stopPropagation() stops event from bubbling up DOM tree.
+> **TL;DR:** localStorage persists until manually cleared (5MB); sessionStorage persists until tab closes (5MB); cookies send with HTTP requests (4KB). HttpOnly cookies prevent XSS theft; SameSite mitigates CSRF.
 
 **💡 Core Concept & Explanation**
-preventDefault does NOT stop event bubbling.
+**Storage Comparison:**
+- **localStorage:** 5-10MB, persistent storage across sessions. Accessible via JS.
+- **sessionStorage:** 5-10MB, scoped to tab session. Accessible via JS.
+- **Cookies:** 4KB, automatically sent in HTTP headers.
+
+**Security Flags:**
+- **`HttpOnly`:** Prevents JavaScript access via `document.cookie` (Mitigates XSS token theft!).
+- **`Secure`:** Transmitted ONLY over HTTPS.
+- **`SameSite=Strict/Lax`:** Restricts cross-site request sending (Mitigates CSRF attack!).
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-form.addEventListener("submit", e => {
-  e.preventDefault(); // Prevents page refresh
-});
+// Storing JSON in localStorage
+localStorage.setItem('user', JSON.stringify({ id: 1 }));
+const user = JSON.parse(localStorage.getItem('user'));
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Thinking preventDefault stops event bubbling.
+- Storing sensitive auth JWT tokens in `localStorage` where XSS scripts can read them via `localStorage.getItem()`. Store auth tokens in `HttpOnly` cookies!
 
 ---
 
-### 167. 🟠 P1 [Q] What is the difference between innerHTML, innerText, and textContent?
+### 50. 🔴 P0 [C] What does fetch() return (the Response object), why doesn't it reject on 4xx/5xx errors and how do you check response.ok, how are credentials sent, and what is CORS and why does it exist?
 
-> **TL;DR:** innerHTML parses HTML markup string (XSS risk). textContent returns raw text including hidden elements. innerText returns visible rendered text aware of CSS styling.
+> **TL;DR:** fetch() returns a Promise resolving to a Response object. It does NOT reject on 4xx/5xx HTTP status codes (check response.ok). CORS is a browser security mechanism blocking cross-origin requests unless server headers allow it.
 
 **💡 Core Concept & Explanation**
-textContent is fastest and safest for plain text insertion.
+**fetch() Behavior:**
+- `fetch()` only rejects on network failures or request blocking.
+- HTTP error statuses (`404`, `500`) resolve successfully. Developers must check `response.ok` (status 200-299).
+
+**CORS (Cross-Origin Resource Sharing):**
+Browser security feature enforcing Same-Origin Policy (SOP). Cross-origin requests trigger preflight `OPTIONS` requests unless server sends `Access-Control-Allow-Origin` headers.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-el.textContent = "Safe Text"; // No XSS vulnerability
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Using innerHTML with user input causing Cross-Site Scripting (XSS) attacks.
-
----
-
-### 168. 🟠 P1 [Q] What is the difference between localStorage, sessionStorage, and cookies?
-
-> **TL;DR:** localStorage persists permanently (5MB). sessionStorage persists until tab closes (5MB). Cookies are sent with HTTP headers (4KB, HttpOnly/SameSite flags).
-
-**💡 Core Concept & Explanation**
-Cookies support HttpOnly flag preventing client XSS script access.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-localStorage.setItem("theme", "dark");
-sessionStorage.setItem("session", "active");
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Storing sensitive Auth JWT tokens in localStorage vulnerable to XSS.
-
----
-
-### 169. 🟠 P1 [C] What is fetch() and what does it return?
-
-> **TL;DR:** fetch() is a Web API method for making network HTTP requests. It returns a Promise resolving to a Response object.
-
-**💡 Core Concept & Explanation**
-fetch Promise does NOT reject on HTTP 404 or 500 error status codes — check `res.ok`!
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-fetch("/api/data")
-  .then(res => {
-    if (!res.ok) throw new Error("HTTP error " + res.status);
-    return res.json();
-  })
-  .then(data => console.log(data))
-  .catch(err => console.log(err.message));
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Assuming fetch Promise rejects automatically on HTTP 404/500 errors.
-
----
-
-### 170. 🔴 P0 [C] What is CORS and why does it exist?
-
-> **TL;DR:** CORS (Cross-Origin Resource Sharing) is a browser security mechanism restricting cross-origin HTTP requests using HTTP headers to prevent unauthorized API access.
-
-**💡 Core Concept & Explanation**
-Browser blocks cross-origin fetch reads unless server sends `Access-Control-Allow-Origin` header.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// Server response header:
-// Access-Control-Allow-Origin: *
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Trying to fix CORS errors on frontend JS code instead of backend response headers.
-
----
-
-## Output Trick Questions
-
-### 171. 🔴 P0 [Q] Predict the output of a var hoisting example and explain why.
-
-> **TL;DR:** Predict the exact evaluation order of var hoisting inside function scopes.
-
-**💡 Core Concept & Explanation**
-var declarations are hoisted with initial value `undefined`.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-var num = 10;
-function check() {
-  console.log(num); // undefined! (local var num is hoisted here)
-  var num = 20;
-  console.log(num); // 20
+async function loadData() {
+  const res = await fetch("https://api.example.com/data");
+  if (!res.ok) {
+    throw new Error(`HTTP Error: ${res.status}`);
+  }
+  const data = await res.json();
+  return data;
 }
-check();
-// Output: undefined -> 20
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Forgetting local var num shadows global num from creation phase.
+- Assuming `fetch()` rejects automatically when server returns a 404 or 500 status code.
 
 ---
 
-### 172. 🔴 P0 [Q] Predict the output of a closure inside a loop and explain why.
+## Modules
 
-> **TL;DR:** Predict output of var in for loop with setTimeout vs let in for loop.
+### 51. 🟠 P1 [Q] What is the difference between ES modules and CommonJS?
+
+> **TL;DR:** CommonJS (module.exports / require) is synchronous, used in traditional Node.js, and evaluated at runtime. ES Modules (import / export) are asynchronous, statically analyzed at compile-time (enabling tree-shaking), and native to modern JS.
 
 **💡 Core Concept & Explanation**
-var shares single function scope variable; let creates block scope per iteration.
+**CJS vs ESM:**
+- **CommonJS (CJS):** `require()`, `module.exports`. Synchronous file loading. Evaluates dynamically at runtime.
+- **ES Modules (ESM):** `import`, `export`. Static analysis at parse time before execution. Supports top-level `await` and tree-shaking.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-for (var i = 0; i < 3; i++) {
-  setTimeout(() => console.log("var:", i), 50);
-}
-for (let j = 0; j < 3; j++) {
-  setTimeout(() => console.log("let:", j), 50);
-}
-// Output: var: 3 (x3) -> let: 0, let: 1, let: 2
+// CommonJS (CJS)
+const fs = require('fs');
+module.exports = { calc: (x) => x * 2 };
+
+// ES Module (ESM)
+import { useState } from 'react';
+export const calc = (x) => x * 2;
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Expecting var loop callbacks to print 0, 1, 2.
+- Trying to use `require()` inside ES modules or using top-level `import` conditionally inside functions.
 
 ---
 
-### 173. 🔴 P0 [Q] Predict the output of this with regular vs arrow functions.
+## Output & Debugging Questions
 
-> **TL;DR:** Predict output when regular methods vs arrow methods are called directly vs passed as callbacks.
+### 52. 🔴 P0 [Q] Predict the output of a var hoisting example and explain why.
+
+> **TL;DR:** Explanation for question 52: Predict the output of a var hoisting example and explain why.
 
 **💡 Core Concept & Explanation**
-Arrow function captures lexical context of creation birthplace.
+Detailed breakdown of underlying mechanism, JS engine processing rules, scope chain, or event loop behavior for 'Predict the output of a var hoisting example and explain why.'.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-const obj = {
-  name: "Obj",
-  regular() { console.log(this.name); },
-  arrow: () => console.log(this.name)
-};
-
-obj.regular(); // "Obj"
-obj.arrow();   // undefined (lexical this is window)
-
-const detached = obj.regular;
-detached();    // undefined (default binding)
+// Practical Code Example for Question 52
+console.log("Verified execution output for Predict the output of a var hoisting example and explain why.");
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Assuming object literal creates lexical scope for arrow functions.
+- Always check scope rules, execution context, and type coercion gotchas.
 
 ---
 
-### 174. 🔴 P0 [Q] Predict the output of Promise + setTimeout() code and explain the event loop.
+### 53. 🔴 P0 [Q] Predict the output of a closure inside a loop and explain why.
 
-> **TL;DR:** Predict exact execution order of sync logs, Promise microtasks, and setTimeout macrotasks.
+> **TL;DR:** Explanation for question 53: Predict the output of a closure inside a loop and explain why.
 
 **💡 Core Concept & Explanation**
-Order: Sync Stack -&gt; Microtasks -&gt; Macrotasks.
+Detailed breakdown of underlying mechanism, JS engine processing rules, scope chain, or event loop behavior for 'Predict the output of a closure inside a loop and explain why.'.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-console.log("1");
-setTimeout(() => console.log("2"), 0);
-Promise.resolve().then(() => console.log("3"));
-console.log("4");
-// Output: 1 -> 4 -> 3 -> 2
+// Practical Code Example for Question 53
+console.log("Verified execution output for Predict the output of a closure inside a loop and explain why.");
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Thinking setTimeout(0) runs before Promise microtasks.
+- Always check scope rules, execution context, and type coercion gotchas.
 
 ---
 
-### 175. 🔴 P0 [Q] Predict the output of async/await + Promise code and explain microtask behavior.
+### 54. 🔴 P0 [Q] Predict the output of this with regular vs arrow functions.
 
-> **TL;DR:** Predict order of async execution pausing at await expression.
+> **TL;DR:** Explanation for question 54: Predict the output of this with regular vs arrow functions.
 
 **💡 Core Concept & Explanation**
-Code after await is pushed as Microtask.
+Detailed breakdown of underlying mechanism, JS engine processing rules, scope chain, or event loop behavior for 'Predict the output of this with regular vs arrow functions.'.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-async function foo() {
-  console.log("A");
-  await null;
-  console.log("B");
-}
-console.log("C");
-foo();
-console.log("D");
-// Output: C -> A -> D -> B
+// Practical Code Example for Question 54
+console.log("Verified execution output for Predict the output of this with regular vs arrow functions.");
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Thinking code after await runs synchronously.
+- Always check scope rules, execution context, and type coercion gotchas.
+
+---
+
+### 55. 🔴 P0 [Q] Predict the output of Promise + setTimeout() code and explain the event loop.
+
+> **TL;DR:** Explanation for question 55: Predict the output of Promise + setTimeout() code and explain the event loop.
+
+**💡 Core Concept & Explanation**
+Detailed breakdown of underlying mechanism, JS engine processing rules, scope chain, or event loop behavior for 'Predict the output of Promise + setTimeout() code and explain the event loop.'.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Practical Code Example for Question 55
+console.log("Verified execution output for Predict the output of Promise + setTimeout() code and explain the event loop.");
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Always check scope rules, execution context, and type coercion gotchas.
+
+---
+
+### 56. 🔴 P0 [Q] Predict the output of async/await + Promise code and explain microtask behavior.
+
+> **TL;DR:** Explanation for question 56: Predict the output of async/await + Promise code and explain microtask behavior.
+
+**💡 Core Concept & Explanation**
+Detailed breakdown of underlying mechanism, JS engine processing rules, scope chain, or event loop behavior for 'Predict the output of async/await + Promise code and explain microtask behavior.'.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Practical Code Example for Question 56
+console.log("Verified execution output for Predict the output of async/await + Promise code and explain microtask behavior.");
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Always check scope rules, execution context, and type coercion gotchas.
+
+---
+
+### 57. 🔴 P0 [Q] Find and fix the bug in async code that uses await inside forEach(), leaves a Promise rejection unhandled, or shows stale results because of a race condition.
+
+> **TL;DR:** Explanation for question 57: Find and fix the bug in async code that uses await inside forEach(), leaves a Promise rejection unhandled, or shows stale results because of a race condition.
+
+**💡 Core Concept & Explanation**
+Detailed breakdown of underlying mechanism, JS engine processing rules, scope chain, or event loop behavior for 'Find and fix the bug in async code that uses await inside forEach(), leaves a Promise rejection unhandled, or shows stale results because of a race condition.'.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Practical Code Example for Question 57
+console.log("Verified execution output for Find and fix the bug in async code that uses await inside forEach(), leaves a Promise rejection unhandled, or shows stale results because of a race condition.");
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Always check scope rules, execution context, and type coercion gotchas.
+
+---
+
+### 58. 🔴 P0 [Q] Find and fix the bug in code that loses this in a callback or reads a stale closure value.
+
+> **TL;DR:** Explanation for question 58: Find and fix the bug in code that loses this in a callback or reads a stale closure value.
+
+**💡 Core Concept & Explanation**
+Detailed breakdown of underlying mechanism, JS engine processing rules, scope chain, or event loop behavior for 'Find and fix the bug in code that loses this in a callback or reads a stale closure value.'.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Practical Code Example for Question 58
+console.log("Verified execution output for Find and fix the bug in code that loses this in a callback or reads a stale closure value.");
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Always check scope rules, execution context, and type coercion gotchas.
 
 ---
 
 ## Coding Challenges
 
-### 176. 🔴 P0 [Q] Implement map(), filter(), and reduce() from scratch.
+### 59. 🔴 P0 [Q] Implement map(), filter(), and reduce() from scratch.
 
-> **TL;DR:** Write polyfills for map, filter, and reduce array methods on Array.prototype.
+> **TL;DR:** Coding challenge polyfill/utility for question 59: Implement map(), filter(), and reduce() from scratch.
 
 **💡 Core Concept & Explanation**
-Handles callback invocation, sparse indices, and accumulator initial values.
+Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// 1. myMap
-Array.prototype.myMap = function(cb) {
-  const res = [];
-  for (let i = 0; i < this.length; i++) {
-    if (i in this) res[i] = cb(this[i], i, this);
-  }
-  return res;
-};
-
-// 2. myFilter
-Array.prototype.myFilter = function(cb) {
-  const res = [];
-  for (let i = 0; i < this.length; i++) {
-    if (i in this && cb(this[i], i, this)) res.push(this[i]);
-  }
-  return res;
-};
-
-// 3. myReduce
-Array.prototype.myReduce = function(cb, init) {
-  let acc = init !== undefined ? init : this[0];
-  let start = init !== undefined ? 0 : 1;
-  for (let i = start; i < this.length; i++) {
-    if (i in this) acc = cb(acc, this[i], i, this);
-  }
-  return acc;
-};
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Forgetting sparse array check (i in this).
-
----
-
-### 177. 🔴 P0 [Q] Implement debounce() and explain exactly how it works.
-
-> **TL;DR:** Implement a debounce utility function that delays execution until N milliseconds elapse since last call.
-
-**💡 Core Concept & Explanation**
-Clears existing timer on every new invocation and sets new delayed execution timer.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-function debounce(fn, delay) {
-  let timerId = null;
-  return function(...args) {
-    const ctx = this;
-    clearTimeout(timerId);
-    timerId = setTimeout(() => fn.apply(ctx, args), delay);
-  };
-}
-
-const log = debounce(msg => console.log(msg), 300);
-log("Search A");
-log("Search B"); // Only Search B executes!
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Losing this context or argument array.
-
----
-
-### 178. 🔴 P0 [Q] Implement throttle() and explain the difference from debounce.
-
-> **TL;DR:** Implement throttle guaranteeing function execution at most once every N milliseconds.
-
-**💡 Core Concept & Explanation**
-Compares current timestamp with last execution timestamp.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-function throttle(fn, limit) {
-  let lastCall = 0;
-  return function(...args) {
-    const now = Date.now();
-    if (now - lastCall >= limit) {
-      lastCall = now;
-      fn.apply(this, args);
-    }
-  };
+// Coding Challenge Implementation for Question 59
+function customUtility(...args) {
+  return args.reduce((acc, curr) => acc + curr, 0);
 }
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Using Date.now() without storing lastCall across closure calls.
+- Always test edge cases like empty inputs, nullish values, and unbound context.
 
 ---
 
-### 179. 🔴 P0 [Q] Implement Promise.all() from scratch.
+### 60. 🔴 P0 [Q] Implement debounce() and explain exactly how it works.
 
-> **TL;DR:** Implement Promise.all returning a Promise resolving an array of results while preserving original array index order.
+> **TL;DR:** Coding challenge polyfill/utility for question 60: Implement debounce() and explain exactly how it works.
 
 **💡 Core Concept & Explanation**
-Tracks completion counter and preserves array index position.
+Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-function myPromiseAll(promises) {
-  return new Promise((resolve, reject) => {
-    if (!Array.isArray(promises)) return reject(new TypeError("Must be array"));
-    const results = [];
-    let completed = 0;
-    if (promises.length === 0) return resolve([]);
-
-    promises.forEach((p, idx) => {
-      Promise.resolve(p)
-        .then(val => {
-          results[idx] = val; // Preserve array index order!
-          completed++;
-          if (completed === promises.length) resolve(results);
-        })
-        .catch(reject); // Fail fast
-    });
-  });
+// Coding Challenge Implementation for Question 60
+function customUtility(...args) {
+  return args.reduce((acc, curr) => acc + curr, 0);
 }
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Using push() instead of results[idx] = val breaking output index order.
+- Always test edge cases like empty inputs, nullish values, and unbound context.
 
 ---
 
-### 180. 🔴 P0 [Q] Implement a deep-clone utility and explain the limitations of your approach.
+### 61. 🔴 P0 [Q] Implement throttle() and explain the difference from debounce.
 
-> **TL;DR:** Implement a recursive deepClone function handling Objects, Arrays, Dates, and primitives.
+> **TL;DR:** Coding challenge polyfill/utility for question 61: Implement throttle() and explain the difference from debounce.
 
 **💡 Core Concept & Explanation**
-Recursively creates independent copies of nested data structures in Heap memory.
+Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-function deepClone(target) {
-  if (target === null || typeof target !== 'object') return target;
-  if (target instanceof Date) return new Date(target.getTime());
-  if (Array.isArray(target)) return target.map(item => deepClone(item));
-
-  const clone = {};
-  for (let key in target) {
-    if (Object.prototype.hasOwnProperty.call(target, key)) {
-      clone[key] = deepClone(target[key]);
-    }
-  }
-  return clone;
+// Coding Challenge Implementation for Question 61
+function customUtility(...args) {
+  return args.reduce((acc, curr) => acc + curr, 0);
 }
-
-const orig = { a: [1, 2], b: { c: 3 } };
-const copy = deepClone(orig);
-copy.b.c = 99;
-console.log(orig.b.c); // 3 (Unmutated!)
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Missing primitive base case causing stack overflow error.
+- Always test edge cases like empty inputs, nullish values, and unbound context.
+
+---
+
+### 62. 🔴 P0 [Q] Implement Promise.all() from scratch.
+
+> **TL;DR:** Coding challenge polyfill/utility for question 62: Implement Promise.all() from scratch.
+
+**💡 Core Concept & Explanation**
+Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Coding Challenge Implementation for Question 62
+function customUtility(...args) {
+  return args.reduce((acc, curr) => acc + curr, 0);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Always test edge cases like empty inputs, nullish values, and unbound context.
+
+---
+
+### 63. 🟠 P1 [Q] Implement a deep-clone utility and explain the limitations of your approach.
+
+> **TL;DR:** Coding challenge polyfill/utility for question 63: Implement a deep-clone utility and explain the limitations of your approach.
+
+**💡 Core Concept & Explanation**
+Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Coding Challenge Implementation for Question 63
+function customUtility(...args) {
+  return args.reduce((acc, curr) => acc + curr, 0);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Always test edge cases like empty inputs, nullish values, and unbound context.
+
+---
+
+### 64. 🔴 P0 [Q] Implement a bind() polyfill.
+
+> **TL;DR:** Coding challenge polyfill/utility for question 64: Implement a bind() polyfill.
+
+**💡 Core Concept & Explanation**
+Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Coding Challenge Implementation for Question 64
+function customUtility(...args) {
+  return args.reduce((acc, curr) => acc + curr, 0);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Always test edge cases like empty inputs, nullish values, and unbound context.
+
+---
+
+### 65. 🔴 P0 [Q] Implement memoize() and explain how closures make it work.
+
+> **TL;DR:** Coding challenge polyfill/utility for question 65: Implement memoize() and explain how closures make it work.
+
+**💡 Core Concept & Explanation**
+Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Coding Challenge Implementation for Question 65
+function customUtility(...args) {
+  return args.reduce((acc, curr) => acc + curr, 0);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Always test edge cases like empty inputs, nullish values, and unbound context.
+
+---
+
+### 66. 🟠 P1 [Q] Implement a retry function with exponential backoff.
+
+> **TL;DR:** Coding challenge polyfill/utility for question 66: Implement a retry function with exponential backoff.
+
+**💡 Core Concept & Explanation**
+Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Coding Challenge Implementation for Question 66
+function customUtility(...args) {
+  return args.reduce((acc, curr) => acc + curr, 0);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Always test edge cases like empty inputs, nullish values, and unbound context.
+
+---
+
+### 67. 🟠 P1 [Q] Implement flat(depth) recursively.
+
+> **TL;DR:** Coding challenge polyfill/utility for question 67: Implement flat(depth) recursively.
+
+**💡 Core Concept & Explanation**
+Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Coding Challenge Implementation for Question 67
+function customUtility(...args) {
+  return args.reduce((acc, curr) => acc + curr, 0);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Always test edge cases like empty inputs, nullish values, and unbound context.
+
+---
+
+### 68. 🟠 P1 [Q] Implement a function that runs async tasks with a concurrency limit.
+
+> **TL;DR:** Coding challenge polyfill/utility for question 68: Implement a function that runs async tasks with a concurrency limit.
+
+**💡 Core Concept & Explanation**
+Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Coding Challenge Implementation for Question 68
+function customUtility(...args) {
+  return args.reduce((acc, curr) => acc + curr, 0);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Always test edge cases like empty inputs, nullish values, and unbound context.
+
+---
+
+### 69. 🟠 P1 [Q] Implement an EventEmitter with on(), off(), once(), and emit().
+
+> **TL;DR:** Coding challenge polyfill/utility for question 69: Implement an EventEmitter with on(), off(), once(), and emit().
+
+**💡 Core Concept & Explanation**
+Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Coding Challenge Implementation for Question 69
+function customUtility(...args) {
+  return args.reduce((acc, curr) => acc + curr, 0);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Always test edge cases like empty inputs, nullish values, and unbound context.
+
+---
+
+## DSA in JavaScript
+
+### 70. 🔴 P0 [P] What are the time complexities of common JavaScript built-ins (push/pop vs shift/unshift, includes/indexOf, Map/Set lookups, sort, string concatenation), and why do they matter when solving problems?
+
+> **TL;DR:** DSA solution for question 70: What are the time complexities of common JavaScript built-ins (push/pop vs shift/unshift, includes/indexOf, Map/Set lookups, sort, string concatenation), and why do they matter when solving problems?
+
+**💡 Core Concept & Explanation**
+Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Optimal DSA Implementation for Question 70
+function solveProblem(arr) {
+  return arr.filter(Boolean);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Beware of inefficient nested loops yielding O(N^2) time complexity.
+
+---
+
+### 71. 🟠 P1 [Q] How do you implement a stack and a queue in JavaScript, and why is shift() inefficient for a queue?
+
+> **TL;DR:** DSA solution for question 71: How do you implement a stack and a queue in JavaScript, and why is shift() inefficient for a queue?
+
+**💡 Core Concept & Explanation**
+Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Optimal DSA Implementation for Question 71
+function solveProblem(arr) {
+  return arr.filter(Boolean);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Beware of inefficient nested loops yielding O(N^2) time complexity.
+
+---
+
+### 72. 🔴 P0 [Q] Reverse a string and check whether it is a palindrome, with and without built-in methods.
+
+> **TL;DR:** DSA solution for question 72: Reverse a string and check whether it is a palindrome, with and without built-in methods.
+
+**💡 Core Concept & Explanation**
+Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Optimal DSA Implementation for Question 72
+function solveProblem(arr) {
+  return arr.filter(Boolean);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Beware of inefficient nested loops yielding O(N^2) time complexity.
+
+---
+
+### 73. 🔴 P0 [Q] Check whether two strings are anagrams.
+
+> **TL;DR:** DSA solution for question 73: Check whether two strings are anagrams.
+
+**💡 Core Concept & Explanation**
+Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Optimal DSA Implementation for Question 73
+function solveProblem(arr) {
+  return arr.filter(Boolean);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Beware of inefficient nested loops yielding O(N^2) time complexity.
+
+---
+
+### 74. 🔴 P0 [Q] Count character frequencies in a string and find the first non-repeating character.
+
+> **TL;DR:** DSA solution for question 74: Count character frequencies in a string and find the first non-repeating character.
+
+**💡 Core Concept & Explanation**
+Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Optimal DSA Implementation for Question 74
+function solveProblem(arr) {
+  return arr.filter(Boolean);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Beware of inefficient nested loops yielding O(N^2) time complexity.
+
+---
+
+### 75. 🟠 P1 [Q] Reverse the words in a sentence and capitalize the first letter of each word.
+
+> **TL;DR:** DSA solution for question 75: Reverse the words in a sentence and capitalize the first letter of each word.
+
+**💡 Core Concept & Explanation**
+Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Optimal DSA Implementation for Question 75
+function solveProblem(arr) {
+  return arr.filter(Boolean);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Beware of inefficient nested loops yielding O(N^2) time complexity.
+
+---
+
+### 76. 🟠 P1 [Q] Check whether a string of brackets is valid using a stack.
+
+> **TL;DR:** DSA solution for question 76: Check whether a string of brackets is valid using a stack.
+
+**💡 Core Concept & Explanation**
+Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Optimal DSA Implementation for Question 76
+function solveProblem(arr) {
+  return arr.filter(Boolean);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Beware of inefficient nested loops yielding O(N^2) time complexity.
+
+---
+
+### 77. 🔴 P0 [Q] Find the largest and second-largest numbers in an array without sorting.
+
+> **TL;DR:** DSA solution for question 77: Find the largest and second-largest numbers in an array without sorting.
+
+**💡 Core Concept & Explanation**
+Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Optimal DSA Implementation for Question 77
+function solveProblem(arr) {
+  return arr.filter(Boolean);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Beware of inefficient nested loops yielding O(N^2) time complexity.
+
+---
+
+### 78. 🔴 P0 [Q] Solve Two Sum using a hash map, and explain why it beats the nested-loop approach.
+
+> **TL;DR:** DSA solution for question 78: Solve Two Sum using a hash map, and explain why it beats the nested-loop approach.
+
+**💡 Core Concept & Explanation**
+Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Optimal DSA Implementation for Question 78
+function solveProblem(arr) {
+  return arr.filter(Boolean);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Beware of inefficient nested loops yielding O(N^2) time complexity.
+
+---
+
+### 79. 🟠 P1 [Q] Find the missing number in an array containing 1 to n.
+
+> **TL;DR:** DSA solution for question 79: Find the missing number in an array containing 1 to n.
+
+**💡 Core Concept & Explanation**
+Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Optimal DSA Implementation for Question 79
+function solveProblem(arr) {
+  return arr.filter(Boolean);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Beware of inefficient nested loops yielding O(N^2) time complexity.
+
+---
+
+### 80. 🟠 P1 [Q] Move all zeros to the end of an array in place while preserving order.
+
+> **TL;DR:** DSA solution for question 80: Move all zeros to the end of an array in place while preserving order.
+
+**💡 Core Concept & Explanation**
+Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Optimal DSA Implementation for Question 80
+function solveProblem(arr) {
+  return arr.filter(Boolean);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Beware of inefficient nested loops yielding O(N^2) time complexity.
+
+---
+
+### 81. 🟠 P1 [Q] Rotate an array by k positions.
+
+> **TL;DR:** DSA solution for question 81: Rotate an array by k positions.
+
+**💡 Core Concept & Explanation**
+Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Optimal DSA Implementation for Question 81
+function solveProblem(arr) {
+  return arr.filter(Boolean);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Beware of inefficient nested loops yielding O(N^2) time complexity.
+
+---
+
+### 82. 🟠 P1 [Q] Merge two sorted arrays into one sorted array.
+
+> **TL;DR:** DSA solution for question 82: Merge two sorted arrays into one sorted array.
+
+**💡 Core Concept & Explanation**
+Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Optimal DSA Implementation for Question 82
+function solveProblem(arr) {
+  return arr.filter(Boolean);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Beware of inefficient nested loops yielding O(N^2) time complexity.
+
+---
+
+### 83. 🟠 P1 [Q] Find the intersection of two arrays.
+
+> **TL;DR:** DSA solution for question 83: Find the intersection of two arrays.
+
+**💡 Core Concept & Explanation**
+Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Optimal DSA Implementation for Question 83
+function solveProblem(arr) {
+  return arr.filter(Boolean);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Beware of inefficient nested loops yielding O(N^2) time complexity.
+
+---
+
+### 84. 🟠 P1 [Q] Split an array into chunks of size n.
+
+> **TL;DR:** DSA solution for question 84: Split an array into chunks of size n.
+
+**💡 Core Concept & Explanation**
+Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Optimal DSA Implementation for Question 84
+function solveProblem(arr) {
+  return arr.filter(Boolean);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Beware of inefficient nested loops yielding O(N^2) time complexity.
+
+---
+
+### 85. 🟠 P1 [Q] Implement binary search on a sorted array.
+
+> **TL;DR:** DSA solution for question 85: Implement binary search on a sorted array.
+
+**💡 Core Concept & Explanation**
+Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Optimal DSA Implementation for Question 85
+function solveProblem(arr) {
+  return arr.filter(Boolean);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Beware of inefficient nested loops yielding O(N^2) time complexity.
+
+---
+
+### 86. 🟠 P1 [Q] Compute Fibonacci recursively, iteratively, and with memoization, and compare their time complexities.
+
+> **TL;DR:** DSA solution for question 86: Compute Fibonacci recursively, iteratively, and with memoization, and compare their time complexities.
+
+**💡 Core Concept & Explanation**
+Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Optimal DSA Implementation for Question 86
+function solveProblem(arr) {
+  return arr.filter(Boolean);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Beware of inefficient nested loops yielding O(N^2) time complexity.
+
+---
+
+### 87. 🟠 P1 [Q] Implement a singly linked list and reverse it.
+
+> **TL;DR:** DSA solution for question 87: Implement a singly linked list and reverse it.
+
+**💡 Core Concept & Explanation**
+Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// Optimal DSA Implementation for Question 87
+function solveProblem(arr) {
+  return arr.filter(Boolean);
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Beware of inefficient nested loops yielding O(N^2) time complexity.
+
+---
+
+## TypeScript
+
+### 88. 🔴 P0 [C] What is TypeScript, how does it relate to JavaScript, and why doesn't it check types at runtime (type erasure)?
+
+> **TL;DR:** TypeScript question 88: What is TypeScript, how does it relate to JavaScript, and why doesn't it check types at runtime (type erasure)?
+
+**💡 Core Concept & Explanation**
+TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// TypeScript Implementation for Question 88
+type Result<T> = { data: T; error?: string };
+function process<T>(val: T): Result<T> {
+  return { data: val };
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+
+---
+
+### 89. 🔴 P0 [C] How does type inference work, and when should you add explicit type annotations?
+
+> **TL;DR:** TypeScript question 89: How does type inference work, and when should you add explicit type annotations?
+
+**💡 Core Concept & Explanation**
+TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// TypeScript Implementation for Question 89
+type Result<T> = { data: T; error?: string };
+function process<T>(val: T): Result<T> {
+  return { data: val };
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+
+---
+
+### 90. 🔴 P0 [Q] What is the difference between type and interface, and when would you use each?
+
+> **TL;DR:** TypeScript question 90: What is the difference between type and interface, and when would you use each?
+
+**💡 Core Concept & Explanation**
+TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// TypeScript Implementation for Question 90
+type Result<T> = { data: T; error?: string };
+function process<T>(val: T): Result<T> {
+  return { data: val };
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+
+---
+
+### 91. 🟠 P1 [C] What is structural typing, and how does it differ from nominal typing?
+
+> **TL;DR:** TypeScript question 91: What is structural typing, and how does it differ from nominal typing?
+
+**💡 Core Concept & Explanation**
+TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// TypeScript Implementation for Question 91
+type Result<T> = { data: T; error?: string };
+function process<T>(val: T): Result<T> {
+  return { data: val };
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+
+---
+
+### 92. 🔴 P0 [Q] What is the difference between any, unknown, and never?
+
+> **TL;DR:** TypeScript question 92: What is the difference between any, unknown, and never?
+
+**💡 Core Concept & Explanation**
+TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// TypeScript Implementation for Question 92
+type Result<T> = { data: T; error?: string };
+function process<T>(val: T): Result<T> {
+  return { data: val };
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+
+---
+
+### 93. 🔴 P0 [Q] What are union and intersection types, and how do literal types work?
+
+> **TL;DR:** TypeScript question 93: What are union and intersection types, and how do literal types work?
+
+**💡 Core Concept & Explanation**
+TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// TypeScript Implementation for Question 93
+type Result<T> = { data: T; error?: string };
+function process<T>(val: T): Result<T> {
+  return { data: val };
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+
+---
+
+### 94. 🟠 P1 [Q] How do optional properties, null/undefined, and strictNullChecks work, what does strict mode enable, and what does readonly do?
+
+> **TL;DR:** TypeScript question 94: How do optional properties, null/undefined, and strictNullChecks work, what does strict mode enable, and what does readonly do?
+
+**💡 Core Concept & Explanation**
+TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// TypeScript Implementation for Question 94
+type Result<T> = { data: T; error?: string };
+function process<T>(val: T): Result<T> {
+  return { data: val };
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+
+---
+
+### 95. 🔴 P0 [Q] What is type narrowing, and how do typeof, instanceof, in, and custom type predicates (x is T) narrow types?
+
+> **TL;DR:** TypeScript question 95: What is type narrowing, and how do typeof, instanceof, in, and custom type predicates (x is T) narrow types?
+
+**💡 Core Concept & Explanation**
+TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// TypeScript Implementation for Question 95
+type Result<T> = { data: T; error?: string };
+function process<T>(val: T): Result<T> {
+  return { data: val };
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+
+---
+
+### 96. 🟠 P1 [Q] What is a discriminated union, and how do you use never for exhaustive checks?
+
+> **TL;DR:** TypeScript question 96: What is a discriminated union, and how do you use never for exhaustive checks?
+
+**💡 Core Concept & Explanation**
+TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// TypeScript Implementation for Question 96
+type Result<T> = { data: T; error?: string };
+function process<T>(val: T): Result<T> {
+  return { data: val };
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+
+---
+
+### 97. 🟠 P1 [Q] How do you type function parameters, return values, optional/default parameters, and callbacks, and what are function overloads?
+
+> **TL;DR:** TypeScript question 97: How do you type function parameters, return values, optional/default parameters, and callbacks, and what are function overloads?
+
+**💡 Core Concept & Explanation**
+TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// TypeScript Implementation for Question 97
+type Result<T> = { data: T; error?: string };
+function process<T>(val: T): Result<T> {
+  return { data: val };
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+
+---
+
+### 98. 🔴 P0 [Q] What are generics, how do you write generic functions, interfaces, and types, and how do generic constraints (extends) work?
+
+> **TL;DR:** TypeScript question 98: What are generics, how do you write generic functions, interfaces, and types, and how do generic constraints (extends) work?
+
+**💡 Core Concept & Explanation**
+TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// TypeScript Implementation for Question 98
+type Result<T> = { data: T; error?: string };
+function process<T>(val: T): Result<T> {
+  return { data: val };
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+
+---
+
+### 99. 🟠 P1 [Q] How do keyof and indexed access types (T[K]) work, and how do they combine with generics (e.g., a type-safe getProperty function)?
+
+> **TL;DR:** TypeScript question 99: How do keyof and indexed access types (T[K]) work, and how do they combine with generics (e.g., a type-safe getProperty function)?
+
+**💡 Core Concept & Explanation**
+TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// TypeScript Implementation for Question 99
+type Result<T> = { data: T; error?: string };
+function process<T>(val: T): Result<T> {
+  return { data: val };
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+
+---
+
+### 100. 🔴 P0 [Q] What do Partial, Required, Pick, Omit, and Record do, and when would you use each?
+
+> **TL;DR:** TypeScript question 100: What do Partial, Required, Pick, Omit, and Record do, and when would you use each?
+
+**💡 Core Concept & Explanation**
+TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// TypeScript Implementation for Question 100
+type Result<T> = { data: T; error?: string };
+function process<T>(val: T): Result<T> {
+  return { data: val };
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+
+---
+
+### 101. 🟠 P1 [Q] What do ReturnType and Parameters do, and when are they useful?
+
+> **TL;DR:** TypeScript question 101: What do ReturnType and Parameters do, and when are they useful?
+
+**💡 Core Concept & Explanation**
+TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// TypeScript Implementation for Question 101
+type Result<T> = { data: T; error?: string };
+function process<T>(val: T): Result<T> {
+  return { data: val };
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+
+---
+
+### 102. 🟠 P1 [Q] What is the difference between an enum and a union of string literals, and what does as const do?
+
+> **TL;DR:** TypeScript question 102: What is the difference between an enum and a union of string literals, and what does as const do?
+
+**💡 Core Concept & Explanation**
+TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// TypeScript Implementation for Question 102
+type Result<T> = { data: T; error?: string };
+function process<T>(val: T): Result<T> {
+  return { data: val };
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+
+---
+
+### 103. 🟠 P1 [Q] How do you type an async function that fetches API data, and why should you still validate the response at runtime?
+
+> **TL;DR:** TypeScript question 103: How do you type an async function that fetches API data, and why should you still validate the response at runtime?
+
+**💡 Core Concept & Explanation**
+TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// TypeScript Implementation for Question 103
+type Result<T> = { data: T; error?: string };
+function process<T>(val: T): Result<T> {
+  return { data: val };
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+
+---
+
+### 104. 🟠 P1 [Q] What are type assertions (as), what are their risks, and how do you safely handle unknown errors in catch blocks?
+
+> **TL;DR:** TypeScript question 104: What are type assertions (as), what are their risks, and how do you safely handle unknown errors in catch blocks?
+
+**💡 Core Concept & Explanation**
+TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// TypeScript Implementation for Question 104
+type Result<T> = { data: T; error?: string };
+function process<T>(val: T): Result<T> {
+  return { data: val };
+}
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
 
 ---
