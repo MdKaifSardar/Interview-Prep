@@ -9,6 +9,7 @@ Curated, high-yield interview preparation modules for Software Engineering, Full
 | Topic | Questions Sheet | Answers Master Key | Status |
 | :--- | :--- | :--- | :--- |
 | **🟨 JavaScript** | [Questions](file:///e:/CSE/interview%20prep/javascript/javascript-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/javascript/javascript-interview-answers.md) | ✅ Complete (180 Qs) |
+| **🟢 Node.js & Express.js** | [Questions](file:///e:/CSE/interview%20prep/nodejs/nodejs-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/nodejs/nodejs-interview-answers.md) | ✅ Complete (72 Qs) |
 | **🍃 MongoDB** | [Questions](file:///e:/CSE/interview%20prep/mongodb/mongodb-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/mongodb/mongodb-interview-answers.md) | ✅ Complete (100 Qs) |
 | **🗄️ Relational DBMS & SQL** | [Questions](file:///e:/CSE/interview%20prep/dbms/dbms-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/dbms/dbms-interview-answers.md) | ✅ Complete (70 Qs) |
 | **⚛️ React & Next.js (Full-Stack)** | [Questions](file:///e:/CSE/interview%20prep/react/react-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/react/react-interview-answers.md) | ✅ Complete (75 Qs) |
@@ -23,6 +24,9 @@ Interview-Prep/
 ├── javascript/                            <-- JavaScript Language Module
 │   ├── javascript-interview-questions.md  <-- 180-Question Master List
 │   └── javascript-interview-answers.md    <-- Comprehensive 4-Part Answer Key
+├── nodejs/                                <-- Node.js & Express.js Backend Module
+│   ├── nodejs-interview-questions.md      <-- 72-Question Master List
+│   └── nodejs-interview-answers.md        <-- Comprehensive 4-Part Answer Key
 ├── mongodb/                               <-- MongoDB NoSQL Module
 │   ├── mongodb-interview-questions.md     <-- 100-Question Master List
 │   └── mongodb-interview-answers.md       <-- Comprehensive 4-Part Answer Key
