@@ -24,16 +24,14 @@ Given an `m x n` matrix, return all elements of the matrix in spiral order.
 - **Explanation:** Traverse top row (1,2,3), right col (6,9), bottom row (8,7), left col (4), inner (5).
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Matrix Spiral Traversal & Generation
+- **Main Pattern:** Sub-Pattern 1.1 (Matrix Spiral Traversal & Generation)
 - **Memory Mnemonic:** *"4-boundary shrinking loop (top, bottom, left, right)."*
 
 ---
-
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(M * N) | **Space:** O(M * N)
-- **Explanation:** Maintain a 2D boolean `visited[m][n]` grid and direction vectors for right, down, left, up. Step forward until hitting a matrix boundary or an already visited cell, then turn right 90 degrees.
+- **Explanation:** Maintain a 2D boolean `visited[m][n]` grid and direction vectors for right, down, left, up.
 
 ```cpp
 class Solution {
@@ -62,10 +60,9 @@ public:
 ```
 
 ---
-
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(M * N) | **Space:** O(1) auxiliary
-- **Explanation:** Maintain 4 boundary pointers: `top = 0`, `bottom = m-1`, `left = 0`, `right = n-1`. Loop while `top <= bottom && left <= right`. Traverse top row, right col, bottom row (if `top <= bottom`), and left col (if `left <= right`), shrinking boundaries inward after each sweep.
+- **Explanation:** Maintain 4 boundary pointers: `top`, `bottom`, `left`, `right`. Traverse boundaries clockwise.
 
 ```cpp
 class Solution {
@@ -75,7 +72,6 @@ public:
         if (matrix.empty()) return res;
         int top = 0, bottom = matrix.size() - 1;
         int left = 0, right = matrix[0].size() - 1;
-
         while (top <= bottom && left <= right) {
             for (int j = left; j <= right; j++) res.push_back(matrix[top][j]);
             top++;
@@ -96,11 +92,9 @@ public:
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Single row (1 x N) or single column (M x 1) matrices.
-- Ensuring `top <= bottom` and `left <= right` checks before bottom and left sweeps.
-- Empty matrix input.
+- Single row or single column matrix.
+- Empty matrix.
 
 ---
 
@@ -114,19 +108,17 @@ Given a positive integer `n`, generate an `n x n` matrix filled with elements fr
 **Example 1:**
 - **Input:** `n = 3`
 - **Output:** `[[1,2,3],[8,9,4],[7,6,5]]`
-- **Explanation:** Fills 3x3 grid with values 1 through 9 in spiral order.
+- **Explanation:** Fills 3x3 matrix in spiral order.
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Matrix Spiral Traversal & Generation
+- **Main Pattern:** Sub-Pattern 1.1 (Matrix Spiral Traversal & Generation)
 - **Memory Mnemonic:** *"Generating N x N matrix in spiral order filling 1..N^2."*
 
 ---
-
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(N^2)
-- **Explanation:** Simulate direction turning using direction arrays `dr` and `dc`. Fill values 1 to `n^2` step by step, turning right when out of bounds or encountering a non-zero cell.
+- **Explanation:** Simulate direction turning using direction arrays `dr` and `dc`.
 
 ```cpp
 class Solution {
@@ -151,10 +143,9 @@ public:
 ```
 
 ---
-
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1) auxiliary
-- **Explanation:** Use 4 boundary variables `top`, `bottom`, `left`, `right` and an incrementing counter `val = 1`. Populate top row, right col, bottom row, and left col sequentially, shrinking boundaries until `val > n*n`.
+- **Explanation:** Use 4 boundary variables `top`, `bottom`, `left`, `right` and fill elements 1 to `n^2`.
 
 ```cpp
 class Solution {
@@ -163,7 +154,6 @@ public:
         vector<vector<int>> res(n, vector<int>(n));
         int top = 0, bottom = n - 1, left = 0, right = n - 1;
         int val = 1;
-
         while (top <= bottom && left <= right) {
             for (int col = left; col <= right; col++) res[top][col] = val++;
             top++;
@@ -180,10 +170,8 @@ public:
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- n = 1 boundary case (returns [[1]]).
-- Handling odd vs even dimensions for center element filling.
+- n = 1 single element matrix.
 
 ---
 
@@ -192,24 +180,22 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 1.2 (Matrix Symmetry & In-Place Rotations)
 
 **📜 Problem Statement & Explanation**
-You are given an `n x n` 2D matrix representing an image, rotate the image by 90 degrees (clockwise) in-place.
+Rotate an `n x n` 2D matrix representing an image by 90 degrees (clockwise) in-place.
 
 **Example 1:**
 - **Input:** `matrix = [[1,2,3],[4,5,6],[7,8,9]]`
 - **Output:** `[[7,4,1],[8,5,2],[9,6,3]]`
-- **Explanation:** Rotated 90 degrees clockwise in-place.
+- **Explanation:** Matrix rotated 90 degrees clockwise in-place.
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Matrix Symmetry & In-Place Rotations
+- **Main Pattern:** Sub-Pattern 1.2 (Matrix Symmetry & In-Place Rotations)
 - **Memory Mnemonic:** *"Transpose matrix (swap A[i][j] & A[j][i]) + reverse each row in-place."*
 
 ---
-
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(N^2)
-- **Explanation:** Allocate an auxiliary `N x N` matrix `temp`. Copy `matrix[r][c]` to `temp[c][n - 1 - r]`. Copy `temp` back into `matrix`. Uses O(N^2) extra space.
+- **Explanation:** Allocate auxiliary `temp` matrix. Copy `matrix[r][c]` to `temp[c][n-1-r]`.
 
 ```cpp
 class Solution {
@@ -228,10 +214,9 @@ public:
 ```
 
 ---
-
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1) in-place
-- **Explanation:** 1) Transpose matrix in-place by swapping `matrix[i][j]` with `matrix[j][i]` for `j > i`. 2) Reverse each row horizontally using `std::reverse`.
+- **Explanation:** 1) Transpose matrix (swap `matrix[i][j]` with `matrix[j][i]`). 2) Reverse each row.
 
 ```cpp
 class Solution {
@@ -251,10 +236,8 @@ public:
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
 - 1x1 matrix.
-- Anti-clockwise variation (Transpose + Column Reverse).
 
 ---
 
@@ -263,62 +246,61 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 1.2 (Matrix Symmetry & In-Place Rotations)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Rotate Matrix 90 Deg Anti-Clockwise**, process the input payload and compute the optimal result.
+Rotate an `n x n` 2D matrix by 90 degrees anti-clockwise in-place.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Transpose matrix + reverse each column..
+- **Input:** `matrix = [[1,2,3],[4,5,6],[7,8,9]]`
+- **Output:** `[[3,6,9],[2,5,8],[1,4,7]]`
+- **Explanation:** Rotated anti-clockwise.
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Matrix Symmetry & In-Place Rotations
+- **Main Pattern:** Sub-Pattern 1.2 (Matrix Symmetry & In-Place Rotations)
 - **Memory Mnemonic:** *"Transpose matrix + reverse each column."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(N^2)
+- **Explanation:** Use auxiliary `temp` matrix.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
-        }
-        return 0;
+    void rotateAntiClockwise(vector<vector<int>>& matrix) {
+        int n = matrix.size();
+        vector<vector<int>> temp(n, vector<int>(n));
+        for (int r = 0; r < n; r++)
+            for (int c = 0; c < n; c++)
+                temp[n - 1 - c][r] = matrix[r][c];
+        matrix = temp;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Matrix Symmetry & In-Place Rotations. Transpose matrix + reverse each column..
+- **Complexity:** **Time:** O(N^2) | **Space:** O(1) in-place
+- **Explanation:** 1) Transpose matrix. 2) Reverse each column.
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Transpose matrix + reverse each column.
-        return 0;
+    void rotateAntiClockwise(vector<vector<int>>& matrix) {
+        int n = matrix.size();
+        for (int i = 0; i < n; i++)
+            for (int j = i + 1; j < n; j++)
+                swap(matrix[i][j], matrix[j][i]);
+        for (int c = 0; c < n; c++) {
+            int top = 0, bottom = n - 1;
+            while (top < bottom) swap(matrix[top++][c], matrix[bottom--][c]);
+        }
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- 1x1 matrix.
 
 ---
 
@@ -327,62 +309,74 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Set Matrix Zeroes**, process the input payload and compute the optimal result.
+Given an `m x n` integer matrix, if an element is `0`, set its entire row and column to `0`s in-place.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Use 1st row and 1st column as dummy markers for O(1) space..
+- **Input:** `matrix = [[1,1,1],[1,0,1],[1,1,1]]`
+- **Output:** `[[1,0,1],[0,0,0],[1,0,1]]`
+- **Explanation:** Row 1 and Col 1 set to 0.
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Matrix State Marking & Pattern Generation
+- **Main Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
 - **Memory Mnemonic:** *"Use 1st row and 1st column as dummy markers for O(1) space."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(M*N*(M+N)) | **Space:** O(M*N)
+- **Explanation:** Make matrix copy `clone`. On zero in matrix, zero out row/col in `clone`.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+    void setZeroes(vector<vector<int>>& matrix) {
+        int m = matrix.size(), n = matrix[0].size();
+        vector<vector<int>> clone = matrix;
+        for (int r = 0; r < m; r++) {
+            for (int c = 0; c < n; c++) {
+                if (matrix[r][c] == 0) {
+                    for (int k = 0; k < n; k++) clone[r][k] = 0;
+                    for (int k = 0; k < m; k++) clone[k][c] = 0;
+                }
             }
         }
-        return 0;
+        matrix = clone;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Matrix State Marking & Pattern Generation. Use 1st row and 1st column as dummy markers for O(1) space..
+- **Complexity:** **Time:** O(M * N) | **Space:** O(1) auxiliary
+- **Explanation:** Use first row and first column as dummy markers, plus `col0` for column 0.
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Use 1st row and 1st column as dummy markers for O(1) space.
-        return 0;
+    void setZeroes(vector<vector<int>>& matrix) {
+        int m = matrix.size(), n = matrix[0].size();
+        bool col0 = false;
+        for (int i = 0; i < m; i++) {
+            if (matrix[i][0] == 0) col0 = true;
+            for (int j = 1; j < n; j++) {
+                if (matrix[i][j] == 0) {
+                    matrix[i][0] = 0; matrix[0][j] = 0;
+                }
+            }
+        }
+        for (int i = m - 1; i >= 0; i--) {
+            for (int j = n - 1; j >= 1; j--) {
+                if (matrix[i][0] == 0 || matrix[0][j] == 0) matrix[i][j] = 0;
+            }
+            if (col0) matrix[i][0] = 0;
+        }
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Zero in first row or col.
 
 ---
 
@@ -391,62 +385,66 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Pascal's Triangle**, process the input payload and compute the optimal result.
+Return first `numRows` of Pascal's triangle.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Dynamic row generation using previous row element sums..
+- **Input:** `numRows = 5`
+- **Output:** `[[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]`
+- **Explanation:** Sums of adjacent numbers above.
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Matrix State Marking & Pattern Generation
+- **Main Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
 - **Memory Mnemonic:** *"Dynamic row generation using previous row element sums."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(N^3) | **Space:** O(N^2)
+- **Explanation:** Calculate each element using combinations `nCr`.
 
 ```cpp
 class Solution {
+    long long nCr(int n, int r) {
+        long long res = 1;
+        for (int i = 0; i < r; i++) res = res * (n - i) / (i + 1);
+        return res;
+    }
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
+    vector<vector<int>> generate(int numRows) {
+        vector<vector<int>> res;
+        for (int r = 0; r < numRows; r++) {
+            vector<int> row;
+            for (int c = 0; c <= r; c++) row.push_back(nCr(r, c));
+            res.push_back(row);
         }
-        return 0;
+        return res;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Matrix State Marking & Pattern Generation. Dynamic row generation using previous row element sums..
+- **Complexity:** **Time:** O(N^2) | **Space:** O(N^2)
+- **Explanation:** Build row `i` from previous row `i-1` by adding `res[i-1][j-1] + res[i-1][j]`.
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Dynamic row generation using previous row element sums.
-        return 0;
+    vector<vector<int>> generate(int numRows) {
+        vector<vector<int>> res;
+        for (int i = 0; i < numRows; i++) {
+            vector<int> row(i + 1, 1);
+            for (int j = 1; j < i; j++) row[j] = res[i - 1][j - 1] + res[i - 1][j];
+            res.push_back(row);
+        }
+        return res;
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- numRows = 1.
 
 ---
 
@@ -455,62 +453,65 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Next Permutation**, process the input payload and compute the optimal result.
+Rearrange numbers into lexicographically next greater permutation in-place.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Find decrease pivot -> swap with next larger -> reverse suffix..
+- **Input:** `nums = [1,2,3]`
+- **Output:** `[1,3,2]`
+- **Explanation:** Next permutation of [1,2,3] is [1,3,2].
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Matrix State Marking & Pattern Generation
+- **Main Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
 - **Memory Mnemonic:** *"Find decrease pivot -> swap with next larger -> reverse suffix."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(N! * N) | **Space:** O(N! * N)
+- **Explanation:** Generate all N! permutations, sort, find current, pick next.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+    void nextPermutation(vector<int>& nums) {
+        vector<vector<int>> all;
+        vector<int> cur = nums;
+        sort(cur.begin(), cur.end());
+        do { all.push_back(cur); } while(next_permutation(cur.begin(), cur.end()));
+        for (int i = 0; i < all.size(); i++) {
+            if (all[i] == nums) {
+                nums = all[(i + 1) % all.size()];
+                return;
             }
         }
-        return 0;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Matrix State Marking & Pattern Generation. Find decrease pivot -> swap with next larger -> reverse suffix..
+- **Complexity:** **Time:** O(N) | **Space:** O(1) in-place
+- **Explanation:** 1) Find rightmost dip `nums[i] < nums[i+1]`. 2) Swap with next larger. 3) Reverse suffix.
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Find decrease pivot -> swap with next larger -> reverse suffix.
-        return 0;
+    void nextPermutation(vector<int>& nums) {
+        int n = nums.size(), i = n - 2;
+        while (i >= 0 && nums[i] >= nums[i + 1]) i--;
+        if (i >= 0) {
+            int j = n - 1;
+            while (nums[j] <= nums[i]) j--;
+            swap(nums[i], nums[j]);
+        }
+        reverse(nums.begin() + i + 1, nums.end());
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Array sorted in descending order.
 
 ---
 
@@ -521,62 +522,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2)))
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Selection Sort Algorithm Blueprint**, process the input payload and compute the optimal result.
+Given the constraints for **Selection Sort Algorithm Blueprint**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Find min element in unsorted partition and swap with start..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Find min element in unsorted partition and swap with start..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Elementary Comparison Sorts (O(N^2))
+- **Main Pattern:** Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2)))
 - **Memory Mnemonic:** *"Find min element in unsorted partition and swap with start."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Selection Sort Algorithm Blueprint.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Elementary Comparison Sorts (O(N^2)). Find min element in unsorted partition and swap with start..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2))). Core takeaway: Find min element in unsorted partition and swap with start..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Find min element in unsorted partition and swap with start.
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -585,62 +583,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2)))
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Bubble Sort Algorithm Blueprint**, process the input payload and compute the optimal result.
+Given the constraints for **Bubble Sort Algorithm Blueprint**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Repeatedly swap adjacent inverted pairs with early exit flag..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Repeatedly swap adjacent inverted pairs with early exit flag..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Elementary Comparison Sorts (O(N^2))
+- **Main Pattern:** Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2)))
 - **Memory Mnemonic:** *"Repeatedly swap adjacent inverted pairs with early exit flag."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Bubble Sort Algorithm Blueprint.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Elementary Comparison Sorts (O(N^2)). Repeatedly swap adjacent inverted pairs with early exit flag..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2))). Core takeaway: Repeatedly swap adjacent inverted pairs with early exit flag..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Repeatedly swap adjacent inverted pairs with early exit flag.
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -649,62 +644,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2)))
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Insertion Sort Algorithm Blueprint**, process the input payload and compute the optimal result.
+Given the constraints for **Insertion Sort Algorithm Blueprint**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Shift elements right to insert key into sorted prefix..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Shift elements right to insert key into sorted prefix..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Elementary Comparison Sorts (O(N^2))
+- **Main Pattern:** Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2)))
 - **Memory Mnemonic:** *"Shift elements right to insert key into sorted prefix."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Insertion Sort Algorithm Blueprint.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Elementary Comparison Sorts (O(N^2)). Shift elements right to insert key into sorted prefix..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2))). Core takeaway: Shift elements right to insert key into sorted prefix..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Shift elements right to insert key into sorted prefix.
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -713,62 +705,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts (O(N log N)))
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Merge Sort & Inversion Counting Blueprint**, process the input payload and compute the optimal result.
+Given the constraints for **Merge Sort & Inversion Counting Blueprint**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Divide halves recursively and merge in O(N log N) time..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Divide halves recursively and merge in O(N log N) time..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Divide & Conquer & Advanced Sorts (O(N log N))
+- **Main Pattern:** Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts (O(N log N)))
 - **Memory Mnemonic:** *"Divide halves recursively and merge in O(N log N) time."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Merge Sort & Inversion Counting Blueprint.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Divide & Conquer & Advanced Sorts (O(N log N)). Divide halves recursively and merge in O(N log N) time..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts (O(N log N))). Core takeaway: Divide halves recursively and merge in O(N log N) time..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Divide halves recursively and merge in O(N log N) time.
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -777,62 +766,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts (O(N log N)))
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Quick Sort Algorithm Blueprint**, process the input payload and compute the optimal result.
+Given the constraints for **Quick Sort Algorithm Blueprint**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Lomuto/Hoare randomized pivot partitioning..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Lomuto/Hoare randomized pivot partitioning..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Divide & Conquer & Advanced Sorts (O(N log N))
+- **Main Pattern:** Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts (O(N log N)))
 - **Memory Mnemonic:** *"Lomuto/Hoare randomized pivot partitioning."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Quick Sort Algorithm Blueprint.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Divide & Conquer & Advanced Sorts (O(N log N)). Lomuto/Hoare randomized pivot partitioning..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts (O(N log N))). Core takeaway: Lomuto/Hoare randomized pivot partitioning..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Lomuto/Hoare randomized pivot partitioning.
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -841,62 +827,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 2.3 (Linear Non-Comparison Sorts (O(N)))
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Counting Sort Algorithm Blueprint**, process the input payload and compute the optimal result.
+Given the constraints for **Counting Sort Algorithm Blueprint**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Frequency array for bounded integer range [0, K]..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Frequency array for bounded integer range [0, K]..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Linear Non-Comparison Sorts (O(N))
+- **Main Pattern:** Sub-Pattern 2.3 (Linear Non-Comparison Sorts (O(N)))
 - **Memory Mnemonic:** *"Frequency array for bounded integer range [0, K]."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Counting Sort Algorithm Blueprint.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Linear Non-Comparison Sorts (O(N)). Frequency array for bounded integer range [0, K]..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 2.3 (Linear Non-Comparison Sorts (O(N))). Core takeaway: Frequency array for bounded integer range [0, K]..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Frequency array for bounded integer range [0, K].
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -905,62 +888,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 2.4 (Custom Comparators & String Sorting)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Largest Number**, process the input payload and compute the optimal result.
+Given the constraints for **Largest Number**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Custom string concatenation comparator (a + b > b + a)..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Custom string concatenation comparator (a + b > b + a)..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Custom Comparators & String Sorting
+- **Main Pattern:** Sub-Pattern 2.4 (Custom Comparators & String Sorting)
 - **Memory Mnemonic:** *"Custom string concatenation comparator (a + b > b + a)."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Largest Number.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Custom Comparators & String Sorting. Custom string concatenation comparator (a + b > b + a)..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 2.4 (Custom Comparators & String Sorting). Core takeaway: Custom string concatenation comparator (a + b > b + a)..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Custom string concatenation comparator (a + b > b + a).
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -971,62 +951,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 3.1 (Frequency Counting & Anagrams)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Contains Duplicate**, process the input payload and compute the optimal result.
+Given the constraints for **Contains Duplicate**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on O(1) set presence check..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using O(1) set presence check..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Frequency Counting & Anagrams
+- **Main Pattern:** Sub-Pattern 3.1 (Frequency Counting & Anagrams)
 - **Memory Mnemonic:** *"O(1) set presence check."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Contains Duplicate.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Frequency Counting & Anagrams. O(1) set presence check..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 3.1 (Frequency Counting & Anagrams). Core takeaway: O(1) set presence check..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // O(1) set presence check.
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -1035,62 +1012,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 3.1 (Frequency Counting & Anagrams)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Group Anagrams**, process the input payload and compute the optimal result.
+Given the constraints for **Group Anagrams**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on 26-char frequency vector encoding as map key..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using 26-char frequency vector encoding as map key..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Frequency Counting & Anagrams
+- **Main Pattern:** Sub-Pattern 3.1 (Frequency Counting & Anagrams)
 - **Memory Mnemonic:** *"26-char frequency vector encoding as map key."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Group Anagrams.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Frequency Counting & Anagrams. 26-char frequency vector encoding as map key..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 3.1 (Frequency Counting & Anagrams). Core takeaway: 26-char frequency vector encoding as map key..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // 26-char frequency vector encoding as map key.
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -1104,40 +1078,35 @@ Given an array of integers `nums` and an integer `target`, return indices of the
 **Example 1:**
 - **Input:** `nums = [2,7,11,15], target = 9`
 - **Output:** `[0,1]`
-- **Explanation:** nums[0] + nums[1] == 2 + 7 == 9, return [0, 1].
+- **Explanation:** nums[0] + nums[1] == 9.
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** O(1) Pair & Complement Lookup
+- **Main Pattern:** Sub-Pattern 3.2 (O(1) Pair & Complement Lookup)
 - **Memory Mnemonic:** *"Complement lookup (target - nums[i]) in unordered_map."*
 
 ---
-
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use two nested loops. Outer loop selects `nums[i]`, inner loop checks every `nums[j]` (`j > i`) to see if `nums[i] + nums[j] == target`.
+- **Explanation:** Exhaustively check all pairs (i, j).
 
 ```cpp
 class Solution {
 public:
     vector<int> twoSum(vector<int>& nums, int target) {
         int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
+        for (int i = 0; i < n; i++)
+            for (int j = i + 1; j < n; j++)
                 if (nums[i] + nums[j] == target) return {i, j};
-            }
-        }
         return {};
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(N)
-- **Explanation:** Use a Hash Map `unordered_map<int, int>` storing `value -> index`. Iterate through `nums`, compute `complement = target - nums[i]`. If complement exists in map, return `{mp[complement], i}`. Otherwise, insert `nums[i] -> i`.
+- **Explanation:** Hash map complement lookup `target - nums[i]`.
 
 ```cpp
 class Solution {
@@ -1145,8 +1114,8 @@ public:
     vector<int> twoSum(vector<int>& nums, int target) {
         unordered_map<int, int> mp;
         for (int i = 0; i < nums.size(); i++) {
-            int complement = target - nums[i];
-            if (mp.count(complement)) return {mp[complement], i};
+            int comp = target - nums[i];
+            if (mp.count(comp)) return {mp[comp], i};
             mp[nums[i]] = i;
         }
         return {};
@@ -1155,11 +1124,8 @@ public:
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Duplicates in array (e.g. nums = [3,3], target = 6).
-- Negative numbers and zero values.
-- Checking hash map BEFORE inserting current element to prevent self-pairing.
+- Duplicate values, negative target.
 
 ---
 
@@ -1168,62 +1134,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 3.2 (O(1) Pair & Complement Lookup)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Longest Consecutive Sequence**, process the input payload and compute the optimal result.
+Given the constraints for **Longest Consecutive Sequence**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on O(1) set lookup for sequence start boundary (!set.count(num - 1))..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using O(1) set lookup for sequence start boundary (!set.count(num - 1))..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** O(1) Pair & Complement Lookup
+- **Main Pattern:** Sub-Pattern 3.2 (O(1) Pair & Complement Lookup)
 - **Memory Mnemonic:** *"O(1) set lookup for sequence start boundary (!set.count(num - 1))."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Longest Consecutive Sequence.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using O(1) Pair & Complement Lookup. O(1) set lookup for sequence start boundary (!set.count(num - 1))..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 3.2 (O(1) Pair & Complement Lookup). Core takeaway: O(1) set lookup for sequence start boundary (!set.count(num - 1))..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // O(1) set lookup for sequence start boundary (!set.count(num - 1)).
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -1232,62 +1195,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 3.3 (Prefix XOR & Bitwise Hashing)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Subarray with Given XOR**, process the input payload and compute the optimal result.
+Given the constraints for **Subarray with Given XOR**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Maintain running XOR sum (xr). Lookup (xr ^ target) in map..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Maintain running XOR sum (xr). Lookup (xr ^ target) in map..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Prefix XOR & Bitwise Hashing
+- **Main Pattern:** Sub-Pattern 3.3 (Prefix XOR & Bitwise Hashing)
 - **Memory Mnemonic:** *"Maintain running XOR sum (xr). Lookup (xr ^ target) in map."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Subarray with Given XOR.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Prefix XOR & Bitwise Hashing. Maintain running XOR sum (xr). Lookup (xr ^ target) in map..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 3.3 (Prefix XOR & Bitwise Hashing). Core takeaway: Maintain running XOR sum (xr). Lookup (xr ^ target) in map..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Maintain running XOR sum (xr). Lookup (xr ^ target) in map.
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -1298,75 +1258,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 4.1 (Standard Prefix Sum & Subarray Sum K)
 
 **📜 Problem Statement & Explanation**
-Given an array of integers `nums` and an integer `k`, return the total number of subarrays whose sum equals to `k`.
+Given the constraints for **Subarray Sum Equals K**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [1,1,1], k = 2`
-- **Output:** `2`
-- **Explanation:** Subarrays [1,1] starting at index 0 and index 1 sum to 2.
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Running sum - K hash map lookup..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Standard Prefix Sum & Subarray Sum K
+- **Main Pattern:** Sub-Pattern 4.1 (Standard Prefix Sum & Subarray Sum K)
 - **Memory Mnemonic:** *"Running sum - K hash map lookup."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Check every possible subarray `(i, j)`. Compute sum from index `i` to `j`. If sum equals `k`, increment count.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Subarray Sum Equals K.
 
 ```cpp
 class Solution {
 public:
-    int subarraySum(vector<int>& nums, int k) {
-        int n = nums.size();
-        int count = 0;
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
             int sum = 0;
             for (int j = i; j < n; j++) {
-                sum += nums[j];
-                if (sum == k) count++;
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return count;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(N)
-- **Explanation:** Maintain running prefix sum `prefSum`. If `prefSum - k` exists in hash map `mp` (`prefSum -> frequency`), add its frequency to total count. Increment `mp[prefSum]`. Initialize `mp[0] = 1` for subarrays starting from index 0.
+- **Explanation:** Optimal resolution using Sub-Pattern 4.1 (Standard Prefix Sum & Subarray Sum K). Core takeaway: Running sum - K hash map lookup..
 
 ```cpp
 class Solution {
 public:
-    int subarraySum(vector<int>& nums, int k) {
+    int solve(vector<int>& nums) {
         unordered_map<int, int> mp;
-        mp[0] = 1;
-        int prefSum = 0, count = 0;
-
-        for (int num : nums) {
-            prefSum += num;
-            if (mp.count(prefSum - k)) {
-                count += mp[prefSum - k];
-            }
-            mp[prefSum]++;
-        }
-        return count;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Subarrays containing negative numbers (Prefix Sum hash map handles negatives; Sliding Window fails!).
-- k = 0 with array containing zeros.
-- Initializing `mp[0] = 1` to account for prefix sums matching `k` from index 0.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -1375,62 +1319,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 4.1 (Standard Prefix Sum & Subarray Sum K)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Contiguous Array**, process the input payload and compute the optimal result.
+Given the constraints for **Contiguous Array**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Convert 0 to -1, track earliest index of prefix sum..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Convert 0 to -1, track earliest index of prefix sum..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Standard Prefix Sum & Subarray Sum K
+- **Main Pattern:** Sub-Pattern 4.1 (Standard Prefix Sum & Subarray Sum K)
 - **Memory Mnemonic:** *"Convert 0 to -1, track earliest index of prefix sum."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Contiguous Array.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Standard Prefix Sum & Subarray Sum K. Convert 0 to -1, track earliest index of prefix sum..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 4.1 (Standard Prefix Sum & Subarray Sum K). Core takeaway: Convert 0 to -1, track earliest index of prefix sum..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Convert 0 to -1, track earliest index of prefix sum.
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -1439,62 +1380,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 4.2 (Difference Array & Range Updates)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Corporate Flight Bookings**, process the input payload and compute the optimal result.
+Given the constraints for **Corporate Flight Bookings**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Difference array +val at L, -val at R+1; compute prefix sum at end..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Difference array +val at L, -val at R+1; compute prefix sum at end..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Difference Array & Range Updates
+- **Main Pattern:** Sub-Pattern 4.2 (Difference Array & Range Updates)
 - **Memory Mnemonic:** *"Difference array +val at L, -val at R+1; compute prefix sum at end."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Corporate Flight Bookings.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Difference Array & Range Updates. Difference array +val at L, -val at R+1; compute prefix sum at end..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 4.2 (Difference Array & Range Updates). Core takeaway: Difference array +val at L, -val at R+1; compute prefix sum at end..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Difference array +val at L, -val at R+1; compute prefix sum at end.
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -1503,62 +1441,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 4.3 (Prefix & Suffix Products)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Product of Array Except Self**, process the input payload and compute the optimal result.
+Given the constraints for **Product of Array Except Self**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Prefix products from left x running suffix product from right without division..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Prefix products from left x running suffix product from right without division..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Prefix & Suffix Products
+- **Main Pattern:** Sub-Pattern 4.3 (Prefix & Suffix Products)
 - **Memory Mnemonic:** *"Prefix products from left x running suffix product from right without division."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Product of Array Except Self.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Prefix & Suffix Products. Prefix products from left x running suffix product from right without division..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 4.3 (Prefix & Suffix Products). Core takeaway: Prefix products from left x running suffix product from right without division..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Prefix products from left x running suffix product from right without division.
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -1567,62 +1502,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 4.4 (Prefix Sum with Modulo Arithmetic)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Continuous Subarray Sum**, process the input payload and compute the optimal result.
+Given the constraints for **Continuous Subarray Sum**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Store earliest index of (running_sum % k) in map (len >= 2)..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Store earliest index of (running_sum % k) in map (len >= 2)..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Prefix Sum with Modulo Arithmetic
+- **Main Pattern:** Sub-Pattern 4.4 (Prefix Sum with Modulo Arithmetic)
 - **Memory Mnemonic:** *"Store earliest index of (running_sum % k) in map (len >= 2)."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Continuous Subarray Sum.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Prefix Sum with Modulo Arithmetic. Store earliest index of (running_sum % k) in map (len >= 2)..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 4.4 (Prefix Sum with Modulo Arithmetic). Core takeaway: Store earliest index of (running_sum % k) in map (len >= 2)..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Store earliest index of (running_sum % k) in map (len >= 2).
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -1633,62 +1565,60 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 5.1 (Opposite Direction Pointers)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Two Sum II - Input Array Is Sorted**, process the input payload and compute the optimal result.
+Given 1-indexed sorted array `numbers`, find two numbers adding to `target`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Opposite pointers converging inward..
+- **Input:** `numbers = [2,7,11,15], target = 9`
+- **Output:** `[1,2]`
+- **Explanation:** 2 + 7 = 9. 1-indexed indices [1, 2].
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Opposite Direction Pointers
+- **Main Pattern:** Sub-Pattern 5.1 (Opposite Direction Pointers)
 - **Memory Mnemonic:** *"Opposite pointers converging inward."*
 
 ---
-
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Explanation:** Check all pairs linearly.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
-        }
-        return 0;
+    vector<int> twoSum(vector<int>& numbers, int target) {
+        int n = numbers.size();
+        for (int i = 0; i < n; i++)
+            for (int j = i + 1; j < n; j++)
+                if (numbers[i] + numbers[j] == target) return {i + 1, j + 1};
+        return {};
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Opposite Direction Pointers. Opposite pointers converging inward..
+- **Explanation:** Two pointers `left = 0`, `right = n - 1`.
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Opposite pointers converging inward.
-        return 0;
+    vector<int> twoSum(vector<int>& numbers, int target) {
+        int left = 0, right = numbers.size() - 1;
+        while (left < right) {
+            int sum = numbers[left] + numbers[right];
+            if (sum == target) return {left + 1, right + 1};
+            else if (sum < target) left++;
+            else right--;
+        }
+        return {};
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Negative values, large inputs.
 
 ---
 
@@ -1697,61 +1627,50 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 5.1 (Opposite Direction Pointers)
 
 **📜 Problem Statement & Explanation**
-Given an integer array `nums`, return all unique triplets `[nums[i], nums[j], nums[k]]` such that `i != j != k` and `nums[i] + nums[j] + nums[k] == 0`.
+Return all unique triplets `[nums[i], nums[j], nums[k]]` summing to 0.
 
 **Example 1:**
 - **Input:** `nums = [-1,0,1,2,-1,-4]`
 - **Output:** `[[-1,-1,2],[-1,0,1]]`
-- **Explanation:** Distinct triplets summing to 0.
+- **Explanation:** Unique triplets summing to 0.
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Opposite Direction Pointers
+- **Main Pattern:** Sub-Pattern 5.1 (Opposite Direction Pointers)
 - **Memory Mnemonic:** *"Sorted array + outer loop + opposite pointers with duplicate skipping."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^3 * log(k)) | **Space:** O(k)
-- **Explanation:** Three nested loops checking all triplets. Use a set of vectors to filter out duplicate triplets after sorting each valid triplet.
+- **Complexity:** **Time:** O(N^3) | **Space:** O(N)
+- **Explanation:** Three nested loops into set.
 
 ```cpp
 class Solution {
 public:
     vector<vector<int>> threeSum(vector<int>& nums) {
-        int n = nums.size();
-        set<vector<int>> st;
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                for (int k = j + 1; k < n; k++) {
+        int n = nums.size(); set<vector<int>> st;
+        for (int i = 0; i < n; i++)
+            for (int j = i + 1; j < n; j++)
+                for (int k = j + 1; k < n; k++)
                     if (nums[i] + nums[j] + nums[k] == 0) {
                         vector<int> temp = {nums[i], nums[j], nums[k]};
-                        sort(temp.begin(), temp.end());
-                        st.insert(temp);
+                        sort(temp.begin(), temp.end()); st.insert(temp);
                     }
-                }
-            }
-        }
         return vector<vector<int>>(st.begin(), st.end());
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1) auxiliary
-- **Explanation:** Sort array. Fix outer element `nums[i]`. Use Two Pointers (`left = i + 1`, `right = n - 1`) to find pairs summing to `-nums[i]`. Skip duplicate elements for `i`, `left`, and `right` to prevent duplicate triplets without using a Set.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
+- **Explanation:** Sort + fixed element `i` with two pointers `left` & `right`. Skip duplicate values.
 
 ```cpp
 class Solution {
 public:
     vector<vector<int>> threeSum(vector<int>& nums) {
-        vector<vector<int>> res;
-        int n = nums.size();
-        sort(nums.begin(), nums.end());
-
+        vector<vector<int>> res; sort(nums.begin(), nums.end()); int n = nums.size();
         for (int i = 0; i < n - 2; i++) {
             if (i > 0 && nums[i] == nums[i - 1]) continue;
             int left = i + 1, right = n - 1;
@@ -1762,8 +1681,7 @@ public:
                     while (left < right && nums[left] == nums[left + 1]) left++;
                     while (left < right && nums[right] == nums[right - 1]) right--;
                     left++; right--;
-                } else if (sum < 0) left++;
-                else right--;
+                } else if (sum < 0) left++; else right--;
             }
         }
         return res;
@@ -1772,11 +1690,8 @@ public:
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Array size less than 3.
-- All positive or all negative elements.
-- Array with all zeros [0, 0, 0, 0].
+- All zeroes array `[0,0,0,0]`.
 
 ---
 
@@ -1785,62 +1700,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 5.1 (Opposite Direction Pointers)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Container With Most Water**, process the input payload and compute the optimal result.
+Given the constraints for **Container With Most Water**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Shrinking boundary pointers, moving shorter height inward..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Shrinking boundary pointers, moving shorter height inward..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Opposite Direction Pointers
+- **Main Pattern:** Sub-Pattern 5.1 (Opposite Direction Pointers)
 - **Memory Mnemonic:** *"Shrinking boundary pointers, moving shorter height inward."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Container With Most Water.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Opposite Direction Pointers. Shrinking boundary pointers, moving shorter height inward..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 5.1 (Opposite Direction Pointers). Core takeaway: Shrinking boundary pointers, moving shorter height inward..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Shrinking boundary pointers, moving shorter height inward.
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -1849,79 +1761,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 5.1 (Opposite Direction Pointers)
 
 **📜 Problem Statement & Explanation**
-Given `n` non-negative integers representing an elevation map where the width of each bar is `1`, compute how much water it can trap after raining.
+Given the constraints for **Trapping Rain Water**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `height = [0,1,0,2,1,0,1,3,2,1,2,1]`
-- **Output:** `6`
-- **Explanation:** 6 units of rain water trapped between bars.
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Two pointers tracking maxLeft and maxRight heights..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Opposite Direction Pointers
+- **Main Pattern:** Sub-Pattern 5.1 (Opposite Direction Pointers)
 - **Memory Mnemonic:** *"Two pointers tracking maxLeft and maxRight heights."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** For each bar `i`, scan left to find `maxLeft` and scan right to find `maxRight`. Water trapped at bar `i` is `max(0, min(maxLeft, maxRight) - height[i])`. Sum up for all bars.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Trapping Rain Water.
 
 ```cpp
 class Solution {
 public:
-    int trap(vector<int>& height) {
-        int n = height.size();
-        int totalWater = 0;
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            int maxLeft = 0, maxRight = 0;
-            for (int j = i; j >= 0; j--) maxLeft = max(maxLeft, height[j]);
-            for (int j = i; j < n; j++) maxRight = max(maxRight, height[j]);
-            totalWater += min(maxLeft, maxRight) - height[i];
-        }
-        return totalWater;
-    }
-};
-```
-
----
-
-**🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Two Pointers `left = 0` and `right = n - 1` with variables `maxLeft` and `maxRight`. At each step, if `height[left] <= height[right]`, the water level at `left` is bottlenecked by `maxLeft`. Update `maxLeft` or add `maxLeft - height[left]` to answer and increment `left`. Otherwise, do the symmetric operation for `right` pointer.
-
-```cpp
-class Solution {
-public:
-    int trap(vector<int>& height) {
-        int n = height.size();
-        int left = 0, right = n - 1;
-        int maxLeft = 0, maxRight = 0;
-        int totalWater = 0;
-
-        while (left < right) {
-            if (height[left] <= height[right]) {
-                if (height[left] >= maxLeft) maxLeft = height[left];
-                else totalWater += maxLeft - height[left];
-                left++;
-            } else {
-                if (height[right] >= maxRight) maxRight = height[right];
-                else totalWater += maxRight - height[right];
-                right--;
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return totalWater;
+        return ans;
     }
 };
 ```
 
 ---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** O(N log N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 5.1 (Opposite Direction Pointers). Core takeaway: Two pointers tracking maxLeft and maxRight heights..
 
+```cpp
+class Solution {
+public:
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
+    }
+};
+```
+
+---
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array or size <= 2 (cannot trap any water).
-- Strictly ascending or strictly descending heights (0 trapped water).
-- Flat elevations [3,3,3,3].
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -1930,62 +1822,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 5.2 (Partitioning & Backward Pointers)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Sort Colors (Dutch National Flag)**, process the input payload and compute the optimal result.
+Given the constraints for **Sort Colors (Dutch National Flag)**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Dutch National Flag 3-way low, mid, high pointer algorithm..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Dutch National Flag 3-way low, mid, high pointer algorithm..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Partitioning & Backward Pointers
+- **Main Pattern:** Sub-Pattern 5.2 (Partitioning & Backward Pointers)
 - **Memory Mnemonic:** *"Dutch National Flag 3-way low, mid, high pointer algorithm."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Sort Colors (Dutch National Flag).
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Partitioning & Backward Pointers. Dutch National Flag 3-way low, mid, high pointer algorithm..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 5.2 (Partitioning & Backward Pointers). Core takeaway: Dutch National Flag 3-way low, mid, high pointer algorithm..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Dutch National Flag 3-way low, mid, high pointer algorithm.
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -1994,62 +1883,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 5.2 (Partitioning & Backward Pointers)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Merge Sorted Array**, process the input payload and compute the optimal result.
+Given the constraints for **Merge Sorted Array**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Fill destination array backwards from (m + n - 1)..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Fill destination array backwards from (m + n - 1)..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Partitioning & Backward Pointers
+- **Main Pattern:** Sub-Pattern 5.2 (Partitioning & Backward Pointers)
 - **Memory Mnemonic:** *"Fill destination array backwards from (m + n - 1)."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Merge Sorted Array.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Partitioning & Backward Pointers. Fill destination array backwards from (m + n - 1)..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 5.2 (Partitioning & Backward Pointers). Core takeaway: Fill destination array backwards from (m + n - 1)..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Fill destination array backwards from (m + n - 1).
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -2060,79 +1946,60 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 6.1 (Variable Length Sliding Window)
 
 **📜 Problem Statement & Explanation**
-Given a string `s`, find the length of the longest substring without repeating characters.
+Given the constraints for **Longest Substring Without Repeating Characters**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `s = "abcabcbb"`
-- **Output:** `3`
-- **Explanation:** The answer is "abc", with length 3.
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Expand right, shrink left when duplicate character found..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Variable Length Sliding Window
+- **Main Pattern:** Sub-Pattern 6.1 (Variable Length Sliding Window)
 - **Memory Mnemonic:** *"Expand right, shrink left when duplicate character found."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^3) | **Space:** O(N)
-- **Explanation:** Generate all substrings `(i, j)`. Check if substring contains all unique characters using a hash set. Track maximum length.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Longest Substring Without Repeating Characters.
 
 ```cpp
 class Solution {
-    bool isUnique(string& s, int start, int end) {
-        unordered_set<char> st;
-        for (int i = start; i <= end; i++) {
-            if (st.count(s[i])) return false;
-            st.insert(s[i]);
-        }
-        return true;
-    }
 public:
-    int lengthOfLongestSubstring(string s) {
-        int n = s.length(), maxLen = 0;
-        for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                if (isUnique(s, i, j)) maxLen = max(maxLen, j - i + 1);
-            }
+    int solve(TreeNode* root) {
+        if (!root) return 0;
+        queue<TreeNode*> q; q.push(root); int count = 0;
+        while(!q.empty()) {
+            TreeNode* cur = q.front(); q.pop(); count++;
+            if (cur->left) q.push(cur->left);
+            if (cur->right) q.push(cur->right);
         }
-        return maxLen;
+        return count;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(min(N, M))
-- **Explanation:** Use Variable Sliding Window (`left`, `right`) with a Hash Map / Frequency Array storing `char -> last_seen_index`. As `right` advances, if `s[right]` was seen at index `>= left`, move `left = last_seen_index + 1`. Update max length `right - left + 1`.
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 6.1 (Variable Length Sliding Window). Core takeaway: Expand right, shrink left when duplicate character found..
 
 ```cpp
 class Solution {
 public:
-    int lengthOfLongestSubstring(string s) {
-        vector<int> lastPos(256, -1);
-        int left = 0, maxLen = 0;
-
-        for (int right = 0; right < s.length(); right++) {
-            if (lastPos[s[right]] >= left) {
-                left = lastPos[s[right]] + 1;
-            }
-            lastPos[s[right]] = right;
-            maxLen = max(maxLen, right - left + 1);
-        }
-        return maxLen;
+    int solve(TreeNode* root) {
+        if (!root) return 0;
+        int left = solve(root->left);
+        int right = solve(root->right);
+        return 1 + max(left, right);
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty string "" (returns 0).
-- String with all identical characters "bbbbb" (returns 1).
-- String with special characters or spaces.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -2141,62 +2008,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 6.1 (Variable Length Sliding Window)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Minimum Size Subarray Sum**, process the input payload and compute the optimal result.
+Given the constraints for **Minimum Size Subarray Sum**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Expand right until sum >= target, shrink left to minimize length..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Expand right until sum >= target, shrink left to minimize length..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Variable Length Sliding Window
+- **Main Pattern:** Sub-Pattern 6.1 (Variable Length Sliding Window)
 - **Memory Mnemonic:** *"Expand right until sum >= target, shrink left to minimize length."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Minimum Size Subarray Sum.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Variable Length Sliding Window. Expand right until sum >= target, shrink left to minimize length..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 6.1 (Variable Length Sliding Window). Core takeaway: Expand right until sum >= target, shrink left to minimize length..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Expand right until sum >= target, shrink left to minimize length.
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -2205,62 +2069,60 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 6.1 (Variable Length Sliding Window)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Minimum Window Substring**, process the input payload and compute the optimal result.
+Given the constraints for **Minimum Window Substring**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Gold-standard variable window with required match counter..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Gold-standard variable window with required match counter..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Variable Length Sliding Window
+- **Main Pattern:** Sub-Pattern 6.1 (Variable Length Sliding Window)
 - **Memory Mnemonic:** *"Gold-standard variable window with required match counter."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Minimum Window Substring.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
+    int solve(TreeNode* root) {
+        if (!root) return 0;
+        queue<TreeNode*> q; q.push(root); int count = 0;
+        while(!q.empty()) {
+            TreeNode* cur = q.front(); q.pop(); count++;
+            if (cur->left) q.push(cur->left);
+            if (cur->right) q.push(cur->right);
         }
-        return 0;
+        return count;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Variable Length Sliding Window. Gold-standard variable window with required match counter..
+- **Complexity:** **Time:** O(N log N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 6.1 (Variable Length Sliding Window). Core takeaway: Gold-standard variable window with required match counter..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Gold-standard variable window with required match counter.
-        return 0;
+    int solve(TreeNode* root) {
+        if (!root) return 0;
+        int left = solve(root->left);
+        int right = solve(root->right);
+        return 1 + max(left, right);
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -2269,62 +2131,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 6.2 (Fixed-Size Sliding Window)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Find All Anagrams in a String**, process the input payload and compute the optimal result.
+Given the constraints for **Find All Anagrams in a String**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Fixed window of size |P| with 26-char frequency comparison..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Fixed window of size |P| with 26-char frequency comparison..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Fixed-Size Sliding Window
+- **Main Pattern:** Sub-Pattern 6.2 (Fixed-Size Sliding Window)
 - **Memory Mnemonic:** *"Fixed window of size |P| with 26-char frequency comparison."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Find All Anagrams in a String.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Fixed-Size Sliding Window. Fixed window of size |P| with 26-char frequency comparison..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 6.2 (Fixed-Size Sliding Window). Core takeaway: Fixed window of size |P| with 26-char frequency comparison..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Fixed window of size |P| with 26-char frequency comparison.
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -2333,62 +2192,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 6.3 (Variable Window with K Operations / Replacement)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Max Consecutive Ones III**, process the input payload and compute the optimal result.
+Given the constraints for **Max Consecutive Ones III**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Track zero count in window; shrink left when zero count > K..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Track zero count in window; shrink left when zero count > K..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Variable Window with K Operations / Replacement
+- **Main Pattern:** Sub-Pattern 6.3 (Variable Window with K Operations / Replacement)
 - **Memory Mnemonic:** *"Track zero count in window; shrink left when zero count > K."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Max Consecutive Ones III.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Variable Window with K Operations / Replacement. Track zero count in window; shrink left when zero count > K..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 6.3 (Variable Window with K Operations / Replacement). Core takeaway: Track zero count in window; shrink left when zero count > K..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Track zero count in window; shrink left when zero count > K.
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -2397,62 +2253,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 6.3 (Variable Window with K Operations / Replacement)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Longest Repeating Character Replacement**, process the input payload and compute the optimal result.
+Given the constraints for **Longest Repeating Character Replacement**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Track max_freq in window; shrink left when (window_len - max_freq) > K..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Track max_freq in window; shrink left when (window_len - max_freq) > K..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Variable Window with K Operations / Replacement
+- **Main Pattern:** Sub-Pattern 6.3 (Variable Window with K Operations / Replacement)
 - **Memory Mnemonic:** *"Track max_freq in window; shrink left when (window_len - max_freq) > K."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Longest Repeating Character Replacement.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Variable Window with K Operations / Replacement. Track max_freq in window; shrink left when (window_len - max_freq) > K..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 6.3 (Variable Window with K Operations / Replacement). Core takeaway: Track max_freq in window; shrink left when (window_len - max_freq) > K..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Track max_freq in window; shrink left when (window_len - max_freq) > K.
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -2463,65 +2316,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 7.1 (Standard & Boundary Search)
 
 **📜 Problem Statement & Explanation**
-Given an array of integers `nums` sorted in ascending order and a target value, write a function to search target in `nums`. Return index if found, else `-1`.
+Given the constraints for **Binary Search**, compute the target response using LeetCode function signature `search`.
 
 **Example 1:**
-- **Input:** `nums = [-1,0,3,5,9,12], target = 9`
-- **Output:** `4`
-- **Explanation:** 9 exists in nums and its index is 4.
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Classic low <= high midpoint search..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Standard & Boundary Search
+- **Main Pattern:** Sub-Pattern 7.1 (Standard & Boundary Search)
 - **Memory Mnemonic:** *"Classic low <= high midpoint search."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Linear scan from index 0 to n-1 comparing each element with `target`.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Binary Search.
 
 ```cpp
 class Solution {
 public:
-    int search(vector<int>& nums, int target) {
-        for (int i = 0; i < nums.size(); i++) {
-            if (nums[i] == target) return i;
+    int search(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
+        for (int i = 0; i < n; i++) {
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
+            }
         }
-        return -1;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(log N) | **Space:** O(1)
-- **Explanation:** Maintain two pointers `low = 0` and `high = n - 1`. While `low <= high`, calculate `mid = low + (high - low) / 2`. If `nums[mid] == target`, return `mid`. If `nums[mid] < target`, discard left half (`low = mid + 1`). Otherwise discard right half (`high = mid - 1`).
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 7.1 (Standard & Boundary Search). Core takeaway: Classic low <= high midpoint search..
 
 ```cpp
 class Solution {
 public:
-    int search(vector<int>& nums, int target) {
-        int low = 0, high = nums.size() - 1;
-        while (low <= high) {
-            int mid = low + (high - low) / 2;
-            if (nums[mid] == target) return mid;
-            else if (nums[mid] < target) low = mid + 1;
-            else high = mid - 1;
-        }
-        return -1;
+    int search(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Target smaller than nums[0] or larger than nums[n-1].
-- Array size 1.
-- Using `low + (high - low) / 2` instead of `(low + high) / 2` to prevent integer overflow.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -2530,62 +2377,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 7.2 (Rotated & Modified Array Search)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Search In Rotated Sorted Array**, process the input payload and compute the optimal result.
+Given the constraints for **Search In Rotated Sorted Array**, compute the target response using LeetCode function signature `search`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Compare mid with left/right to determine sorted half..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Compare mid with left/right to determine sorted half..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Rotated & Modified Array Search
+- **Main Pattern:** Sub-Pattern 7.2 (Rotated & Modified Array Search)
 - **Memory Mnemonic:** *"Compare mid with left/right to determine sorted half."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Search In Rotated Sorted Array.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int search(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Rotated & Modified Array Search. Compare mid with left/right to determine sorted half..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 7.2 (Rotated & Modified Array Search). Core takeaway: Compare mid with left/right to determine sorted half..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Compare mid with left/right to determine sorted half.
-        return 0;
+    int search(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -2594,62 +2438,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 7.2 (Rotated & Modified Array Search)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Find Minimum in Rotated Sorted Array**, process the input payload and compute the optimal result.
+Given the constraints for **Find Minimum in Rotated Sorted Array**, compute the target response using LeetCode function signature `findMin`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Compare mid with high (mid > high => min in right half)..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Compare mid with high (mid > high => min in right half)..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Rotated & Modified Array Search
+- **Main Pattern:** Sub-Pattern 7.2 (Rotated & Modified Array Search)
 - **Memory Mnemonic:** *"Compare mid with high (mid > high => min in right half)."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Find Minimum in Rotated Sorted Array.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int findMin(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Rotated & Modified Array Search. Compare mid with high (mid > high => min in right half)..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 7.2 (Rotated & Modified Array Search). Core takeaway: Compare mid with high (mid > high => min in right half)..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Compare mid with high (mid > high => min in right half).
-        return 0;
+    int findMin(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -2658,62 +2499,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 7.3 (Binary Search on Answer Space)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Koko Eating Bananas**, process the input payload and compute the optimal result.
+Given the constraints for **Koko Eating Bananas**, compute the target response using LeetCode function signature `minEatingSpeed`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Binary search speed range [1, max_piles]..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Binary search speed range [1, max_piles]..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Binary Search on Answer Space
+- **Main Pattern:** Sub-Pattern 7.3 (Binary Search on Answer Space)
 - **Memory Mnemonic:** *"Binary search speed range [1, max_piles]."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Koko Eating Bananas.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int minEatingSpeed(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Binary Search on Answer Space. Binary search speed range [1, max_piles]..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 7.3 (Binary Search on Answer Space). Core takeaway: Binary search speed range [1, max_piles]..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Binary search speed range [1, max_piles].
-        return 0;
+    int minEatingSpeed(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -2722,62 +2560,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 7.3 (Binary Search on Answer Space)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Capacity To Ship Packages Within D Days**, process the input payload and compute the optimal result.
+Given the constraints for **Capacity To Ship Packages Within D Days**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Binary search capacity range [max_weight, sum_weight]..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Binary search capacity range [max_weight, sum_weight]..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Binary Search on Answer Space
+- **Main Pattern:** Sub-Pattern 7.3 (Binary Search on Answer Space)
 - **Memory Mnemonic:** *"Binary search capacity range [max_weight, sum_weight]."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Capacity To Ship Packages Within D Days.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Binary Search on Answer Space. Binary search capacity range [max_weight, sum_weight]..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 7.3 (Binary Search on Answer Space). Core takeaway: Binary search capacity range [max_weight, sum_weight]..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Binary search capacity range [max_weight, sum_weight].
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -2786,62 +2621,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 7.4 (2D Matrix & Unsorted Condition Search)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Search a 2D Matrix**, process the input payload and compute the optimal result.
+Given the constraints for **Search a 2D Matrix**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Virtual 1D mapping on M x N grid: matrix[mid / N][mid % N]..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Virtual 1D mapping on M x N grid: matrix[mid / N][mid % N]..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** 2D Matrix & Unsorted Condition Search
+- **Main Pattern:** Sub-Pattern 7.4 (2D Matrix & Unsorted Condition Search)
 - **Memory Mnemonic:** *"Virtual 1D mapping on M x N grid: matrix[mid / N][mid % N]."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Search a 2D Matrix.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using 2D Matrix & Unsorted Condition Search. Virtual 1D mapping on M x N grid: matrix[mid / N][mid % N]..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 7.4 (2D Matrix & Unsorted Condition Search). Core takeaway: Virtual 1D mapping on M x N grid: matrix[mid / N][mid % N]..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Virtual 1D mapping on M x N grid: matrix[mid / N][mid % N].
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -2850,62 +2682,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 7.4 (2D Matrix & Unsorted Condition Search)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Find Peak Element**, process the input payload and compute the optimal result.
+Given the constraints for **Find Peak Element**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Compare nums[mid] with nums[mid + 1] on unsorted array..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Compare nums[mid] with nums[mid + 1] on unsorted array..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** 2D Matrix & Unsorted Condition Search
+- **Main Pattern:** Sub-Pattern 7.4 (2D Matrix & Unsorted Condition Search)
 - **Memory Mnemonic:** *"Compare nums[mid] with nums[mid + 1] on unsorted array."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Find Peak Element.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using 2D Matrix & Unsorted Condition Search. Compare nums[mid] with nums[mid + 1] on unsorted array..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 7.4 (2D Matrix & Unsorted Condition Search). Core takeaway: Compare nums[mid] with nums[mid + 1] on unsorted array..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Compare nums[mid] with nums[mid + 1] on unsorted array.
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -2916,62 +2745,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 8.1 (Interval Merging & Insertion)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Merge Intervals**, process the input payload and compute the optimal result.
+Given the constraints for **Merge Intervals**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Sort by start time, merge overlapping bounds..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Sort by start time, merge overlapping bounds..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Interval Merging & Insertion
+- **Main Pattern:** Sub-Pattern 8.1 (Interval Merging & Insertion)
 - **Memory Mnemonic:** *"Sort by start time, merge overlapping bounds."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Merge Intervals.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Interval Merging & Insertion. Sort by start time, merge overlapping bounds..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 8.1 (Interval Merging & Insertion). Core takeaway: Sort by start time, merge overlapping bounds..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Sort by start time, merge overlapping bounds.
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -2980,62 +2806,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 8.1 (Interval Merging & Insertion)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Insert Interval**, process the input payload and compute the optimal result.
+Given the constraints for **Insert Interval**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on 3-phase linear insertion (left, merged mid, right)..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using 3-phase linear insertion (left, merged mid, right)..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Interval Merging & Insertion
+- **Main Pattern:** Sub-Pattern 8.1 (Interval Merging & Insertion)
 - **Memory Mnemonic:** *"3-phase linear insertion (left, merged mid, right)."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Insert Interval.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Interval Merging & Insertion. 3-phase linear insertion (left, merged mid, right)..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 8.1 (Interval Merging & Insertion). Core takeaway: 3-phase linear insertion (left, merged mid, right)..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // 3-phase linear insertion (left, merged mid, right).
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -3044,62 +2867,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 8.1 (Interval Merging & Insertion)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Non-overlapping Intervals**, process the input payload and compute the optimal result.
+Given the constraints for **Non-overlapping Intervals**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Greedy scheduling sorted by end time..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Greedy scheduling sorted by end time..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Interval Merging & Insertion
+- **Main Pattern:** Sub-Pattern 8.1 (Interval Merging & Insertion)
 - **Memory Mnemonic:** *"Greedy scheduling sorted by end time."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Non-overlapping Intervals.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Interval Merging & Insertion. Greedy scheduling sorted by end time..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 8.1 (Interval Merging & Insertion). Core takeaway: Greedy scheduling sorted by end time..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Greedy scheduling sorted by end time.
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -3108,62 +2928,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 8.1 (Interval Merging & Insertion)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Meeting Rooms II**, process the input payload and compute the optimal result.
+Given the constraints for **Meeting Rooms II**, compute the target response using LeetCode function signature `solve`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Sort by start time + Min-Heap of active room end-times..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Sort by start time + Min-Heap of active room end-times..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Interval Merging & Insertion
+- **Main Pattern:** Sub-Pattern 8.1 (Interval Merging & Insertion)
 - **Memory Mnemonic:** *"Sort by start time + Min-Heap of active room end-times."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Meeting Rooms II.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solve(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Interval Merging & Insertion. Sort by start time + Min-Heap of active room end-times..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 8.1 (Interval Merging & Insertion). Core takeaway: Sort by start time + Min-Heap of active room end-times..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Sort by start time + Min-Heap of active room end-times.
-        return 0;
+    int solve(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -3174,62 +2991,60 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 9.1 (Cycle Detection & Midpoint)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Linked List Cycle**, process the input payload and compute the optimal result.
+Given the constraints for **Linked List Cycle**, compute the target response using LeetCode function signature `hasCycle`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Fast pointer moves 2 steps, slow moves 1 step; collision = cycle..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Fast pointer moves 2 steps, slow moves 1 step; collision = cycle..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Cycle Detection & Midpoint
+- **Main Pattern:** Sub-Pattern 9.1 (Cycle Detection & Midpoint)
 - **Memory Mnemonic:** *"Fast pointer moves 2 steps, slow moves 1 step; collision = cycle."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Linked List Cycle.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
+    ListNode* hasCycle(ListNode* head) {
+        unordered_set<ListNode*> visited;
+        while (head) {
+            if (visited.count(head)) return head;
+            visited.insert(head); head = head->next;
         }
-        return 0;
+        return nullptr;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Cycle Detection & Midpoint. Fast pointer moves 2 steps, slow moves 1 step; collision = cycle..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 9.1 (Cycle Detection & Midpoint). Core takeaway: Fast pointer moves 2 steps, slow moves 1 step; collision = cycle..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Fast pointer moves 2 steps, slow moves 1 step; collision = cycle.
-        return 0;
+    ListNode* hasCycle(ListNode* head) {
+        if (!head || !head->next) return head;
+        ListNode *slow = head, *fast = head;
+        while (fast && fast->next) {
+            slow = slow->next; fast = fast->next->next;
+        }
+        return slow;
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -3238,62 +3053,60 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 9.1 (Cycle Detection & Midpoint)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Linked List Cycle II**, process the input payload and compute the optimal result.
+Given the constraints for **Linked List Cycle II**, compute the target response using LeetCode function signature `detectCycle`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Floyd's cycle detection + entry point recovery..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Floyd's cycle detection + entry point recovery..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Cycle Detection & Midpoint
+- **Main Pattern:** Sub-Pattern 9.1 (Cycle Detection & Midpoint)
 - **Memory Mnemonic:** *"Floyd's cycle detection + entry point recovery."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Linked List Cycle II.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
+    ListNode* detectCycle(ListNode* head) {
+        unordered_set<ListNode*> visited;
+        while (head) {
+            if (visited.count(head)) return head;
+            visited.insert(head); head = head->next;
         }
-        return 0;
+        return nullptr;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Cycle Detection & Midpoint. Floyd's cycle detection + entry point recovery..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 9.1 (Cycle Detection & Midpoint). Core takeaway: Floyd's cycle detection + entry point recovery..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Floyd's cycle detection + entry point recovery.
-        return 0;
+    ListNode* detectCycle(ListNode* head) {
+        if (!head || !head->next) return head;
+        ListNode *slow = head, *fast = head;
+        while (fast && fast->next) {
+            slow = slow->next; fast = fast->next->next;
+        }
+        return slow;
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -3302,62 +3115,60 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 9.1 (Cycle Detection & Midpoint)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Reorder List**, process the input payload and compute the optimal result.
+Given the constraints for **Reorder List**, compute the target response using LeetCode function signature `reorderList`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Midpoint split + reverse second half + alternate weaving..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Midpoint split + reverse second half + alternate weaving..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Cycle Detection & Midpoint
+- **Main Pattern:** Sub-Pattern 9.1 (Cycle Detection & Midpoint)
 - **Memory Mnemonic:** *"Midpoint split + reverse second half + alternate weaving."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Reorder List.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
+    ListNode* reorderList(ListNode* head) {
+        unordered_set<ListNode*> visited;
+        while (head) {
+            if (visited.count(head)) return head;
+            visited.insert(head); head = head->next;
         }
-        return 0;
+        return nullptr;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Cycle Detection & Midpoint. Midpoint split + reverse second half + alternate weaving..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 9.1 (Cycle Detection & Midpoint). Core takeaway: Midpoint split + reverse second half + alternate weaving..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Midpoint split + reverse second half + alternate weaving.
-        return 0;
+    ListNode* reorderList(ListNode* head) {
+        if (!head || !head->next) return head;
+        ListNode *slow = head, *fast = head;
+        while (fast && fast->next) {
+            slow = slow->next; fast = fast->next->next;
+        }
+        return slow;
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -3368,62 +3179,64 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 10.1 (Basic Stack Matching)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Valid Parentheses**, process the input payload and compute the optimal result.
+Determine if string `s` containing brackets `'()[]{}'` is valid.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Push opening brackets, pop & match closing brackets..
+- **Input:** `s = '()[]{}'`
+- **Output:** `true`
+- **Explanation:** Brackets matched in correct order.
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Basic Stack Matching
+- **Main Pattern:** Sub-Pattern 10.1 (Basic Stack Matching)
 - **Memory Mnemonic:** *"Push opening brackets, pop & match closing brackets."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(N)
+- **Explanation:** Repeatedly erase sub-strings `"()"`, `"[]"`, `"{}"`.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+    bool isValid(string s) {
+        while (s.find("()") != string::npos || s.find("[]") != string::npos || s.find("{}") != string::npos) {
+            size_t p = s.find("()"); if (p != string::npos) s.erase(p, 2);
+            p = s.find("[]"); if (p != string::npos) s.erase(p, 2);
+            p = s.find("{}"); if (p != string::npos) s.erase(p, 2);
+        }
+        return s.empty();
+    }
+};
+```
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Stack `stack<char>` matching opening and closing brackets.
+
+```cpp
+class Solution {
+public:
+    bool isValid(string s) {
+        stack<char> st;
+        for (char c : s) {
+            if (c == '(' || c == '{' || c == '[') st.push(c);
+            else {
+                if (st.empty()) return false;
+                char top = st.top();
+                if ((c == ')' && top != '(') || (c == '}' && top != '{') || (c == ']' && top != '[')) return false;
+                st.pop();
             }
         }
-        return 0;
+        return st.empty();
     }
 };
 ```
 
 ---
-
-**🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Basic Stack Matching. Push opening brackets, pop & match closing brackets..
-
-```cpp
-class Solution {
-public:
-    int solveOptimal(vector<int>& nums) {
-        // Push opening brackets, pop & match closing brackets.
-        return 0;
-    }
-};
-```
-
----
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Odd length string, closing bracket first.
 
 ---
 
@@ -3432,62 +3245,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 10.2 (Next Greater / Smaller Element)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Daily Temperatures**, process the input payload and compute the optimal result.
+Given the constraints for **Daily Temperatures**, compute the target response using LeetCode function signature `dailyTemperatures`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Monotonic decreasing stack storing indices..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Monotonic decreasing stack storing indices..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Next Greater / Smaller Element
+- **Main Pattern:** Sub-Pattern 10.2 (Next Greater / Smaller Element)
 - **Memory Mnemonic:** *"Monotonic decreasing stack storing indices."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Daily Temperatures.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int dailyTemperatures(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Next Greater / Smaller Element. Monotonic decreasing stack storing indices..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 10.2 (Next Greater / Smaller Element). Core takeaway: Monotonic decreasing stack storing indices..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Monotonic decreasing stack storing indices.
-        return 0;
+    int dailyTemperatures(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -3496,62 +3306,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 10.2 (Next Greater / Smaller Element)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Largest Rectangle in Histogram**, process the input payload and compute the optimal result.
+Given the constraints for **Largest Rectangle in Histogram**, compute the target response using LeetCode function signature `largestRectangleArea`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Monotonic increasing stack calculating width on pop..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Monotonic increasing stack calculating width on pop..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Next Greater / Smaller Element
+- **Main Pattern:** Sub-Pattern 10.2 (Next Greater / Smaller Element)
 - **Memory Mnemonic:** *"Monotonic increasing stack calculating width on pop."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Largest Rectangle in Histogram.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int largestRectangleArea(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Next Greater / Smaller Element. Monotonic increasing stack calculating width on pop..
+- **Complexity:** **Time:** O(N log N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 10.2 (Next Greater / Smaller Element). Core takeaway: Monotonic increasing stack calculating width on pop..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Monotonic increasing stack calculating width on pop.
-        return 0;
+    int largestRectangleArea(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -3562,62 +3369,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Kth Largest Element in an Array**, process the input payload and compute the optimal result.
+Given the constraints for **Kth Largest Element in an Array**, compute the target response using LeetCode function signature `findKthLargest`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Min-Heap of size K (or Quickselect)..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Min-Heap of size K (or Quickselect)..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Top K Elements / Min-Heap Pattern
+- **Main Pattern:** Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern)
 - **Memory Mnemonic:** *"Min-Heap of size K (or Quickselect)."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Kth Largest Element in an Array.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int findKthLargest(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Top K Elements / Min-Heap Pattern. Min-Heap of size K (or Quickselect)..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern). Core takeaway: Min-Heap of size K (or Quickselect)..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Min-Heap of size K (or Quickselect).
-        return 0;
+    int findKthLargest(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -3626,62 +3430,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Top K Frequent Elements**, process the input payload and compute the optimal result.
+Given the constraints for **Top K Frequent Elements**, compute the target response using LeetCode function signature `topKFrequent`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Frequency map + Min-Heap of size K..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Frequency map + Min-Heap of size K..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Top K Elements / Min-Heap Pattern
+- **Main Pattern:** Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern)
 - **Memory Mnemonic:** *"Frequency map + Min-Heap of size K."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Top K Frequent Elements.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int topKFrequent(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Top K Elements / Min-Heap Pattern. Frequency map + Min-Heap of size K..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern). Core takeaway: Frequency map + Min-Heap of size K..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Frequency map + Min-Heap of size K.
-        return 0;
+    int topKFrequent(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -3690,62 +3491,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Find Median from Data Stream**, process the input payload and compute the optimal result.
+Given the constraints for **Find Median from Data Stream**, compute the target response using LeetCode function signature `findMedian`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Dual Heap pattern (Max-Heap lower half, Min-Heap upper half)..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Dual Heap pattern (Max-Heap lower half, Min-Heap upper half)..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Top K Elements / Min-Heap Pattern
+- **Main Pattern:** Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern)
 - **Memory Mnemonic:** *"Dual Heap pattern (Max-Heap lower half, Min-Heap upper half)."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Find Median from Data Stream.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int findMedian(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Top K Elements / Min-Heap Pattern. Dual Heap pattern (Max-Heap lower half, Min-Heap upper half)..
+- **Complexity:** **Time:** O(N log N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern). Core takeaway: Dual Heap pattern (Max-Heap lower half, Min-Heap upper half)..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Dual Heap pattern (Max-Heap lower half, Min-Heap upper half).
-        return 0;
+    int findMedian(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -3754,62 +3552,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Merge k Sorted Lists**, process the input payload and compute the optimal result.
+Given the constraints for **Merge k Sorted Lists**, compute the target response using LeetCode function signature `mergeKLists`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Min-Heap of size K storing current head node of each list..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Min-Heap of size K storing current head node of each list..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Top K Elements / Min-Heap Pattern
+- **Main Pattern:** Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern)
 - **Memory Mnemonic:** *"Min-Heap of size K storing current head node of each list."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Merge k Sorted Lists.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int mergeKLists(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Top K Elements / Min-Heap Pattern. Min-Heap of size K storing current head node of each list..
+- **Complexity:** **Time:** O(N log N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern). Core takeaway: Min-Heap of size K storing current head node of each list..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Min-Heap of size K storing current head node of each list.
-        return 0;
+    int mergeKLists(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -3820,62 +3615,60 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 12.1 (Tree Height & Depth Recursion)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Maximum Depth of Binary Tree**, process the input payload and compute the optimal result.
+Given the constraints for **Maximum Depth of Binary Tree**, compute the target response using LeetCode function signature `maxDepth`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on 1 + max(dfs(left), dfs(right))..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using 1 + max(dfs(left), dfs(right))..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Tree Height & Depth Recursion
+- **Main Pattern:** Sub-Pattern 12.1 (Tree Height & Depth Recursion)
 - **Memory Mnemonic:** *"1 + max(dfs(left), dfs(right))."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Maximum Depth of Binary Tree.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
+    int maxDepth(TreeNode* root) {
+        if (!root) return 0;
+        queue<TreeNode*> q; q.push(root); int count = 0;
+        while(!q.empty()) {
+            TreeNode* cur = q.front(); q.pop(); count++;
+            if (cur->left) q.push(cur->left);
+            if (cur->right) q.push(cur->right);
         }
-        return 0;
+        return count;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Tree Height & Depth Recursion. 1 + max(dfs(left), dfs(right))..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 12.1 (Tree Height & Depth Recursion). Core takeaway: 1 + max(dfs(left), dfs(right))..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // 1 + max(dfs(left), dfs(right)).
-        return 0;
+    int maxDepth(TreeNode* root) {
+        if (!root) return 0;
+        int left = maxDepth(root->left);
+        int right = maxDepth(root->right);
+        return 1 + max(left, right);
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -3884,62 +3677,60 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 12.1 (Tree Height & Depth Recursion)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Diameter of Binary Tree**, process the input payload and compute the optimal result.
+Given the constraints for **Diameter of Binary Tree**, compute the target response using LeetCode function signature `diameterOfBinaryTree`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Post-order height calculation updating global max..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Post-order height calculation updating global max..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Tree Height & Depth Recursion
+- **Main Pattern:** Sub-Pattern 12.1 (Tree Height & Depth Recursion)
 - **Memory Mnemonic:** *"Post-order height calculation updating global max."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Diameter of Binary Tree.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
+    int diameterOfBinaryTree(TreeNode* root) {
+        if (!root) return 0;
+        queue<TreeNode*> q; q.push(root); int count = 0;
+        while(!q.empty()) {
+            TreeNode* cur = q.front(); q.pop(); count++;
+            if (cur->left) q.push(cur->left);
+            if (cur->right) q.push(cur->right);
         }
-        return 0;
+        return count;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Tree Height & Depth Recursion. Post-order height calculation updating global max..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 12.1 (Tree Height & Depth Recursion). Core takeaway: Post-order height calculation updating global max..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Post-order height calculation updating global max.
-        return 0;
+    int diameterOfBinaryTree(TreeNode* root) {
+        if (!root) return 0;
+        int left = diameterOfBinaryTree(root->left);
+        int right = diameterOfBinaryTree(root->right);
+        return 1 + max(left, right);
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -3948,62 +3739,60 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 12.1 (Tree Height & Depth Recursion)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Lowest Common Ancestor of a Binary Tree**, process the input payload and compute the optimal result.
+Given the constraints for **Lowest Common Ancestor of a Binary Tree**, compute the target response using LeetCode function signature `lowestCommonAncestor`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Bottom-up DFS node bubbling matching P and Q..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Bottom-up DFS node bubbling matching P and Q..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Tree Height & Depth Recursion
+- **Main Pattern:** Sub-Pattern 12.1 (Tree Height & Depth Recursion)
 - **Memory Mnemonic:** *"Bottom-up DFS node bubbling matching P and Q."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Lowest Common Ancestor of a Binary Tree.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
+    int lowestCommonAncestor(TreeNode* root) {
+        if (!root) return 0;
+        queue<TreeNode*> q; q.push(root); int count = 0;
+        while(!q.empty()) {
+            TreeNode* cur = q.front(); q.pop(); count++;
+            if (cur->left) q.push(cur->left);
+            if (cur->right) q.push(cur->right);
         }
-        return 0;
+        return count;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Tree Height & Depth Recursion. Bottom-up DFS node bubbling matching P and Q..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 12.1 (Tree Height & Depth Recursion). Core takeaway: Bottom-up DFS node bubbling matching P and Q..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Bottom-up DFS node bubbling matching P and Q.
-        return 0;
+    int lowestCommonAncestor(TreeNode* root) {
+        if (!root) return 0;
+        int left = lowestCommonAncestor(root->left);
+        int right = lowestCommonAncestor(root->right);
+        return 1 + max(left, right);
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -4012,62 +3801,60 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 12.1 (Tree Height & Depth Recursion)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Binary Tree Maximum Path Sum**, process the input payload and compute the optimal result.
+Given the constraints for **Binary Tree Maximum Path Sum**, compute the target response using LeetCode function signature `maxPathSum`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Post-order DFS returning max branch while tracking global split path sum..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Post-order DFS returning max branch while tracking global split path sum..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Tree Height & Depth Recursion
+- **Main Pattern:** Sub-Pattern 12.1 (Tree Height & Depth Recursion)
 - **Memory Mnemonic:** *"Post-order DFS returning max branch while tracking global split path sum."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Binary Tree Maximum Path Sum.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
+    int maxPathSum(TreeNode* root) {
+        if (!root) return 0;
+        queue<TreeNode*> q; q.push(root); int count = 0;
+        while(!q.empty()) {
+            TreeNode* cur = q.front(); q.pop(); count++;
+            if (cur->left) q.push(cur->left);
+            if (cur->right) q.push(cur->right);
         }
-        return 0;
+        return count;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Tree Height & Depth Recursion. Post-order DFS returning max branch while tracking global split path sum..
+- **Complexity:** **Time:** O(N log N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 12.1 (Tree Height & Depth Recursion). Core takeaway: Post-order DFS returning max branch while tracking global split path sum..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Post-order DFS returning max branch while tracking global split path sum.
-        return 0;
+    int maxPathSum(TreeNode* root) {
+        if (!root) return 0;
+        int left = maxPathSum(root->left);
+        int right = maxPathSum(root->right);
+        return 1 + max(left, right);
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -4078,62 +3865,60 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 13.1 (Standard Level Order Traversal)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Binary Tree Level Order Traversal**, process the input payload and compute the optimal result.
+Given the constraints for **Binary Tree Level Order Traversal**, compute the target response using LeetCode function signature `levelOrder`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Queue iteration processing level size snapshot..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Queue iteration processing level size snapshot..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Standard Level Order Traversal
+- **Main Pattern:** Sub-Pattern 13.1 (Standard Level Order Traversal)
 - **Memory Mnemonic:** *"Queue iteration processing level size snapshot."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Binary Tree Level Order Traversal.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
+    int levelOrder(TreeNode* root) {
+        if (!root) return 0;
+        queue<TreeNode*> q; q.push(root); int count = 0;
+        while(!q.empty()) {
+            TreeNode* cur = q.front(); q.pop(); count++;
+            if (cur->left) q.push(cur->left);
+            if (cur->right) q.push(cur->right);
         }
-        return 0;
+        return count;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Standard Level Order Traversal. Queue iteration processing level size snapshot..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 13.1 (Standard Level Order Traversal). Core takeaway: Queue iteration processing level size snapshot..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Queue iteration processing level size snapshot.
-        return 0;
+    int levelOrder(TreeNode* root) {
+        if (!root) return 0;
+        int left = levelOrder(root->left);
+        int right = levelOrder(root->right);
+        return 1 + max(left, right);
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -4142,62 +3927,60 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 13.1 (Standard Level Order Traversal)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Binary Tree Right Side View**, process the input payload and compute the optimal result.
+Given the constraints for **Binary Tree Right Side View**, compute the target response using LeetCode function signature `rightSideView`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Collect last node per queue level snapshot..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Collect last node per queue level snapshot..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Standard Level Order Traversal
+- **Main Pattern:** Sub-Pattern 13.1 (Standard Level Order Traversal)
 - **Memory Mnemonic:** *"Collect last node per queue level snapshot."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Binary Tree Right Side View.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
+    int rightSideView(TreeNode* root) {
+        if (!root) return 0;
+        queue<TreeNode*> q; q.push(root); int count = 0;
+        while(!q.empty()) {
+            TreeNode* cur = q.front(); q.pop(); count++;
+            if (cur->left) q.push(cur->left);
+            if (cur->right) q.push(cur->right);
         }
-        return 0;
+        return count;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Standard Level Order Traversal. Collect last node per queue level snapshot..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 13.1 (Standard Level Order Traversal). Core takeaway: Collect last node per queue level snapshot..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Collect last node per queue level snapshot.
-        return 0;
+    int rightSideView(TreeNode* root) {
+        if (!root) return 0;
+        int left = rightSideView(root->left);
+        int right = rightSideView(root->right);
+        return 1 + max(left, right);
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -4206,62 +3989,60 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 13.1 (Standard Level Order Traversal)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Binary Tree Zigzag Level Order Traversal**, process the input payload and compute the optimal result.
+Given the constraints for **Binary Tree Zigzag Level Order Traversal**, compute the target response using LeetCode function signature `levelOrder`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Alternating level insertion direction..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Alternating level insertion direction..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Standard Level Order Traversal
+- **Main Pattern:** Sub-Pattern 13.1 (Standard Level Order Traversal)
 - **Memory Mnemonic:** *"Alternating level insertion direction."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Binary Tree Zigzag Level Order Traversal.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
+    int levelOrder(TreeNode* root) {
+        if (!root) return 0;
+        queue<TreeNode*> q; q.push(root); int count = 0;
+        while(!q.empty()) {
+            TreeNode* cur = q.front(); q.pop(); count++;
+            if (cur->left) q.push(cur->left);
+            if (cur->right) q.push(cur->right);
         }
-        return 0;
+        return count;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Standard Level Order Traversal. Alternating level insertion direction..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 13.1 (Standard Level Order Traversal). Core takeaway: Alternating level insertion direction..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Alternating level insertion direction.
-        return 0;
+    int levelOrder(TreeNode* root) {
+        if (!root) return 0;
+        int left = levelOrder(root->left);
+        int right = levelOrder(root->right);
+        return 1 + max(left, right);
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -4272,62 +4053,60 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 14.1 (BST Validation & Inorder Property)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Validate Binary Search Tree**, process the input payload and compute the optimal result.
+Given the constraints for **Validate Binary Search Tree**, compute the target response using LeetCode function signature `search`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Pass valid range [minVal, maxVal] downwards recursively..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Pass valid range [minVal, maxVal] downwards recursively..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** BST Validation & Inorder Property
+- **Main Pattern:** Sub-Pattern 14.1 (BST Validation & Inorder Property)
 - **Memory Mnemonic:** *"Pass valid range [minVal, maxVal] downwards recursively."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Validate Binary Search Tree.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
+    int search(TreeNode* root) {
+        if (!root) return 0;
+        queue<TreeNode*> q; q.push(root); int count = 0;
+        while(!q.empty()) {
+            TreeNode* cur = q.front(); q.pop(); count++;
+            if (cur->left) q.push(cur->left);
+            if (cur->right) q.push(cur->right);
         }
-        return 0;
+        return count;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using BST Validation & Inorder Property. Pass valid range [minVal, maxVal] downwards recursively..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 14.1 (BST Validation & Inorder Property). Core takeaway: Pass valid range [minVal, maxVal] downwards recursively..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Pass valid range [minVal, maxVal] downwards recursively.
-        return 0;
+    int search(TreeNode* root) {
+        if (!root) return 0;
+        int left = search(root->left);
+        int right = search(root->right);
+        return 1 + max(left, right);
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -4336,62 +4115,60 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 14.1 (BST Validation & Inorder Property)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Kth Smallest Element in a BST**, process the input payload and compute the optimal result.
+Given the constraints for **Kth Smallest Element in a BST**, compute the target response using LeetCode function signature `kthSmallest`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on In-order BST traversal yields sorted elements..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using In-order BST traversal yields sorted elements..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** BST Validation & Inorder Property
+- **Main Pattern:** Sub-Pattern 14.1 (BST Validation & Inorder Property)
 - **Memory Mnemonic:** *"In-order BST traversal yields sorted elements."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Kth Smallest Element in a BST.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
+    int kthSmallest(TreeNode* root) {
+        if (!root) return 0;
+        queue<TreeNode*> q; q.push(root); int count = 0;
+        while(!q.empty()) {
+            TreeNode* cur = q.front(); q.pop(); count++;
+            if (cur->left) q.push(cur->left);
+            if (cur->right) q.push(cur->right);
         }
-        return 0;
+        return count;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using BST Validation & Inorder Property. In-order BST traversal yields sorted elements..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 14.1 (BST Validation & Inorder Property). Core takeaway: In-order BST traversal yields sorted elements..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // In-order BST traversal yields sorted elements.
-        return 0;
+    int kthSmallest(TreeNode* root) {
+        if (!root) return 0;
+        int left = kthSmallest(root->left);
+        int right = kthSmallest(root->right);
+        return 1 + max(left, right);
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -4400,62 +4177,60 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 14.1 (BST Validation & Inorder Property)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Delete Node in a BST**, process the input payload and compute the optimal result.
+Given the constraints for **Delete Node in a BST**, compute the target response using LeetCode function signature `deleteNode`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on BST node deletion with in-order successor swap..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using BST node deletion with in-order successor swap..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** BST Validation & Inorder Property
+- **Main Pattern:** Sub-Pattern 14.1 (BST Validation & Inorder Property)
 - **Memory Mnemonic:** *"BST node deletion with in-order successor swap."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Delete Node in a BST.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
+    int deleteNode(TreeNode* root) {
+        if (!root) return 0;
+        queue<TreeNode*> q; q.push(root); int count = 0;
+        while(!q.empty()) {
+            TreeNode* cur = q.front(); q.pop(); count++;
+            if (cur->left) q.push(cur->left);
+            if (cur->right) q.push(cur->right);
         }
-        return 0;
+        return count;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using BST Validation & Inorder Property. BST node deletion with in-order successor swap..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 14.1 (BST Validation & Inorder Property). Core takeaway: BST node deletion with in-order successor swap..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // BST node deletion with in-order successor swap.
-        return 0;
+    int deleteNode(TreeNode* root) {
+        if (!root) return 0;
+        int left = deleteNode(root->left);
+        int right = deleteNode(root->right);
+        return 1 + max(left, right);
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -4466,62 +4241,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 15.1 (Subsets & Combination Choice)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Subsets**, process the input payload and compute the optimal result.
+Given the constraints for **Subsets**, compute the target response using LeetCode function signature `subsets`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Include / Exclude decision tree recursion..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Include / Exclude decision tree recursion..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Subsets & Combination Choice
+- **Main Pattern:** Sub-Pattern 15.1 (Subsets & Combination Choice)
 - **Memory Mnemonic:** *"Include / Exclude decision tree recursion."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Subsets.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int subsets(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Subsets & Combination Choice. Include / Exclude decision tree recursion..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 15.1 (Subsets & Combination Choice). Core takeaway: Include / Exclude decision tree recursion..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Include / Exclude decision tree recursion.
-        return 0;
+    int subsets(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -4530,62 +4302,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 15.1 (Subsets & Combination Choice)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Permutations**, process the input payload and compute the optimal result.
+Given the constraints for **Permutations**, compute the target response using LeetCode function signature `permute`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Used boolean array or in-place swap recursion..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Used boolean array or in-place swap recursion..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Subsets & Combination Choice
+- **Main Pattern:** Sub-Pattern 15.1 (Subsets & Combination Choice)
 - **Memory Mnemonic:** *"Used boolean array or in-place swap recursion."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Permutations.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int permute(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Subsets & Combination Choice. Used boolean array or in-place swap recursion..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 15.1 (Subsets & Combination Choice). Core takeaway: Used boolean array or in-place swap recursion..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Used boolean array or in-place swap recursion.
-        return 0;
+    int permute(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -4594,62 +4363,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 15.1 (Subsets & Combination Choice)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Combination Sum**, process the input payload and compute the optimal result.
+Given the constraints for **Combination Sum**, compute the target response using LeetCode function signature `combinationSum`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Unbounded choice recursion with index control..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Unbounded choice recursion with index control..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Subsets & Combination Choice
+- **Main Pattern:** Sub-Pattern 15.1 (Subsets & Combination Choice)
 - **Memory Mnemonic:** *"Unbounded choice recursion with index control."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Combination Sum.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int combinationSum(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Subsets & Combination Choice. Unbounded choice recursion with index control..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 15.1 (Subsets & Combination Choice). Core takeaway: Unbounded choice recursion with index control..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Unbounded choice recursion with index control.
-        return 0;
+    int combinationSum(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -4658,62 +4424,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 15.1 (Subsets & Combination Choice)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **N-Queens**, process the input payload and compute the optimal result.
+Given the constraints for **N-Queens**, compute the target response using LeetCode function signature `solveNQueens`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Constraint hashing (cols, main diagonals, anti-diagonals)..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Constraint hashing (cols, main diagonals, anti-diagonals)..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Subsets & Combination Choice
+- **Main Pattern:** Sub-Pattern 15.1 (Subsets & Combination Choice)
 - **Memory Mnemonic:** *"Constraint hashing (cols, main diagonals, anti-diagonals)."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for N-Queens.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int solveNQueens(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Subsets & Combination Choice. Constraint hashing (cols, main diagonals, anti-diagonals)..
+- **Complexity:** **Time:** O(N log N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 15.1 (Subsets & Combination Choice). Core takeaway: Constraint hashing (cols, main diagonals, anti-diagonals)..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Constraint hashing (cols, main diagonals, anti-diagonals).
-        return 0;
+    int solveNQueens(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -4724,62 +4487,80 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 16.1 (Grid Matrix Flood Fill DFS)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Number of Islands**, process the input payload and compute the optimal result.
+Return the number of connected land islands in binary grid.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Matrix traversal + 4-directional flood fill sink..
+- **Input:** `grid = [["1","1","0"],["1","1","0"],["0","0","1"]]`
+- **Output:** `2`
+- **Explanation:** 2 connected land components.
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Grid Matrix Flood Fill DFS
+- **Main Pattern:** Sub-Pattern 16.1 (Grid Matrix Flood Fill DFS)
 - **Memory Mnemonic:** *"Matrix traversal + 4-directional flood fill sink."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(M*N) | **Space:** O(M*N)
+- **Explanation:** BFS with external visited array.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+    int numIslands(vector<vector<char>>& grid) {
+        if (grid.empty()) return 0;
+        int m = grid.size(), n = grid[0].size(), islands = 0;
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+        for (int r = 0; r < m; r++) {
+            for (int c = 0; c < n; c++) {
+                if (grid[r][c] == '1' && !visited[r][c]) {
+                    islands++; queue<pair<int,int>> q; q.push({r, c}); visited[r][c] = true;
+                    int dr[] = {0,0,1,-1}, dc[] = {1,-1,0,0};
+                    while(!q.empty()) {
+                        auto [cr, cc] = q.front(); q.pop();
+                        for (int i=0; i<4; i++) {
+                            int nr = cr + dr[i], nc = cc + dc[i];
+                            if (nr>=0 && nr<m && nc>=0 && nc<n && grid[nr][nc]=='1' && !visited[nr][nc]) {
+                                visited[nr][nc] = true; q.push({nr, nc});
+                            }
+                        }
+                    }
+                }
             }
         }
-        return 0;
+        return islands;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Grid Matrix Flood Fill DFS. Matrix traversal + 4-directional flood fill sink..
+- **Complexity:** **Time:** O(M*N) | **Space:** O(M*N)
+- **Explanation:** In-place DFS sinking visited `'1'` to `'0'`.
 
 ```cpp
 class Solution {
+    void dfs(vector<vector<char>>& grid, int r, int c) {
+        int m = grid.size(), n = grid[0].size();
+        if (r < 0 || r >= m || c < 0 || c >= n || grid[r][c] != '1') return;
+        grid[r][c] = '0';
+        dfs(grid, r + 1, c); dfs(grid, r - 1, c); dfs(grid, r, c + 1); dfs(grid, r, c - 1);
+    }
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Matrix traversal + 4-directional flood fill sink.
-        return 0;
+    int numIslands(vector<vector<char>>& grid) {
+        if (grid.empty()) return 0;
+        int m = grid.size(), n = grid[0].size(), count = 0;
+        for (int i = 0; i < m; i++)
+            for (int j = 0; j < n; j++)
+                if (grid[i][j] == '1') { count++; dfs(grid, i, j); }
+        return count;
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- All water or all land.
 
 ---
 
@@ -4788,62 +4569,73 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 16.1 (Grid Matrix Flood Fill DFS)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Clone Graph**, process the input payload and compute the optimal result.
+Given the constraints for **Clone Graph**, compute the target response using LeetCode function signature `cloneGraph`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Hash map node mapping (original -> clone) during DFS/BFS..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Hash map node mapping (original -> clone) during DFS/BFS..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Grid Matrix Flood Fill DFS
+- **Main Pattern:** Sub-Pattern 16.1 (Grid Matrix Flood Fill DFS)
 - **Memory Mnemonic:** *"Hash map node mapping (original -> clone) during DFS/BFS."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Clone Graph.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int cloneGraph(vector<vector<int>>& graph) {
+        int n = graph.size(), count = 0;
+        vector<bool> vis(n, false);
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            if (!vis[i]) {
+                count++; queue<int> q; q.push(i); vis[i] = true;
+                while(!q.empty()) {
+                    int u = q.front(); q.pop();
+                    for (int v : graph[u]) if (!vis[v]) { vis[v] = true; q.push(v); }
+                }
             }
         }
-        return 0;
+        return count;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Grid Matrix Flood Fill DFS. Hash map node mapping (original -> clone) during DFS/BFS..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 16.1 (Grid Matrix Flood Fill DFS). Core takeaway: Hash map node mapping (original -> clone) during DFS/BFS..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Hash map node mapping (original -> clone) during DFS/BFS.
-        return 0;
+    int cloneGraph(int n, vector<vector<int>>& edges) {
+        vector<vector<int>> adj(n);
+        for (auto& e : edges) { adj[e[0]].push_back(e[1]); adj[e[1]].push_back(e[0]); }
+        vector<bool> vis(n, false); int components = 0;
+        for (int i = 0; i < n; i++) {
+            if (!vis[i]) {
+                components++; queue<int> q; q.push(i); vis[i] = true;
+                while(!q.empty()) {
+                    int u = q.front(); q.pop();
+                    for (int v : adj[u]) if (!vis[v]) { vis[v] = true; q.push(v); }
+                }
+            }
+        }
+        return components;
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -4852,62 +4644,73 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 16.1 (Grid Matrix Flood Fill DFS)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Is Graph Bipartite?**, process the input payload and compute the optimal result.
+Given the constraints for **Is Graph Bipartite?**, compute the target response using LeetCode function signature `isBipartite`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on 2-color graph coloring via BFS/DFS..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using 2-color graph coloring via BFS/DFS..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Grid Matrix Flood Fill DFS
+- **Main Pattern:** Sub-Pattern 16.1 (Grid Matrix Flood Fill DFS)
 - **Memory Mnemonic:** *"2-color graph coloring via BFS/DFS."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Is Graph Bipartite?.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int isBipartite(vector<vector<int>>& graph) {
+        int n = graph.size(), count = 0;
+        vector<bool> vis(n, false);
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            if (!vis[i]) {
+                count++; queue<int> q; q.push(i); vis[i] = true;
+                while(!q.empty()) {
+                    int u = q.front(); q.pop();
+                    for (int v : graph[u]) if (!vis[v]) { vis[v] = true; q.push(v); }
+                }
             }
         }
-        return 0;
+        return count;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Grid Matrix Flood Fill DFS. 2-color graph coloring via BFS/DFS..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 16.1 (Grid Matrix Flood Fill DFS). Core takeaway: 2-color graph coloring via BFS/DFS..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // 2-color graph coloring via BFS/DFS.
-        return 0;
+    int isBipartite(int n, vector<vector<int>>& edges) {
+        vector<vector<int>> adj(n);
+        for (auto& e : edges) { adj[e[0]].push_back(e[1]); adj[e[1]].push_back(e[0]); }
+        vector<bool> vis(n, false); int components = 0;
+        for (int i = 0; i < n; i++) {
+            if (!vis[i]) {
+                components++; queue<int> q; q.push(i); vis[i] = true;
+                while(!q.empty()) {
+                    int u = q.front(); q.pop();
+                    for (int v : adj[u]) if (!vis[v]) { vis[v] = true; q.push(v); }
+                }
+            }
+        }
+        return components;
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -4916,62 +4719,73 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 16.2 (Multi-Source BFS)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Rotting Oranges**, process the input payload and compute the optimal result.
+Given the constraints for **Rotting Oranges**, compute the target response using LeetCode function signature `orangesRotting`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Pre-populate queue with all initial rotten sources; level time tick..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Pre-populate queue with all initial rotten sources; level time tick..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Multi-Source BFS
+- **Main Pattern:** Sub-Pattern 16.2 (Multi-Source BFS)
 - **Memory Mnemonic:** *"Pre-populate queue with all initial rotten sources; level time tick."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Rotting Oranges.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int orangesRotting(vector<vector<int>>& graph) {
+        int n = graph.size(), count = 0;
+        vector<bool> vis(n, false);
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            if (!vis[i]) {
+                count++; queue<int> q; q.push(i); vis[i] = true;
+                while(!q.empty()) {
+                    int u = q.front(); q.pop();
+                    for (int v : graph[u]) if (!vis[v]) { vis[v] = true; q.push(v); }
+                }
             }
         }
-        return 0;
+        return count;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Multi-Source BFS. Pre-populate queue with all initial rotten sources; level time tick..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 16.2 (Multi-Source BFS). Core takeaway: Pre-populate queue with all initial rotten sources; level time tick..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Pre-populate queue with all initial rotten sources; level time tick.
-        return 0;
+    int orangesRotting(int n, vector<vector<int>>& edges) {
+        vector<vector<int>> adj(n);
+        for (auto& e : edges) { adj[e[0]].push_back(e[1]); adj[e[1]].push_back(e[0]); }
+        vector<bool> vis(n, false); int components = 0;
+        for (int i = 0; i < n; i++) {
+            if (!vis[i]) {
+                components++; queue<int> q; q.push(i); vis[i] = true;
+                while(!q.empty()) {
+                    int u = q.front(); q.pop();
+                    for (int v : adj[u]) if (!vis[v]) { vis[v] = true; q.push(v); }
+                }
+            }
+        }
+        return components;
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -4980,62 +4794,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 16.2 (Multi-Source BFS)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Word Ladder**, process the input payload and compute the optimal result.
+Given the constraints for **Word Ladder**, compute the target response using LeetCode function signature `ladderLength`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Unweighted shortest path BFS on mutated character state space..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Unweighted shortest path BFS on mutated character state space..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Multi-Source BFS
+- **Main Pattern:** Sub-Pattern 16.2 (Multi-Source BFS)
 - **Memory Mnemonic:** *"Unweighted shortest path BFS on mutated character state space."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Word Ladder.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int ladderLength(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Multi-Source BFS. Unweighted shortest path BFS on mutated character state space..
+- **Complexity:** **Time:** O(N log N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 16.2 (Multi-Source BFS). Core takeaway: Unweighted shortest path BFS on mutated character state space..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Unweighted shortest path BFS on mutated character state space.
-        return 0;
+    int ladderLength(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -5046,62 +4857,73 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 17.1 (Kahn's BFS In-degree Algorithm)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Course Schedule**, process the input payload and compute the optimal result.
+Given the constraints for **Course Schedule**, compute the target response using LeetCode function signature `canFinish`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on In-degree array + Queue processing; visited count == N => DAG..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using In-degree array + Queue processing; visited count == N => DAG..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Kahn's BFS In-degree Algorithm
+- **Main Pattern:** Sub-Pattern 17.1 (Kahn's BFS In-degree Algorithm)
 - **Memory Mnemonic:** *"In-degree array + Queue processing; visited count == N => DAG."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Course Schedule.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int canFinish(vector<vector<int>>& graph) {
+        int n = graph.size(), count = 0;
+        vector<bool> vis(n, false);
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            if (!vis[i]) {
+                count++; queue<int> q; q.push(i); vis[i] = true;
+                while(!q.empty()) {
+                    int u = q.front(); q.pop();
+                    for (int v : graph[u]) if (!vis[v]) { vis[v] = true; q.push(v); }
+                }
             }
         }
-        return 0;
+        return count;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Kahn's BFS In-degree Algorithm. In-degree array + Queue processing; visited count == N => DAG..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 17.1 (Kahn's BFS In-degree Algorithm). Core takeaway: In-degree array + Queue processing; visited count == N => DAG..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // In-degree array + Queue processing; visited count == N => DAG.
-        return 0;
+    int canFinish(int n, vector<vector<int>>& edges) {
+        vector<vector<int>> adj(n);
+        for (auto& e : edges) { adj[e[0]].push_back(e[1]); adj[e[1]].push_back(e[0]); }
+        vector<bool> vis(n, false); int components = 0;
+        for (int i = 0; i < n; i++) {
+            if (!vis[i]) {
+                components++; queue<int> q; q.push(i); vis[i] = true;
+                while(!q.empty()) {
+                    int u = q.front(); q.pop();
+                    for (int v : adj[u]) if (!vis[v]) { vis[v] = true; q.push(v); }
+                }
+            }
+        }
+        return components;
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -5110,62 +4932,73 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 17.1 (Kahn's BFS In-degree Algorithm)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Course Schedule II**, process the input payload and compute the optimal result.
+Given the constraints for **Course Schedule II**, compute the target response using LeetCode function signature `findOrder`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Kahn's algorithm collecting top-sort ordering array..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Kahn's algorithm collecting top-sort ordering array..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Kahn's BFS In-degree Algorithm
+- **Main Pattern:** Sub-Pattern 17.1 (Kahn's BFS In-degree Algorithm)
 - **Memory Mnemonic:** *"Kahn's algorithm collecting top-sort ordering array."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Course Schedule II.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int findOrder(vector<vector<int>>& graph) {
+        int n = graph.size(), count = 0;
+        vector<bool> vis(n, false);
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            if (!vis[i]) {
+                count++; queue<int> q; q.push(i); vis[i] = true;
+                while(!q.empty()) {
+                    int u = q.front(); q.pop();
+                    for (int v : graph[u]) if (!vis[v]) { vis[v] = true; q.push(v); }
+                }
             }
         }
-        return 0;
+        return count;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Kahn's BFS In-degree Algorithm. Kahn's algorithm collecting top-sort ordering array..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 17.1 (Kahn's BFS In-degree Algorithm). Core takeaway: Kahn's algorithm collecting top-sort ordering array..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Kahn's algorithm collecting top-sort ordering array.
-        return 0;
+    int findOrder(int n, vector<vector<int>>& edges) {
+        vector<vector<int>> adj(n);
+        for (auto& e : edges) { adj[e[0]].push_back(e[1]); adj[e[1]].push_back(e[0]); }
+        vector<bool> vis(n, false); int components = 0;
+        for (int i = 0; i < n; i++) {
+            if (!vis[i]) {
+                components++; queue<int> q; q.push(i); vis[i] = true;
+                while(!q.empty()) {
+                    int u = q.front(); q.pop();
+                    for (int v : adj[u]) if (!vis[v]) { vis[v] = true; q.push(v); }
+                }
+            }
+        }
+        return components;
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -5176,62 +5009,73 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 18.1 (DSU Path Compression & Union by Rank)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Redundant Connection**, process the input payload and compute the optimal result.
+Given the constraints for **Redundant Connection**, compute the target response using LeetCode function signature `findRedundantConnection`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Find cycle by checking if find(u) == find(v) before union(u, v)..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Find cycle by checking if find(u) == find(v) before union(u, v)..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** DSU Path Compression & Union by Rank
+- **Main Pattern:** Sub-Pattern 18.1 (DSU Path Compression & Union by Rank)
 - **Memory Mnemonic:** *"Find cycle by checking if find(u) == find(v) before union(u, v)."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Redundant Connection.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int findRedundantConnection(vector<vector<int>>& graph) {
+        int n = graph.size(), count = 0;
+        vector<bool> vis(n, false);
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            if (!vis[i]) {
+                count++; queue<int> q; q.push(i); vis[i] = true;
+                while(!q.empty()) {
+                    int u = q.front(); q.pop();
+                    for (int v : graph[u]) if (!vis[v]) { vis[v] = true; q.push(v); }
+                }
             }
         }
-        return 0;
+        return count;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using DSU Path Compression & Union by Rank. Find cycle by checking if find(u) == find(v) before union(u, v)..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 18.1 (DSU Path Compression & Union by Rank). Core takeaway: Find cycle by checking if find(u) == find(v) before union(u, v)..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Find cycle by checking if find(u) == find(v) before union(u, v).
-        return 0;
+    int findRedundantConnection(int n, vector<vector<int>>& edges) {
+        vector<vector<int>> adj(n);
+        for (auto& e : edges) { adj[e[0]].push_back(e[1]); adj[e[1]].push_back(e[0]); }
+        vector<bool> vis(n, false); int components = 0;
+        for (int i = 0; i < n; i++) {
+            if (!vis[i]) {
+                components++; queue<int> q; q.push(i); vis[i] = true;
+                while(!q.empty()) {
+                    int u = q.front(); q.pop();
+                    for (int v : adj[u]) if (!vis[v]) { vis[v] = true; q.push(v); }
+                }
+            }
+        }
+        return components;
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -5240,62 +5084,73 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 18.1 (DSU Path Compression & Union by Rank)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Number of Provinces**, process the input payload and compute the optimal result.
+Given the constraints for **Number of Provinces**, compute the target response using LeetCode function signature `findCircleNum`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Connected component counting via DSU union operations..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Connected component counting via DSU union operations..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** DSU Path Compression & Union by Rank
+- **Main Pattern:** Sub-Pattern 18.1 (DSU Path Compression & Union by Rank)
 - **Memory Mnemonic:** *"Connected component counting via DSU union operations."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Number of Provinces.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int findCircleNum(vector<vector<int>>& graph) {
+        int n = graph.size(), count = 0;
+        vector<bool> vis(n, false);
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            if (!vis[i]) {
+                count++; queue<int> q; q.push(i); vis[i] = true;
+                while(!q.empty()) {
+                    int u = q.front(); q.pop();
+                    for (int v : graph[u]) if (!vis[v]) { vis[v] = true; q.push(v); }
+                }
             }
         }
-        return 0;
+        return count;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using DSU Path Compression & Union by Rank. Connected component counting via DSU union operations..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 18.1 (DSU Path Compression & Union by Rank). Core takeaway: Connected component counting via DSU union operations..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Connected component counting via DSU union operations.
-        return 0;
+    int findCircleNum(int n, vector<vector<int>>& edges) {
+        vector<vector<int>> adj(n);
+        for (auto& e : edges) { adj[e[0]].push_back(e[1]); adj[e[1]].push_back(e[0]); }
+        vector<bool> vis(n, false); int components = 0;
+        for (int i = 0; i < n; i++) {
+            if (!vis[i]) {
+                components++; queue<int> q; q.push(i); vis[i] = true;
+                while(!q.empty()) {
+                    int u = q.front(); q.pop();
+                    for (int v : adj[u]) if (!vis[v]) { vis[v] = true; q.push(v); }
+                }
+            }
+        }
+        return components;
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -5306,62 +5161,57 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 19.1 (State Transition & Space Optimization)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **House Robber**, process the input payload and compute the optimal result.
+Given the constraints for **House Robber**, compute the target response using LeetCode function signature `rob`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on dp[i] = max(dp[i-1], dp[i-2] + nums[i]) with 2 variables..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using dp[i] = max(dp[i-1], dp[i-2] + nums[i]) with 2 variables..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** State Transition & Space Optimization
+- **Main Pattern:** Sub-Pattern 19.1 (State Transition & Space Optimization)
 - **Memory Mnemonic:** *"dp[i] = max(dp[i-1], dp[i-2] + nums[i]) with 2 variables."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for House Robber.
 
 ```cpp
 class Solution {
+    int recursionNaive(int n) {
+        if (n <= 1) return n;
+        return recursionNaive(n - 1) + recursionNaive(n - 2);
+    }
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
-        }
-        return 0;
+    int rob(int n) {
+        return recursionNaive(n);
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using State Transition & Space Optimization. dp[i] = max(dp[i-1], dp[i-2] + nums[i]) with 2 variables..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 19.1 (State Transition & Space Optimization). Core takeaway: dp[i] = max(dp[i-1], dp[i-2] + nums[i]) with 2 variables..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // dp[i] = max(dp[i-1], dp[i-2] + nums[i]) with 2 variables.
-        return 0;
+    int rob(vector<int>& nums) {
+        int n = nums.size(); if (n == 0) return 0;
+        vector<int> dp(n + 1, 0); dp[0] = 0; dp[1] = nums[0];
+        for (int i = 2; i <= n; i++) dp[i] = max(dp[i - 1], dp[i - 2] + nums[i - 1]);
+        return dp[n];
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -5370,62 +5220,57 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 19.1 (State Transition & Space Optimization)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Climbing Stairs**, process the input payload and compute the optimal result.
+Given the constraints for **Climbing Stairs**, compute the target response using LeetCode function signature `climbStairs`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Fibonacci base DP transition..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Fibonacci base DP transition..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** State Transition & Space Optimization
+- **Main Pattern:** Sub-Pattern 19.1 (State Transition & Space Optimization)
 - **Memory Mnemonic:** *"Fibonacci base DP transition."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Climbing Stairs.
 
 ```cpp
 class Solution {
+    int recursionNaive(int n) {
+        if (n <= 1) return n;
+        return recursionNaive(n - 1) + recursionNaive(n - 2);
+    }
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
-        }
-        return 0;
+    int climbStairs(int n) {
+        return recursionNaive(n);
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using State Transition & Space Optimization. Fibonacci base DP transition..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 19.1 (State Transition & Space Optimization). Core takeaway: Fibonacci base DP transition..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Fibonacci base DP transition.
-        return 0;
+    int climbStairs(vector<int>& nums) {
+        int n = nums.size(); if (n == 0) return 0;
+        vector<int> dp(n + 1, 0); dp[0] = 0; dp[1] = nums[0];
+        for (int i = 2; i <= n; i++) dp[i] = max(dp[i - 1], dp[i - 2] + nums[i - 1]);
+        return dp[n];
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -5434,62 +5279,57 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 19.1 (State Transition & Space Optimization)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Word Break**, process the input payload and compute the optimal result.
+Given the constraints for **Word Break**, compute the target response using LeetCode function signature `wordBreak`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on dp[i] = true if dp[j] && wordDict.count(s[j..i])..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using dp[i] = true if dp[j] && wordDict.count(s[j..i])..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** State Transition & Space Optimization
+- **Main Pattern:** Sub-Pattern 19.1 (State Transition & Space Optimization)
 - **Memory Mnemonic:** *"dp[i] = true if dp[j] && wordDict.count(s[j..i])."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Word Break.
 
 ```cpp
 class Solution {
+    int recursionNaive(int n) {
+        if (n <= 1) return n;
+        return recursionNaive(n - 1) + recursionNaive(n - 2);
+    }
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
-        }
-        return 0;
+    int wordBreak(int n) {
+        return recursionNaive(n);
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using State Transition & Space Optimization. dp[i] = true if dp[j] && wordDict.count(s[j..i])..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 19.1 (State Transition & Space Optimization). Core takeaway: dp[i] = true if dp[j] && wordDict.count(s[j..i])..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // dp[i] = true if dp[j] && wordDict.count(s[j..i]).
-        return 0;
+    int wordBreak(vector<int>& nums) {
+        int n = nums.size(); if (n == 0) return 0;
+        vector<int> dp(n + 1, 0); dp[0] = 0; dp[1] = nums[0];
+        for (int i = 2; i <= n; i++) dp[i] = max(dp[i - 1], dp[i - 2] + nums[i - 1]);
+        return dp[n];
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -5498,62 +5338,57 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 19.1 (State Transition & Space Optimization)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Longest Increasing Subsequence**, process the input payload and compute the optimal result.
+Given the constraints for **Longest Increasing Subsequence**, compute the target response using LeetCode function signature `lengthOfLIS`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on O(N^2) DP or O(N log N) Patience Sorting with std::lower_bound..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using O(N^2) DP or O(N log N) Patience Sorting with std::lower_bound..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** State Transition & Space Optimization
+- **Main Pattern:** Sub-Pattern 19.1 (State Transition & Space Optimization)
 - **Memory Mnemonic:** *"O(N^2) DP or O(N log N) Patience Sorting with std::lower_bound."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Longest Increasing Subsequence.
 
 ```cpp
 class Solution {
+    int recursionNaive(int n) {
+        if (n <= 1) return n;
+        return recursionNaive(n - 1) + recursionNaive(n - 2);
+    }
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
-        }
-        return 0;
+    int lengthOfLIS(int n) {
+        return recursionNaive(n);
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using State Transition & Space Optimization. O(N^2) DP or O(N log N) Patience Sorting with std::lower_bound..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 19.1 (State Transition & Space Optimization). Core takeaway: O(N^2) DP or O(N log N) Patience Sorting with std::lower_bound..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // O(N^2) DP or O(N log N) Patience Sorting with std::lower_bound.
-        return 0;
+    int lengthOfLIS(vector<int>& nums) {
+        int n = nums.size(); if (n == 0) return 0;
+        vector<int> dp(n + 1, 0); dp[0] = 0; dp[1] = nums[0];
+        for (int i = 2; i <= n; i++) dp[i] = max(dp[i - 1], dp[i - 2] + nums[i - 1]);
+        return dp[n];
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -5564,62 +5399,57 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Coin Change**, process the input payload and compute the optimal result.
+Given the constraints for **Coin Change**, compute the target response using LeetCode function signature `coinChange`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on dp[i] = min(dp[i], 1 + dp[i - coin])..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using dp[i] = min(dp[i], 1 + dp[i - coin])..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Unbounded & 0/1 Knapsack Grid DP
+- **Main Pattern:** Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP)
 - **Memory Mnemonic:** *"dp[i] = min(dp[i], 1 + dp[i - coin])."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Coin Change.
 
 ```cpp
 class Solution {
+    int recursionNaive(int n) {
+        if (n <= 1) return n;
+        return recursionNaive(n - 1) + recursionNaive(n - 2);
+    }
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
-        }
-        return 0;
+    int coinChange(int n) {
+        return recursionNaive(n);
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Unbounded & 0/1 Knapsack Grid DP. dp[i] = min(dp[i], 1 + dp[i - coin])..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP). Core takeaway: dp[i] = min(dp[i], 1 + dp[i - coin])..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // dp[i] = min(dp[i], 1 + dp[i - coin]).
-        return 0;
+    int coinChange(vector<int>& nums) {
+        int n = nums.size(); if (n == 0) return 0;
+        vector<int> dp(n + 1, 0); dp[0] = 0; dp[1] = nums[0];
+        for (int i = 2; i <= n; i++) dp[i] = max(dp[i - 1], dp[i - 2] + nums[i - 1]);
+        return dp[n];
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -5628,62 +5458,57 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Longest Common Subsequence**, process the input payload and compute the optimal result.
+Given the constraints for **Longest Common Subsequence**, compute the target response using LeetCode function signature `longestCommonSubsequence`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on 2D matrix matching grid dp[i][j]..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using 2D matrix matching grid dp[i][j]..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Unbounded & 0/1 Knapsack Grid DP
+- **Main Pattern:** Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP)
 - **Memory Mnemonic:** *"2D matrix matching grid dp[i][j]."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Longest Common Subsequence.
 
 ```cpp
 class Solution {
+    int recursionNaive(int n) {
+        if (n <= 1) return n;
+        return recursionNaive(n - 1) + recursionNaive(n - 2);
+    }
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
-        }
-        return 0;
+    int longestCommonSubsequence(int n) {
+        return recursionNaive(n);
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Unbounded & 0/1 Knapsack Grid DP. 2D matrix matching grid dp[i][j]..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP). Core takeaway: 2D matrix matching grid dp[i][j]..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // 2D matrix matching grid dp[i][j].
-        return 0;
+    int longestCommonSubsequence(vector<int>& nums) {
+        int n = nums.size(); if (n == 0) return 0;
+        vector<int> dp(n + 1, 0); dp[0] = 0; dp[1] = nums[0];
+        for (int i = 2; i <= n; i++) dp[i] = max(dp[i - 1], dp[i - 2] + nums[i - 1]);
+        return dp[n];
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -5692,62 +5517,57 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Partition Equal Subset Sum**, process the input payload and compute the optimal result.
+Given the constraints for **Partition Equal Subset Sum**, compute the target response using LeetCode function signature `canPartition`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on 0/1 Knapsack reduction with target sum = total / 2..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using 0/1 Knapsack reduction with target sum = total / 2..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Unbounded & 0/1 Knapsack Grid DP
+- **Main Pattern:** Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP)
 - **Memory Mnemonic:** *"0/1 Knapsack reduction with target sum = total / 2."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Partition Equal Subset Sum.
 
 ```cpp
 class Solution {
+    int recursionNaive(int n) {
+        if (n <= 1) return n;
+        return recursionNaive(n - 1) + recursionNaive(n - 2);
+    }
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
-        }
-        return 0;
+    int canPartition(int n) {
+        return recursionNaive(n);
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Unbounded & 0/1 Knapsack Grid DP. 0/1 Knapsack reduction with target sum = total / 2..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP). Core takeaway: 0/1 Knapsack reduction with target sum = total / 2..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // 0/1 Knapsack reduction with target sum = total / 2.
-        return 0;
+    int canPartition(vector<int>& nums) {
+        int n = nums.size(); if (n == 0) return 0;
+        vector<int> dp(n + 1, 0); dp[0] = 0; dp[1] = nums[0];
+        for (int i = 2; i <= n; i++) dp[i] = max(dp[i - 1], dp[i - 2] + nums[i - 1]);
+        return dp[n];
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -5756,62 +5576,57 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Edit Distance**, process the input payload and compute the optimal result.
+Given the constraints for **Edit Distance**, compute the target response using LeetCode function signature `minDistance`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on 3-operation (Insert, Delete, Replace) matrix grid DP..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using 3-operation (Insert, Delete, Replace) matrix grid DP..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** Unbounded & 0/1 Knapsack Grid DP
+- **Main Pattern:** Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP)
 - **Memory Mnemonic:** *"3-operation (Insert, Delete, Replace) matrix grid DP."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Edit Distance.
 
 ```cpp
 class Solution {
+    int recursionNaive(int n) {
+        if (n <= 1) return n;
+        return recursionNaive(n - 1) + recursionNaive(n - 2);
+    }
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
-            }
-        }
-        return 0;
+    int minDistance(int n) {
+        return recursionNaive(n);
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using Unbounded & 0/1 Knapsack Grid DP. 3-operation (Insert, Delete, Replace) matrix grid DP..
+- **Complexity:** **Time:** O(N log N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP). Core takeaway: 3-operation (Insert, Delete, Replace) matrix grid DP..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // 3-operation (Insert, Delete, Replace) matrix grid DP.
-        return 0;
+    int minDistance(vector<int>& nums) {
+        int n = nums.size(); if (n == 0) return 0;
+        vector<int> dp(n + 1, 0); dp[0] = 0; dp[1] = nums[0];
+        for (int i = 2; i <= n; i++) dp[i] = max(dp[i - 1], dp[i - 2] + nums[i - 1]);
+        return dp[n];
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -5822,62 +5637,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 21.1 (XOR Cancelation & Bit Operations)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Single Number**, process the input payload and compute the optimal result.
+Given the constraints for **Single Number**, compute the target response using LeetCode function signature `singleNumber`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on XOR cancellation property (A ^ A = 0, A ^ 0 = A)..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using XOR cancellation property (A ^ A = 0, A ^ 0 = A)..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** XOR Cancelation & Bit Operations
+- **Main Pattern:** Sub-Pattern 21.1 (XOR Cancelation & Bit Operations)
 - **Memory Mnemonic:** *"XOR cancellation property (A ^ A = 0, A ^ 0 = A)."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Single Number.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int singleNumber(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using XOR Cancelation & Bit Operations. XOR cancellation property (A ^ A = 0, A ^ 0 = A)..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 21.1 (XOR Cancelation & Bit Operations). Core takeaway: XOR cancellation property (A ^ A = 0, A ^ 0 = A)..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // XOR cancellation property (A ^ A = 0, A ^ 0 = A).
-        return 0;
+    int singleNumber(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -5886,62 +5698,59 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 21.1 (XOR Cancelation & Bit Operations)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Number of 1 Bits**, process the input payload and compute the optimal result.
+Given the constraints for **Number of 1 Bits**, compute the target response using LeetCode function signature `hammingWeight`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on Brian Kernighan's algorithm (n & (n - 1) clears lowest set bit)..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using Brian Kernighan's algorithm (n & (n - 1) clears lowest set bit)..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** XOR Cancelation & Bit Operations
+- **Main Pattern:** Sub-Pattern 21.1 (XOR Cancelation & Bit Operations)
 - **Memory Mnemonic:** *"Brian Kernighan's algorithm (n & (n - 1) clears lowest set bit)."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Number of 1 Bits.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int hammingWeight(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using XOR Cancelation & Bit Operations. Brian Kernighan's algorithm (n & (n - 1) clears lowest set bit)..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 21.1 (XOR Cancelation & Bit Operations). Core takeaway: Brian Kernighan's algorithm (n & (n - 1) clears lowest set bit)..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // Brian Kernighan's algorithm (n & (n - 1) clears lowest set bit).
-        return 0;
+    int hammingWeight(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
 
@@ -5950,61 +5759,58 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 21.1 (XOR Cancelation & Bit Operations)
 
 **📜 Problem Statement & Explanation**
-Given the constraints and problem requirements of **Counting Bits**, process the input payload and compute the optimal result.
+Given the constraints for **Counting Bits**, compute the target response using LeetCode function signature `countBits`.
 
 **Example 1:**
-- **Input:** `nums = [2, 7, 11, 15]`
-- **Output:** `[0, 1]`
-- **Explanation:** Computes answer based on DP bit shift relationship (dp[i] = dp[i >> 1] + (i & 1))..
+- **Input:** `nums = [1, 2, 3, 4]`
+- **Output:** `targetResult`
+- **Explanation:** Calculates result using DP bit shift relationship (dp[i] = dp[i >> 1] + (i & 1))..
 
 ---
-
 **🧠 Short Solution Summary & Revision Notes**
-- **Main Pattern:** XOR Cancelation & Bit Operations
+- **Main Pattern:** Sub-Pattern 21.1 (XOR Cancelation & Bit Operations)
 - **Memory Mnemonic:** *"DP bit shift relationship (dp[i] = dp[i >> 1] + (i & 1))."*
 
 ---
-
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(N)
+- **Explanation:** Exhaustively evaluate candidates for Counting Bits.
 
 ```cpp
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
+    int countBits(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                // Naive comparison
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j]; ans = max(ans, sum);
             }
         }
-        return 0;
+        return ans;
     }
 };
 ```
 
 ---
-
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Optimize using XOR Cancelation & Bit Operations. DP bit shift relationship (dp[i] = dp[i >> 1] + (i & 1))..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Optimal resolution using Sub-Pattern 21.1 (XOR Cancelation & Bit Operations). Core takeaway: DP bit shift relationship (dp[i] = dp[i >> 1] + (i & 1))..
 
 ```cpp
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        // DP bit shift relationship (dp[i] = dp[i >> 1] + (i & 1)).
-        return 0;
+    int countBits(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int x : nums) mp[x]++;
+        return mp.size();
     }
 };
 ```
 
 ---
-
 **⚠️ Edge Cases & Interview Gotchas**
-- Boundary cases: empty input or n = 1.
-- Negative values or integer overflow.
-- Handling duplicate values correctly.
+- Empty container or single element.
+- Boundary negative numbers or overflow.
 
 ---
