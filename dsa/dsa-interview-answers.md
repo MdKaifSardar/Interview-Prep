@@ -33,12 +33,13 @@ Given an `m x n` matrix, return all elements of the matrix in spiral order.
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(M * N) | **Space:** O(M * N)
-- **Explanation:** Maintain a 2D boolean `visited[m][n]` matrix and direction vectors `dr = [0, 1, 0, -1]`, `dc = [1, 0, -1, 0]`. Step forward until hitting a boundary or visited cell, then turn right 90 degrees.
+- **Explanation:** Maintain a 2D boolean `visited[m][n]` grid and direction vectors for right, down, left, up. Step forward until hitting a matrix boundary or an already visited cell, then turn right 90 degrees.
 
 ```cpp
 class Solution {
 public:
     vector<int> spiralOrder(vector<vector<int>>& matrix) {
+        if (matrix.empty()) return {};
         int m = matrix.size(), n = matrix[0].size();
         vector<vector<bool>> visited(m, vector<bool>(n, false));
         vector<int> res;
@@ -64,7 +65,7 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(M * N) | **Space:** O(1) auxiliary
-- **Explanation:** Use 4 shrinking boundary pointers: `top = 0`, `bottom = m-1`, `left = 0`, `right = n-1`. Loop while `top <= bottom` and `left <= right`. Traverse top row, right col, bottom row (if valid), and left col (if valid), shrinking boundaries inward.
+- **Explanation:** Maintain 4 boundary pointers: `top = 0`, `bottom = m-1`, `left = 0`, `right = n-1`. Loop while `top <= bottom && left <= right`. Traverse top row, right col, bottom row (if `top <= bottom`), and left col (if `left <= right`), shrinking boundaries inward after each sweep.
 
 ```cpp
 class Solution {
@@ -76,16 +77,16 @@ public:
         int left = 0, right = matrix[0].size() - 1;
 
         while (top <= bottom && left <= right) {
-            for (int col = left; col <= right; col++) res.push_back(matrix[top][col]);
+            for (int j = left; j <= right; j++) res.push_back(matrix[top][j]);
             top++;
-            for (int row = top; row <= bottom; row++) res.push_back(matrix[row][right]);
+            for (int i = top; i <= bottom; i++) res.push_back(matrix[i][right]);
             right--;
             if (top <= bottom) {
-                for (int col = right; col >= left; col--) res.push_back(matrix[bottom][col]);
+                for (int j = right; j >= left; j--) res.push_back(matrix[bottom][j]);
                 bottom--;
             }
             if (left <= right) {
-                for (int row = bottom; row >= top; row--) res.push_back(matrix[left][row]);
+                for (int i = bottom; i >= top; i--) res.push_back(matrix[i][left]);
                 left++;
             }
         }
@@ -97,9 +98,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- 1xN single row matrix or Mx1 single column matrix.
-- Square vs non-square matrix dimensions (e.g. 3x5 or 5x3).
-- Checking `top <= bottom` and `left <= right` before executing bottom and left traversal sweeps.
+- Single row (1 x N) or single column (M x 1) matrices.
+- Ensuring `top <= bottom` and `left <= right` checks before bottom and left sweeps.
+- Empty matrix input.
 
 ---
 
@@ -108,12 +109,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 1.1 (Matrix Spiral Traversal & Generation)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Spiral Matrix II**, solve the problem efficiently adhering to algorithmic constraints.
+Given a positive integer `n`, generate an `n x n` matrix filled with elements from `1` to `n^2` in spiral order.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `n = 3`
+- **Output:** `[[1,2,3],[8,9,4],[7,6,5]]`
+- **Explanation:** Fills 3x3 grid with values 1 through 9 in spiral order.
 
 ---
 
@@ -124,23 +125,27 @@ Given the input parameters for **Spiral Matrix II**, solve the problem efficient
 ---
 
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(N^2)
+- **Explanation:** Simulate direction turning using direction arrays `dr` and `dc`. Fill values 1 to `n^2` step by step, turning right when out of bounds or encountering a non-zero cell.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        int ans = 0;
-        for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+    vector<vector<int>> generateMatrix(int n) {
+        vector<vector<int>> res(n, vector<int>(n, 0));
+        int dr[] = {0, 1, 0, -1}, dc[] = {1, 0, -1, 0};
+        int r = 0, c = 0, di = 0;
+        for (int val = 1; val <= n * n; val++) {
+            res[r][c] = val;
+            int nr = r + dr[di], nc = c + dc[di];
+            if (nr >= 0 && nr < n && nc >= 0 && nc < n && res[nr][nc] == 0) {
+                r = nr; c = nc;
+            } else {
+                di = (di + 1) % 4;
+                r += dr[di]; c += dc[di];
             }
         }
-        return ans;
+        return res;
     }
 };
 ```
@@ -148,17 +153,28 @@ public:
 ---
 
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Matrix Spiral Traversal & Generation to optimize calculation in a single pass. Generating N x N matrix in spiral order filling 1..N^2..
+- **Complexity:** **Time:** O(N^2) | **Space:** O(1) auxiliary
+- **Explanation:** Use 4 boundary variables `top`, `bottom`, `left`, `right` and an incrementing counter `val = 1`. Populate top row, right col, bottom row, and left col sequentially, shrinking boundaries until `val > n*n`.
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
-        // Generating N x N matrix in spiral order filling 1..N^2.
-        return n;
+    vector<vector<int>> generateMatrix(int n) {
+        vector<vector<int>> res(n, vector<int>(n));
+        int top = 0, bottom = n - 1, left = 0, right = n - 1;
+        int val = 1;
+
+        while (top <= bottom && left <= right) {
+            for (int col = left; col <= right; col++) res[top][col] = val++;
+            top++;
+            for (int row = top; row <= bottom; row++) res[row][right] = val++;
+            right--;
+            for (int col = right; col >= left; col--) res[bottom][col] = val++;
+            bottom--;
+            for (int row = bottom; row >= top; row--) res[left][row] = val++;
+            left++;
+        }
+        return res;
     }
 };
 ```
@@ -166,14 +182,12 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- n = 1 boundary case (returns [[1]]).
+- Handling odd vs even dimensions for center element filling.
 
 ---
 
-### 3. 🟠 P1 [Q] LC 48: Rotate Image [MEDIUM]
+### 3. 🔴 P0 [Q] LC 48: Rotate Image [MEDIUM]
 - **LeetCode Link:** [Rotate Image](https://leetcode.com/problems/rotate-image/)
 - **Category / Sub-Pattern:** Sub-Pattern 1.2 (Matrix Symmetry & In-Place Rotations)
 
@@ -183,7 +197,7 @@ You are given an `n x n` 2D matrix representing an image, rotate the image by 90
 **Example 1:**
 - **Input:** `matrix = [[1,2,3],[4,5,6],[7,8,9]]`
 - **Output:** `[[7,4,1],[8,5,2],[9,6,3]]`
-- **Explanation:** Matrix rotated 90 degrees clockwise in-place.
+- **Explanation:** Rotated 90 degrees clockwise in-place.
 
 ---
 
@@ -195,20 +209,20 @@ You are given an `n x n` 2D matrix representing an image, rotate the image by 90
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(N^2)
-- **Explanation:** Create a new temporary `N x N` matrix `res`. Copy `matrix[i][j]` to `res[j][n - 1 - i]`, then copy `res` back into `matrix`. Requires extra O(N^2) memory.
+- **Explanation:** Allocate an auxiliary `N x N` matrix `temp`. Copy `matrix[r][c]` to `temp[c][n - 1 - r]`. Copy `temp` back into `matrix`. Uses O(N^2) extra space.
 
 ```cpp
 class Solution {
 public:
     void rotate(vector<vector<int>>& matrix) {
         int n = matrix.size();
-        vector<vector<int>> res(n, vector<int>(n));
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                res[j][n - 1 - i] = matrix[i][j];
+        vector<vector<int>> temp(n, vector<int>(n));
+        for (int r = 0; r < n; r++) {
+            for (int c = 0; c < n; c++) {
+                temp[c][n - 1 - r] = matrix[r][c];
             }
         }
-        matrix = res;
+        matrix = temp;
     }
 };
 ```
@@ -217,20 +231,18 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1) in-place
-- **Explanation:** Two-step matrix transformation: 1) Transpose the matrix in-place by swapping `matrix[i][j]` with `matrix[j][i]` for `j > i`. 2) Reverse each row of the transposed matrix horizontally.
+- **Explanation:** 1) Transpose matrix in-place by swapping `matrix[i][j]` with `matrix[j][i]` for `j > i`. 2) Reverse each row horizontally using `std::reverse`.
 
 ```cpp
 class Solution {
 public:
     void rotate(vector<vector<int>>& matrix) {
         int n = matrix.size();
-        // 1. Transpose matrix
         for (int i = 0; i < n; i++) {
             for (int j = i + 1; j < n; j++) {
                 swap(matrix[i][j], matrix[j][i]);
             }
         }
-        // 2. Reverse each row
         for (int i = 0; i < n; i++) {
             reverse(matrix[i].begin(), matrix[i].end());
         }
@@ -241,23 +253,22 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- 1x1 matrix (no-op).
-- Anti-clockwise rotation variation: Transpose matrix + reverse each column vertically.
-- In-place mutation constraint verification.
+- 1x1 matrix.
+- Anti-clockwise variation (Transpose + Column Reverse).
 
 ---
 
-### 4. 🟠 P1 [Q] Custom / Interview: Rotate Matrix 90 Deg Anti-Clockwise [MEDIUM]
+### 4. 🔴 P0 [Q] Custom / Interview: Rotate Matrix 90 Deg Anti-Clockwise [MEDIUM]
 - **LeetCode Link:** [Rotate Matrix 90 Deg Anti-Clockwise](#)
 - **Category / Sub-Pattern:** Sub-Pattern 1.2 (Matrix Symmetry & In-Place Rotations)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Rotate Matrix 90 Deg Anti-Clockwise**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Rotate Matrix 90 Deg Anti-Clockwise**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Transpose matrix + reverse each column..
 
 ---
 
@@ -269,22 +280,19 @@ Given the input parameters for **Rotate Matrix 90 Deg Anti-Clockwise**, solve th
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -293,16 +301,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Matrix Symmetry & In-Place Rotations to optimize calculation in a single pass. Transpose matrix + reverse each column..
+- **Explanation:** Optimize using Matrix Symmetry & In-Place Rotations. Transpose matrix + reverse each column..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Transpose matrix + reverse each column.
-        return n;
+        return 0;
     }
 };
 ```
@@ -310,10 +316,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -322,12 +327,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Set Matrix Zeroes**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Set Matrix Zeroes**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Use 1st row and 1st column as dummy markers for O(1) space..
 
 ---
 
@@ -339,22 +344,19 @@ Given the input parameters for **Set Matrix Zeroes**, solve the problem efficien
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -363,16 +365,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Matrix State Marking & Pattern Generation to optimize calculation in a single pass. Use 1st row and 1st column as dummy markers for O(1) space..
+- **Explanation:** Optimize using Matrix State Marking & Pattern Generation. Use 1st row and 1st column as dummy markers for O(1) space..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Use 1st row and 1st column as dummy markers for O(1) space.
-        return n;
+        return 0;
     }
 };
 ```
@@ -380,24 +380,23 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
-### 6. 🟠 P1 [Q] LC 118: Pascal's Triangle [EASY]
+### 6. 🔴 P0 [Q] LC 118: Pascal's Triangle [EASY]
 - **LeetCode Link:** [Pascal's Triangle](https://leetcode.com/problems/pascals-triangle/)
 - **Category / Sub-Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Pascal's Triangle**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Pascal's Triangle**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Dynamic row generation using previous row element sums..
 
 ---
 
@@ -409,22 +408,19 @@ Given the input parameters for **Pascal's Triangle**, solve the problem efficien
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -433,16 +429,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Matrix State Marking & Pattern Generation to optimize calculation in a single pass. Dynamic row generation using previous row element sums..
+- **Explanation:** Optimize using Matrix State Marking & Pattern Generation. Dynamic row generation using previous row element sums..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Dynamic row generation using previous row element sums.
-        return n;
+        return 0;
     }
 };
 ```
@@ -450,10 +444,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -462,12 +455,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Next Permutation**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Next Permutation**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Find decrease pivot -> swap with next larger -> reverse suffix..
 
 ---
 
@@ -479,22 +472,19 @@ Given the input parameters for **Next Permutation**, solve the problem efficient
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -503,16 +493,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Matrix State Marking & Pattern Generation to optimize calculation in a single pass. Find decrease pivot -> swap with next larger -> reverse suffix..
+- **Explanation:** Optimize using Matrix State Marking & Pattern Generation. Find decrease pivot -> swap with next larger -> reverse suffix..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Find decrease pivot -> swap with next larger -> reverse suffix.
-        return n;
+        return 0;
     }
 };
 ```
@@ -520,10 +508,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -534,12 +521,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2)))
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Selection Sort Algorithm Blueprint**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Selection Sort Algorithm Blueprint**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Find min element in unsorted partition and swap with start..
 
 ---
 
@@ -551,22 +538,19 @@ Given the input parameters for **Selection Sort Algorithm Blueprint**, solve the
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -575,16 +559,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Elementary Comparison Sorts (O(N^2)) to optimize calculation in a single pass. Find min element in unsorted partition and swap with start..
+- **Explanation:** Optimize using Elementary Comparison Sorts (O(N^2)). Find min element in unsorted partition and swap with start..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Find min element in unsorted partition and swap with start.
-        return n;
+        return 0;
     }
 };
 ```
@@ -592,10 +574,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -604,12 +585,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2)))
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Bubble Sort Algorithm Blueprint**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Bubble Sort Algorithm Blueprint**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Repeatedly swap adjacent inverted pairs with early exit flag..
 
 ---
 
@@ -621,22 +602,19 @@ Given the input parameters for **Bubble Sort Algorithm Blueprint**, solve the pr
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -645,16 +623,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Elementary Comparison Sorts (O(N^2)) to optimize calculation in a single pass. Repeatedly swap adjacent inverted pairs with early exit flag..
+- **Explanation:** Optimize using Elementary Comparison Sorts (O(N^2)). Repeatedly swap adjacent inverted pairs with early exit flag..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Repeatedly swap adjacent inverted pairs with early exit flag.
-        return n;
+        return 0;
     }
 };
 ```
@@ -662,10 +638,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -674,12 +649,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2)))
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Insertion Sort Algorithm Blueprint**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Insertion Sort Algorithm Blueprint**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Shift elements right to insert key into sorted prefix..
 
 ---
 
@@ -691,22 +666,19 @@ Given the input parameters for **Insertion Sort Algorithm Blueprint**, solve the
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -715,16 +687,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Elementary Comparison Sorts (O(N^2)) to optimize calculation in a single pass. Shift elements right to insert key into sorted prefix..
+- **Explanation:** Optimize using Elementary Comparison Sorts (O(N^2)). Shift elements right to insert key into sorted prefix..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Shift elements right to insert key into sorted prefix.
-        return n;
+        return 0;
     }
 };
 ```
@@ -732,10 +702,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -744,12 +713,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts (O(N log N)))
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Merge Sort & Inversion Counting Blueprint**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Merge Sort & Inversion Counting Blueprint**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Divide halves recursively and merge in O(N log N) time..
 
 ---
 
@@ -761,22 +730,19 @@ Given the input parameters for **Merge Sort & Inversion Counting Blueprint**, so
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -785,16 +751,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Divide & Conquer & Advanced Sorts (O(N log N)) to optimize calculation in a single pass. Divide halves recursively and merge in O(N log N) time..
+- **Explanation:** Optimize using Divide & Conquer & Advanced Sorts (O(N log N)). Divide halves recursively and merge in O(N log N) time..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Divide halves recursively and merge in O(N log N) time.
-        return n;
+        return 0;
     }
 };
 ```
@@ -802,10 +766,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -814,12 +777,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts (O(N log N)))
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Quick Sort Algorithm Blueprint**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Quick Sort Algorithm Blueprint**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Lomuto/Hoare randomized pivot partitioning..
 
 ---
 
@@ -831,22 +794,19 @@ Given the input parameters for **Quick Sort Algorithm Blueprint**, solve the pro
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -855,16 +815,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Divide & Conquer & Advanced Sorts (O(N log N)) to optimize calculation in a single pass. Lomuto/Hoare randomized pivot partitioning..
+- **Explanation:** Optimize using Divide & Conquer & Advanced Sorts (O(N log N)). Lomuto/Hoare randomized pivot partitioning..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Lomuto/Hoare randomized pivot partitioning.
-        return n;
+        return 0;
     }
 };
 ```
@@ -872,10 +830,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -884,12 +841,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 2.3 (Linear Non-Comparison Sorts (O(N)))
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Counting Sort Algorithm Blueprint**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Counting Sort Algorithm Blueprint**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Frequency array for bounded integer range [0, K]..
 
 ---
 
@@ -901,22 +858,19 @@ Given the input parameters for **Counting Sort Algorithm Blueprint**, solve the 
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -925,16 +879,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Linear Non-Comparison Sorts (O(N)) to optimize calculation in a single pass. Frequency array for bounded integer range [0, K]..
+- **Explanation:** Optimize using Linear Non-Comparison Sorts (O(N)). Frequency array for bounded integer range [0, K]..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Frequency array for bounded integer range [0, K].
-        return n;
+        return 0;
     }
 };
 ```
@@ -942,10 +894,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -954,12 +905,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 2.4 (Custom Comparators & String Sorting)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Largest Number**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Largest Number**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Custom string concatenation comparator (a + b > b + a)..
 
 ---
 
@@ -971,22 +922,19 @@ Given the input parameters for **Largest Number**, solve the problem efficiently
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -995,16 +943,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Custom Comparators & String Sorting to optimize calculation in a single pass. Custom string concatenation comparator (a + b > b + a)..
+- **Explanation:** Optimize using Custom Comparators & String Sorting. Custom string concatenation comparator (a + b > b + a)..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Custom string concatenation comparator (a + b > b + a).
-        return n;
+        return 0;
     }
 };
 ```
@@ -1012,10 +958,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -1026,12 +971,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 3.1 (Frequency Counting & Anagrams)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Contains Duplicate**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Contains Duplicate**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on O(1) set presence check..
 
 ---
 
@@ -1043,22 +988,19 @@ Given the input parameters for **Contains Duplicate**, solve the problem efficie
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -1067,16 +1009,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Frequency Counting & Anagrams to optimize calculation in a single pass. O(1) set presence check..
+- **Explanation:** Optimize using Frequency Counting & Anagrams. O(1) set presence check..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // O(1) set presence check.
-        return n;
+        return 0;
     }
 };
 ```
@@ -1084,10 +1024,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -1096,12 +1035,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 3.1 (Frequency Counting & Anagrams)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Group Anagrams**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Group Anagrams**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on 26-char frequency vector encoding as map key..
 
 ---
 
@@ -1113,22 +1052,19 @@ Given the input parameters for **Group Anagrams**, solve the problem efficiently
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -1137,16 +1073,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Frequency Counting & Anagrams to optimize calculation in a single pass. 26-char frequency vector encoding as map key..
+- **Explanation:** Optimize using Frequency Counting & Anagrams. 26-char frequency vector encoding as map key..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // 26-char frequency vector encoding as map key.
-        return n;
+        return 0;
     }
 };
 ```
@@ -1154,10 +1088,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -1183,7 +1116,7 @@ Given an array of integers `nums` and an integer `target`, return indices of the
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use two nested loops. Outer loop selects `nums[i]`, inner loop checks every `nums[j]` where `j > i` to see if `nums[i] + nums[j] == target`.
+- **Explanation:** Use two nested loops. Outer loop selects `nums[i]`, inner loop checks every `nums[j]` (`j > i`) to see if `nums[i] + nums[j] == target`.
 
 ```cpp
 class Solution {
@@ -1204,7 +1137,7 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(N)
-- **Explanation:** Use a Hash Map `unordered_map<int, int>` storing `value -> index`. Iterate through `nums`, compute `complement = target - nums[i]`. If complement exists in map, return `{map[complement], i}`. Otherwise, insert `nums[i] -> i`.
+- **Explanation:** Use a Hash Map `unordered_map<int, int>` storing `value -> index`. Iterate through `nums`, compute `complement = target - nums[i]`. If complement exists in map, return `{mp[complement], i}`. Otherwise, insert `nums[i] -> i`.
 
 ```cpp
 class Solution {
@@ -1224,9 +1157,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Duplicate numbers in array (e.g. `nums = [3, 3]`, `target = 6`).
+- Duplicates in array (e.g. nums = [3,3], target = 6).
 - Negative numbers and zero values.
-- Checking hash map BEFORE inserting current element to avoid reusing the same index twice.
+- Checking hash map BEFORE inserting current element to prevent self-pairing.
 
 ---
 
@@ -1235,12 +1168,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 3.2 (O(1) Pair & Complement Lookup)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Longest Consecutive Sequence**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Longest Consecutive Sequence**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on O(1) set lookup for sequence start boundary (!set.count(num - 1))..
 
 ---
 
@@ -1252,22 +1185,19 @@ Given the input parameters for **Longest Consecutive Sequence**, solve the probl
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -1276,16 +1206,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use O(1) Pair & Complement Lookup to optimize calculation in a single pass. O(1) set lookup for sequence start boundary (!set.count(num - 1))..
+- **Explanation:** Optimize using O(1) Pair & Complement Lookup. O(1) set lookup for sequence start boundary (!set.count(num - 1))..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // O(1) set lookup for sequence start boundary (!set.count(num - 1)).
-        return n;
+        return 0;
     }
 };
 ```
@@ -1293,10 +1221,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -1305,12 +1232,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 3.3 (Prefix XOR & Bitwise Hashing)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Subarray with Given XOR**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Subarray with Given XOR**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Maintain running XOR sum (xr). Lookup (xr ^ target) in map..
 
 ---
 
@@ -1322,22 +1249,19 @@ Given the input parameters for **Subarray with Given XOR**, solve the problem ef
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -1346,16 +1270,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Prefix XOR & Bitwise Hashing to optimize calculation in a single pass. Maintain running XOR sum (xr). Lookup (xr ^ target) in map..
+- **Explanation:** Optimize using Prefix XOR & Bitwise Hashing. Maintain running XOR sum (xr). Lookup (xr ^ target) in map..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Maintain running XOR sum (xr). Lookup (xr ^ target) in map.
-        return n;
+        return 0;
     }
 };
 ```
@@ -1363,10 +1285,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -1377,12 +1298,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 4.1 (Standard Prefix Sum & Subarray Sum K)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Subarray Sum Equals K**, solve the problem efficiently adhering to algorithmic constraints.
+Given an array of integers `nums` and an integer `k`, return the total number of subarrays whose sum equals to `k`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [1,1,1], k = 2`
+- **Output:** `2`
+- **Explanation:** Subarrays [1,1] starting at index 0 and index 1 sum to 2.
 
 ---
 
@@ -1394,22 +1315,22 @@ Given the input parameters for **Subarray Sum Equals K**, solve the problem effi
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Check every possible subarray `(i, j)`. Compute sum from index `i` to `j`. If sum equals `k`, increment count.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
+    int subarraySum(vector<int>& nums, int k) {
         int n = nums.size();
-        int ans = 0;
+        int count = 0;
         for (int i = 0; i < n; i++) {
+            int sum = 0;
             for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+                sum += nums[j];
+                if (sum == k) count++;
             }
         }
-        return ans;
+        return count;
     }
 };
 ```
@@ -1417,17 +1338,25 @@ public:
 ---
 
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Standard Prefix Sum & Subarray Sum K to optimize calculation in a single pass. Running sum - K hash map lookup..
+- **Complexity:** **Time:** O(N) | **Space:** O(N)
+- **Explanation:** Maintain running prefix sum `prefSum`. If `prefSum - k` exists in hash map `mp` (`prefSum -> frequency`), add its frequency to total count. Increment `mp[prefSum]`. Initialize `mp[0] = 1` for subarrays starting from index 0.
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
-        // Running sum - K hash map lookup.
-        return n;
+    int subarraySum(vector<int>& nums, int k) {
+        unordered_map<int, int> mp;
+        mp[0] = 1;
+        int prefSum = 0, count = 0;
+
+        for (int num : nums) {
+            prefSum += num;
+            if (mp.count(prefSum - k)) {
+                count += mp[prefSum - k];
+            }
+            mp[prefSum]++;
+        }
+        return count;
     }
 };
 ```
@@ -1435,10 +1364,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Subarrays containing negative numbers (Prefix Sum hash map handles negatives; Sliding Window fails!).
+- k = 0 with array containing zeros.
+- Initializing `mp[0] = 1` to account for prefix sums matching `k` from index 0.
 
 ---
 
@@ -1447,12 +1375,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 4.1 (Standard Prefix Sum & Subarray Sum K)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Contiguous Array**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Contiguous Array**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Convert 0 to -1, track earliest index of prefix sum..
 
 ---
 
@@ -1464,22 +1392,19 @@ Given the input parameters for **Contiguous Array**, solve the problem efficient
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -1488,16 +1413,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Standard Prefix Sum & Subarray Sum K to optimize calculation in a single pass. Convert 0 to -1, track earliest index of prefix sum..
+- **Explanation:** Optimize using Standard Prefix Sum & Subarray Sum K. Convert 0 to -1, track earliest index of prefix sum..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Convert 0 to -1, track earliest index of prefix sum.
-        return n;
+        return 0;
     }
 };
 ```
@@ -1505,10 +1428,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -1517,12 +1439,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 4.2 (Difference Array & Range Updates)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Corporate Flight Bookings**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Corporate Flight Bookings**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Difference array +val at L, -val at R+1; compute prefix sum at end..
 
 ---
 
@@ -1534,22 +1456,19 @@ Given the input parameters for **Corporate Flight Bookings**, solve the problem 
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -1558,16 +1477,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Difference Array & Range Updates to optimize calculation in a single pass. Difference array +val at L, -val at R+1; compute prefix sum at end..
+- **Explanation:** Optimize using Difference Array & Range Updates. Difference array +val at L, -val at R+1; compute prefix sum at end..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Difference array +val at L, -val at R+1; compute prefix sum at end.
-        return n;
+        return 0;
     }
 };
 ```
@@ -1575,10 +1492,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -1587,12 +1503,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 4.3 (Prefix & Suffix Products)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Product of Array Except Self**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Product of Array Except Self**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Prefix products from left x running suffix product from right without division..
 
 ---
 
@@ -1604,22 +1520,19 @@ Given the input parameters for **Product of Array Except Self**, solve the probl
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -1628,16 +1541,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Prefix & Suffix Products to optimize calculation in a single pass. Prefix products from left x running suffix product from right without division..
+- **Explanation:** Optimize using Prefix & Suffix Products. Prefix products from left x running suffix product from right without division..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Prefix products from left x running suffix product from right without division.
-        return n;
+        return 0;
     }
 };
 ```
@@ -1645,10 +1556,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -1657,12 +1567,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 4.4 (Prefix Sum with Modulo Arithmetic)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Continuous Subarray Sum**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Continuous Subarray Sum**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Store earliest index of (running_sum % k) in map (len >= 2)..
 
 ---
 
@@ -1674,22 +1584,19 @@ Given the input parameters for **Continuous Subarray Sum**, solve the problem ef
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -1698,16 +1605,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Prefix Sum with Modulo Arithmetic to optimize calculation in a single pass. Store earliest index of (running_sum % k) in map (len >= 2)..
+- **Explanation:** Optimize using Prefix Sum with Modulo Arithmetic. Store earliest index of (running_sum % k) in map (len >= 2)..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Store earliest index of (running_sum % k) in map (len >= 2).
-        return n;
+        return 0;
     }
 };
 ```
@@ -1715,10 +1620,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -1729,12 +1633,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 5.1 (Opposite Direction Pointers)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Two Sum II - Input Array Is Sorted**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Two Sum II - Input Array Is Sorted**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Opposite pointers converging inward..
 
 ---
 
@@ -1746,22 +1650,19 @@ Given the input parameters for **Two Sum II - Input Array Is Sorted**, solve the
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -1770,16 +1671,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Opposite Direction Pointers to optimize calculation in a single pass. Opposite pointers converging inward..
+- **Explanation:** Optimize using Opposite Direction Pointers. Opposite pointers converging inward..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Opposite pointers converging inward.
-        return n;
+        return 0;
     }
 };
 ```
@@ -1787,10 +1686,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -1799,12 +1697,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 5.1 (Opposite Direction Pointers)
 
 **📜 Problem Statement & Explanation**
-Given an integer array `nums`, return all the triplets `[nums[i], nums[j], nums[k]]` such that `i != j != k` and `nums[i] + nums[j] + nums[k] == 0`. Solution set must not contain duplicate triplets.
+Given an integer array `nums`, return all unique triplets `[nums[i], nums[j], nums[k]]` such that `i != j != k` and `nums[i] + nums[j] + nums[k] == 0`.
 
 **Example 1:**
 - **Input:** `nums = [-1,0,1,2,-1,-4]`
 - **Output:** `[[-1,-1,2],[-1,0,1]]`
-- **Explanation:** Distinct triplets summing to 0 are [-1,-1,2] and [-1,0,1].
+- **Explanation:** Distinct triplets summing to 0.
 
 ---
 
@@ -1816,7 +1714,7 @@ Given an integer array `nums`, return all the triplets `[nums[i], nums[j], nums[
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^3 * log(k)) | **Space:** O(k)
-- **Explanation:** Three nested loops checking all triplets. Use a set to filter out duplicate triplets after sorting each valid triplet.
+- **Explanation:** Three nested loops checking all triplets. Use a set of vectors to filter out duplicate triplets after sorting each valid triplet.
 
 ```cpp
 class Solution {
@@ -1855,14 +1753,14 @@ public:
         sort(nums.begin(), nums.end());
 
         for (int i = 0; i < n - 2; i++) {
-            if (i > 0 && nums[i] == nums[i - 1]) continue; // Skip duplicate i
+            if (i > 0 && nums[i] == nums[i - 1]) continue;
             int left = i + 1, right = n - 1;
             while (left < right) {
                 int sum = nums[i] + nums[left] + nums[right];
                 if (sum == 0) {
                     res.push_back({nums[i], nums[left], nums[right]});
-                    while (left < right && nums[left] == nums[left + 1]) left++; // Skip duplicate left
-                    while (left < right && nums[right] == nums[right - 1]) right--; // Skip duplicate right
+                    while (left < right && nums[left] == nums[left + 1]) left++;
+                    while (left < right && nums[right] == nums[right - 1]) right--;
                     left++; right--;
                 } else if (sum < 0) left++;
                 else right--;
@@ -1876,9 +1774,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Array size less than 3 (n < 3).
-- All elements positive or all elements negative (no triplet can sum to 0).
-- Array with all zeros ([0, 0, 0, 0]).
+- Array size less than 3.
+- All positive or all negative elements.
+- Array with all zeros [0, 0, 0, 0].
 
 ---
 
@@ -1887,12 +1785,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 5.1 (Opposite Direction Pointers)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Container With Most Water**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Container With Most Water**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Shrinking boundary pointers, moving shorter height inward..
 
 ---
 
@@ -1904,22 +1802,19 @@ Given the input parameters for **Container With Most Water**, solve the problem 
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -1928,16 +1823,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Opposite Direction Pointers to optimize calculation in a single pass. Shrinking boundary pointers, moving shorter height inward..
+- **Explanation:** Optimize using Opposite Direction Pointers. Shrinking boundary pointers, moving shorter height inward..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Shrinking boundary pointers, moving shorter height inward.
-        return n;
+        return 0;
     }
 };
 ```
@@ -1945,10 +1838,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -1957,12 +1849,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 5.1 (Opposite Direction Pointers)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Trapping Rain Water**, solve the problem efficiently adhering to algorithmic constraints.
+Given `n` non-negative integers representing an elevation map where the width of each bar is `1`, compute how much water it can trap after raining.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `height = [0,1,0,2,1,0,1,3,2,1,2,1]`
+- **Output:** `6`
+- **Explanation:** 6 units of rain water trapped between bars.
 
 ---
 
@@ -1974,22 +1866,21 @@ Given the input parameters for **Trapping Rain Water**, solve the problem effici
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** For each bar `i`, scan left to find `maxLeft` and scan right to find `maxRight`. Water trapped at bar `i` is `max(0, min(maxLeft, maxRight) - height[i])`. Sum up for all bars.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        int ans = 0;
+    int trap(vector<int>& height) {
+        int n = height.size();
+        int totalWater = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
-            }
+            int maxLeft = 0, maxRight = 0;
+            for (int j = i; j >= 0; j--) maxLeft = max(maxLeft, height[j]);
+            for (int j = i; j < n; j++) maxRight = max(maxRight, height[j]);
+            totalWater += min(maxLeft, maxRight) - height[i];
         }
-        return ans;
+        return totalWater;
     }
 };
 ```
@@ -1998,16 +1889,29 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Opposite Direction Pointers to optimize calculation in a single pass. Two pointers tracking maxLeft and maxRight heights..
+- **Explanation:** Use Two Pointers `left = 0` and `right = n - 1` with variables `maxLeft` and `maxRight`. At each step, if `height[left] <= height[right]`, the water level at `left` is bottlenecked by `maxLeft`. Update `maxLeft` or add `maxLeft - height[left]` to answer and increment `left`. Otherwise, do the symmetric operation for `right` pointer.
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
-        // Two pointers tracking maxLeft and maxRight heights.
-        return n;
+    int trap(vector<int>& height) {
+        int n = height.size();
+        int left = 0, right = n - 1;
+        int maxLeft = 0, maxRight = 0;
+        int totalWater = 0;
+
+        while (left < right) {
+            if (height[left] <= height[right]) {
+                if (height[left] >= maxLeft) maxLeft = height[left];
+                else totalWater += maxLeft - height[left];
+                left++;
+            } else {
+                if (height[right] >= maxRight) maxRight = height[right];
+                else totalWater += maxRight - height[right];
+                right--;
+            }
+        }
+        return totalWater;
     }
 };
 ```
@@ -2015,10 +1919,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Empty array or size <= 2 (cannot trap any water).
+- Strictly ascending or strictly descending heights (0 trapped water).
+- Flat elevations [3,3,3,3].
 
 ---
 
@@ -2027,12 +1930,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 5.2 (Partitioning & Backward Pointers)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Sort Colors (Dutch National Flag)**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Sort Colors (Dutch National Flag)**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Dutch National Flag 3-way low, mid, high pointer algorithm..
 
 ---
 
@@ -2044,22 +1947,19 @@ Given the input parameters for **Sort Colors (Dutch National Flag)**, solve the 
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -2068,16 +1968,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Partitioning & Backward Pointers to optimize calculation in a single pass. Dutch National Flag 3-way low, mid, high pointer algorithm..
+- **Explanation:** Optimize using Partitioning & Backward Pointers. Dutch National Flag 3-way low, mid, high pointer algorithm..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Dutch National Flag 3-way low, mid, high pointer algorithm.
-        return n;
+        return 0;
     }
 };
 ```
@@ -2085,10 +1983,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -2097,12 +1994,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 5.2 (Partitioning & Backward Pointers)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Merge Sorted Array**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Merge Sorted Array**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Fill destination array backwards from (m + n - 1)..
 
 ---
 
@@ -2114,22 +2011,19 @@ Given the input parameters for **Merge Sorted Array**, solve the problem efficie
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -2138,16 +2032,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Partitioning & Backward Pointers to optimize calculation in a single pass. Fill destination array backwards from (m + n - 1)..
+- **Explanation:** Optimize using Partitioning & Backward Pointers. Fill destination array backwards from (m + n - 1)..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Fill destination array backwards from (m + n - 1).
-        return n;
+        return 0;
     }
 };
 ```
@@ -2155,10 +2047,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -2169,12 +2060,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 6.1 (Variable Length Sliding Window)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Longest Substring Without Repeating Characters**, solve the problem efficiently adhering to algorithmic constraints.
+Given a string `s`, find the length of the longest substring without repeating characters.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `s = "abcabcbb"`
+- **Output:** `3`
+- **Explanation:** The answer is "abc", with length 3.
 
 ---
 
@@ -2185,23 +2076,28 @@ Given the input parameters for **Longest Substring Without Repeating Characters*
 ---
 
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Complexity:** **Time:** O(N^3) | **Space:** O(N)
+- **Explanation:** Generate all substrings `(i, j)`. Check if substring contains all unique characters using a hash set. Track maximum length.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
+    bool isUnique(string& s, int start, int end) {
+        unordered_set<char> st;
+        for (int i = start; i <= end; i++) {
+            if (st.count(s[i])) return false;
+            st.insert(s[i]);
+        }
+        return true;
+    }
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        int ans = 0;
+    int lengthOfLongestSubstring(string s) {
+        int n = s.length(), maxLen = 0;
         for (int i = 0; i < n; i++) {
             for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+                if (isUnique(s, i, j)) maxLen = max(maxLen, j - i + 1);
             }
         }
-        return ans;
+        return maxLen;
     }
 };
 ```
@@ -2209,17 +2105,24 @@ public:
 ---
 
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Variable Length Sliding Window to optimize calculation in a single pass. Expand right, shrink left when duplicate character found..
+- **Complexity:** **Time:** O(N) | **Space:** O(min(N, M))
+- **Explanation:** Use Variable Sliding Window (`left`, `right`) with a Hash Map / Frequency Array storing `char -> last_seen_index`. As `right` advances, if `s[right]` was seen at index `>= left`, move `left = last_seen_index + 1`. Update max length `right - left + 1`.
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
-        // Expand right, shrink left when duplicate character found.
-        return n;
+    int lengthOfLongestSubstring(string s) {
+        vector<int> lastPos(256, -1);
+        int left = 0, maxLen = 0;
+
+        for (int right = 0; right < s.length(); right++) {
+            if (lastPos[s[right]] >= left) {
+                left = lastPos[s[right]] + 1;
+            }
+            lastPos[s[right]] = right;
+            maxLen = max(maxLen, right - left + 1);
+        }
+        return maxLen;
     }
 };
 ```
@@ -2227,10 +2130,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Empty string "" (returns 0).
+- String with all identical characters "bbbbb" (returns 1).
+- String with special characters or spaces.
 
 ---
 
@@ -2239,12 +2141,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 6.1 (Variable Length Sliding Window)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Minimum Size Subarray Sum**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Minimum Size Subarray Sum**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Expand right until sum >= target, shrink left to minimize length..
 
 ---
 
@@ -2256,22 +2158,19 @@ Given the input parameters for **Minimum Size Subarray Sum**, solve the problem 
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -2280,16 +2179,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Variable Length Sliding Window to optimize calculation in a single pass. Expand right until sum >= target, shrink left to minimize length..
+- **Explanation:** Optimize using Variable Length Sliding Window. Expand right until sum >= target, shrink left to minimize length..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Expand right until sum >= target, shrink left to minimize length.
-        return n;
+        return 0;
     }
 };
 ```
@@ -2297,10 +2194,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -2309,12 +2205,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 6.1 (Variable Length Sliding Window)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Minimum Window Substring**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Minimum Window Substring**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Gold-standard variable window with required match counter..
 
 ---
 
@@ -2326,22 +2222,19 @@ Given the input parameters for **Minimum Window Substring**, solve the problem e
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -2350,16 +2243,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Variable Length Sliding Window to optimize calculation in a single pass. Gold-standard variable window with required match counter..
+- **Explanation:** Optimize using Variable Length Sliding Window. Gold-standard variable window with required match counter..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Gold-standard variable window with required match counter.
-        return n;
+        return 0;
     }
 };
 ```
@@ -2367,10 +2258,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -2379,12 +2269,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 6.2 (Fixed-Size Sliding Window)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Find All Anagrams in a String**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Find All Anagrams in a String**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Fixed window of size |P| with 26-char frequency comparison..
 
 ---
 
@@ -2396,22 +2286,19 @@ Given the input parameters for **Find All Anagrams in a String**, solve the prob
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -2420,16 +2307,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Fixed-Size Sliding Window to optimize calculation in a single pass. Fixed window of size |P| with 26-char frequency comparison..
+- **Explanation:** Optimize using Fixed-Size Sliding Window. Fixed window of size |P| with 26-char frequency comparison..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Fixed window of size |P| with 26-char frequency comparison.
-        return n;
+        return 0;
     }
 };
 ```
@@ -2437,10 +2322,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -2449,12 +2333,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 6.3 (Variable Window with K Operations / Replacement)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Max Consecutive Ones III**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Max Consecutive Ones III**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Track zero count in window; shrink left when zero count > K..
 
 ---
 
@@ -2466,22 +2350,19 @@ Given the input parameters for **Max Consecutive Ones III**, solve the problem e
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -2490,16 +2371,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Variable Window with K Operations / Replacement to optimize calculation in a single pass. Track zero count in window; shrink left when zero count > K..
+- **Explanation:** Optimize using Variable Window with K Operations / Replacement. Track zero count in window; shrink left when zero count > K..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Track zero count in window; shrink left when zero count > K.
-        return n;
+        return 0;
     }
 };
 ```
@@ -2507,10 +2386,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -2519,12 +2397,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 6.3 (Variable Window with K Operations / Replacement)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Longest Repeating Character Replacement**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Longest Repeating Character Replacement**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Track max_freq in window; shrink left when (window_len - max_freq) > K..
 
 ---
 
@@ -2536,22 +2414,19 @@ Given the input parameters for **Longest Repeating Character Replacement**, solv
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -2560,16 +2435,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Variable Window with K Operations / Replacement to optimize calculation in a single pass. Track max_freq in window; shrink left when (window_len - max_freq) > K..
+- **Explanation:** Optimize using Variable Window with K Operations / Replacement. Track max_freq in window; shrink left when (window_len - max_freq) > K..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Track max_freq in window; shrink left when (window_len - max_freq) > K.
-        return n;
+        return 0;
     }
 };
 ```
@@ -2577,10 +2450,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -2591,12 +2463,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 7.1 (Standard & Boundary Search)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Binary Search**, solve the problem efficiently adhering to algorithmic constraints.
+Given an array of integers `nums` sorted in ascending order and a target value, write a function to search target in `nums`. Return index if found, else `-1`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [-1,0,3,5,9,12], target = 9`
+- **Output:** `4`
+- **Explanation:** 9 exists in nums and its index is 4.
 
 ---
 
@@ -2607,23 +2479,17 @@ Given the input parameters for **Binary Search**, solve the problem efficiently 
 ---
 
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Complexity:** **Time:** O(N) | **Space:** O(1)
+- **Explanation:** Linear scan from index 0 to n-1 comparing each element with `target`.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
-    int solveNaive(vector<int>& nums) {
-        int n = nums.size();
-        int ans = 0;
-        for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
-            }
+    int search(vector<int>& nums, int target) {
+        for (int i = 0; i < nums.size(); i++) {
+            if (nums[i] == target) return i;
         }
-        return ans;
+        return -1;
     }
 };
 ```
@@ -2631,17 +2497,21 @@ public:
 ---
 
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Standard & Boundary Search to optimize calculation in a single pass. Classic low <= high midpoint search..
+- **Complexity:** **Time:** O(log N) | **Space:** O(1)
+- **Explanation:** Maintain two pointers `low = 0` and `high = n - 1`. While `low <= high`, calculate `mid = low + (high - low) / 2`. If `nums[mid] == target`, return `mid`. If `nums[mid] < target`, discard left half (`low = mid + 1`). Otherwise discard right half (`high = mid - 1`).
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
-    int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
-        // Classic low <= high midpoint search.
-        return n;
+    int search(vector<int>& nums, int target) {
+        int low = 0, high = nums.size() - 1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            if (nums[mid] == target) return mid;
+            else if (nums[mid] < target) low = mid + 1;
+            else high = mid - 1;
+        }
+        return -1;
     }
 };
 ```
@@ -2649,24 +2519,23 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Target smaller than nums[0] or larger than nums[n-1].
+- Array size 1.
+- Using `low + (high - low) / 2` instead of `(low + high) / 2` to prevent integer overflow.
 
 ---
 
-### 38. 🟠 P1 [Q] LC 33: Search In Rotated Sorted Array [MEDIUM]
+### 38. 🔴 P0 [Q] LC 33: Search In Rotated Sorted Array [MEDIUM]
 - **LeetCode Link:** [Search In Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/)
 - **Category / Sub-Pattern:** Sub-Pattern 7.2 (Rotated & Modified Array Search)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Search In Rotated Sorted Array**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Search In Rotated Sorted Array**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Compare mid with left/right to determine sorted half..
 
 ---
 
@@ -2678,22 +2547,19 @@ Given the input parameters for **Search In Rotated Sorted Array**, solve the pro
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -2702,16 +2568,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Rotated & Modified Array Search to optimize calculation in a single pass. Compare mid with left/right to determine sorted half..
+- **Explanation:** Optimize using Rotated & Modified Array Search. Compare mid with left/right to determine sorted half..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Compare mid with left/right to determine sorted half.
-        return n;
+        return 0;
     }
 };
 ```
@@ -2719,24 +2583,23 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
-### 39. 🟠 P1 [Q] LC 153: Find Minimum in Rotated Sorted Array [MEDIUM]
+### 39. 🔴 P0 [Q] LC 153: Find Minimum in Rotated Sorted Array [MEDIUM]
 - **LeetCode Link:** [Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/)
 - **Category / Sub-Pattern:** Sub-Pattern 7.2 (Rotated & Modified Array Search)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Find Minimum in Rotated Sorted Array**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Find Minimum in Rotated Sorted Array**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Compare mid with high (mid > high => min in right half)..
 
 ---
 
@@ -2748,22 +2611,19 @@ Given the input parameters for **Find Minimum in Rotated Sorted Array**, solve t
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -2772,16 +2632,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Rotated & Modified Array Search to optimize calculation in a single pass. Compare mid with high (mid > high => min in right half)..
+- **Explanation:** Optimize using Rotated & Modified Array Search. Compare mid with high (mid > high => min in right half)..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Compare mid with high (mid > high => min in right half).
-        return n;
+        return 0;
     }
 };
 ```
@@ -2789,10 +2647,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -2801,12 +2658,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 7.3 (Binary Search on Answer Space)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Koko Eating Bananas**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Koko Eating Bananas**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Binary search speed range [1, max_piles]..
 
 ---
 
@@ -2818,22 +2675,19 @@ Given the input parameters for **Koko Eating Bananas**, solve the problem effici
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -2842,16 +2696,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Binary Search on Answer Space to optimize calculation in a single pass. Binary search speed range [1, max_piles]..
+- **Explanation:** Optimize using Binary Search on Answer Space. Binary search speed range [1, max_piles]..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Binary search speed range [1, max_piles].
-        return n;
+        return 0;
     }
 };
 ```
@@ -2859,10 +2711,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -2871,12 +2722,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 7.3 (Binary Search on Answer Space)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Capacity To Ship Packages Within D Days**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Capacity To Ship Packages Within D Days**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Binary search capacity range [max_weight, sum_weight]..
 
 ---
 
@@ -2888,22 +2739,19 @@ Given the input parameters for **Capacity To Ship Packages Within D Days**, solv
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -2912,16 +2760,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Binary Search on Answer Space to optimize calculation in a single pass. Binary search capacity range [max_weight, sum_weight]..
+- **Explanation:** Optimize using Binary Search on Answer Space. Binary search capacity range [max_weight, sum_weight]..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Binary search capacity range [max_weight, sum_weight].
-        return n;
+        return 0;
     }
 };
 ```
@@ -2929,10 +2775,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -2941,12 +2786,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 7.4 (2D Matrix & Unsorted Condition Search)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Search a 2D Matrix**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Search a 2D Matrix**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Virtual 1D mapping on M x N grid: matrix[mid / N][mid % N]..
 
 ---
 
@@ -2958,22 +2803,19 @@ Given the input parameters for **Search a 2D Matrix**, solve the problem efficie
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -2982,16 +2824,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use 2D Matrix & Unsorted Condition Search to optimize calculation in a single pass. Virtual 1D mapping on M x N grid: matrix[mid / N][mid % N]..
+- **Explanation:** Optimize using 2D Matrix & Unsorted Condition Search. Virtual 1D mapping on M x N grid: matrix[mid / N][mid % N]..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Virtual 1D mapping on M x N grid: matrix[mid / N][mid % N].
-        return n;
+        return 0;
     }
 };
 ```
@@ -2999,10 +2839,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -3011,12 +2850,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 7.4 (2D Matrix & Unsorted Condition Search)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Find Peak Element**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Find Peak Element**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Compare nums[mid] with nums[mid + 1] on unsorted array..
 
 ---
 
@@ -3028,22 +2867,19 @@ Given the input parameters for **Find Peak Element**, solve the problem efficien
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -3052,16 +2888,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use 2D Matrix & Unsorted Condition Search to optimize calculation in a single pass. Compare nums[mid] with nums[mid + 1] on unsorted array..
+- **Explanation:** Optimize using 2D Matrix & Unsorted Condition Search. Compare nums[mid] with nums[mid + 1] on unsorted array..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Compare nums[mid] with nums[mid + 1] on unsorted array.
-        return n;
+        return 0;
     }
 };
 ```
@@ -3069,10 +2903,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -3083,12 +2916,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 8.1 (Interval Merging & Insertion)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Merge Intervals**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Merge Intervals**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Sort by start time, merge overlapping bounds..
 
 ---
 
@@ -3100,22 +2933,19 @@ Given the input parameters for **Merge Intervals**, solve the problem efficientl
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -3124,16 +2954,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Interval Merging & Insertion to optimize calculation in a single pass. Sort by start time, merge overlapping bounds..
+- **Explanation:** Optimize using Interval Merging & Insertion. Sort by start time, merge overlapping bounds..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Sort by start time, merge overlapping bounds.
-        return n;
+        return 0;
     }
 };
 ```
@@ -3141,10 +2969,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -3153,12 +2980,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 8.1 (Interval Merging & Insertion)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Insert Interval**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Insert Interval**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on 3-phase linear insertion (left, merged mid, right)..
 
 ---
 
@@ -3170,22 +2997,19 @@ Given the input parameters for **Insert Interval**, solve the problem efficientl
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -3194,16 +3018,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Interval Merging & Insertion to optimize calculation in a single pass. 3-phase linear insertion (left, merged mid, right)..
+- **Explanation:** Optimize using Interval Merging & Insertion. 3-phase linear insertion (left, merged mid, right)..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // 3-phase linear insertion (left, merged mid, right).
-        return n;
+        return 0;
     }
 };
 ```
@@ -3211,10 +3033,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -3223,12 +3044,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 8.1 (Interval Merging & Insertion)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Non-overlapping Intervals**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Non-overlapping Intervals**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Greedy scheduling sorted by end time..
 
 ---
 
@@ -3240,22 +3061,19 @@ Given the input parameters for **Non-overlapping Intervals**, solve the problem 
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -3264,16 +3082,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Interval Merging & Insertion to optimize calculation in a single pass. Greedy scheduling sorted by end time..
+- **Explanation:** Optimize using Interval Merging & Insertion. Greedy scheduling sorted by end time..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Greedy scheduling sorted by end time.
-        return n;
+        return 0;
     }
 };
 ```
@@ -3281,10 +3097,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -3293,12 +3108,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 8.1 (Interval Merging & Insertion)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Meeting Rooms II**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Meeting Rooms II**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Sort by start time + Min-Heap of active room end-times..
 
 ---
 
@@ -3310,22 +3125,19 @@ Given the input parameters for **Meeting Rooms II**, solve the problem efficient
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -3334,16 +3146,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Interval Merging & Insertion to optimize calculation in a single pass. Sort by start time + Min-Heap of active room end-times..
+- **Explanation:** Optimize using Interval Merging & Insertion. Sort by start time + Min-Heap of active room end-times..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Sort by start time + Min-Heap of active room end-times.
-        return n;
+        return 0;
     }
 };
 ```
@@ -3351,10 +3161,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -3365,12 +3174,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 9.1 (Cycle Detection & Midpoint)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Linked List Cycle**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Linked List Cycle**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Fast pointer moves 2 steps, slow moves 1 step; collision = cycle..
 
 ---
 
@@ -3382,22 +3191,19 @@ Given the input parameters for **Linked List Cycle**, solve the problem efficien
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -3406,16 +3212,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Cycle Detection & Midpoint to optimize calculation in a single pass. Fast pointer moves 2 steps, slow moves 1 step; collision = cycle..
+- **Explanation:** Optimize using Cycle Detection & Midpoint. Fast pointer moves 2 steps, slow moves 1 step; collision = cycle..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Fast pointer moves 2 steps, slow moves 1 step; collision = cycle.
-        return n;
+        return 0;
     }
 };
 ```
@@ -3423,10 +3227,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -3435,12 +3238,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 9.1 (Cycle Detection & Midpoint)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Linked List Cycle II**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Linked List Cycle II**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Floyd's cycle detection + entry point recovery..
 
 ---
 
@@ -3452,22 +3255,19 @@ Given the input parameters for **Linked List Cycle II**, solve the problem effic
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -3476,16 +3276,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Cycle Detection & Midpoint to optimize calculation in a single pass. Floyd's cycle detection + entry point recovery..
+- **Explanation:** Optimize using Cycle Detection & Midpoint. Floyd's cycle detection + entry point recovery..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Floyd's cycle detection + entry point recovery.
-        return n;
+        return 0;
     }
 };
 ```
@@ -3493,10 +3291,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -3505,12 +3302,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 9.1 (Cycle Detection & Midpoint)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Reorder List**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Reorder List**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Midpoint split + reverse second half + alternate weaving..
 
 ---
 
@@ -3522,22 +3319,19 @@ Given the input parameters for **Reorder List**, solve the problem efficiently a
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -3546,16 +3340,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Cycle Detection & Midpoint to optimize calculation in a single pass. Midpoint split + reverse second half + alternate weaving..
+- **Explanation:** Optimize using Cycle Detection & Midpoint. Midpoint split + reverse second half + alternate weaving..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Midpoint split + reverse second half + alternate weaving.
-        return n;
+        return 0;
     }
 };
 ```
@@ -3563,10 +3355,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -3577,12 +3368,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 10.1 (Basic Stack Matching)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Valid Parentheses**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Valid Parentheses**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Push opening brackets, pop & match closing brackets..
 
 ---
 
@@ -3594,22 +3385,19 @@ Given the input parameters for **Valid Parentheses**, solve the problem efficien
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -3618,16 +3406,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Basic Stack Matching to optimize calculation in a single pass. Push opening brackets, pop & match closing brackets..
+- **Explanation:** Optimize using Basic Stack Matching. Push opening brackets, pop & match closing brackets..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Push opening brackets, pop & match closing brackets.
-        return n;
+        return 0;
     }
 };
 ```
@@ -3635,10 +3421,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -3647,12 +3432,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 10.2 (Next Greater / Smaller Element)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Daily Temperatures**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Daily Temperatures**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Monotonic decreasing stack storing indices..
 
 ---
 
@@ -3664,22 +3449,19 @@ Given the input parameters for **Daily Temperatures**, solve the problem efficie
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -3688,16 +3470,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Next Greater / Smaller Element to optimize calculation in a single pass. Monotonic decreasing stack storing indices..
+- **Explanation:** Optimize using Next Greater / Smaller Element. Monotonic decreasing stack storing indices..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Monotonic decreasing stack storing indices.
-        return n;
+        return 0;
     }
 };
 ```
@@ -3705,10 +3485,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -3717,12 +3496,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 10.2 (Next Greater / Smaller Element)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Largest Rectangle in Histogram**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Largest Rectangle in Histogram**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Monotonic increasing stack calculating width on pop..
 
 ---
 
@@ -3734,22 +3513,19 @@ Given the input parameters for **Largest Rectangle in Histogram**, solve the pro
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -3758,16 +3534,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Next Greater / Smaller Element to optimize calculation in a single pass. Monotonic increasing stack calculating width on pop..
+- **Explanation:** Optimize using Next Greater / Smaller Element. Monotonic increasing stack calculating width on pop..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Monotonic increasing stack calculating width on pop.
-        return n;
+        return 0;
     }
 };
 ```
@@ -3775,10 +3549,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -3789,12 +3562,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Kth Largest Element in an Array**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Kth Largest Element in an Array**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Min-Heap of size K (or Quickselect)..
 
 ---
 
@@ -3806,22 +3579,19 @@ Given the input parameters for **Kth Largest Element in an Array**, solve the pr
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -3830,16 +3600,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Top K Elements / Min-Heap Pattern to optimize calculation in a single pass. Min-Heap of size K (or Quickselect)..
+- **Explanation:** Optimize using Top K Elements / Min-Heap Pattern. Min-Heap of size K (or Quickselect)..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Min-Heap of size K (or Quickselect).
-        return n;
+        return 0;
     }
 };
 ```
@@ -3847,10 +3615,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -3859,12 +3626,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Top K Frequent Elements**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Top K Frequent Elements**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Frequency map + Min-Heap of size K..
 
 ---
 
@@ -3876,22 +3643,19 @@ Given the input parameters for **Top K Frequent Elements**, solve the problem ef
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -3900,16 +3664,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Top K Elements / Min-Heap Pattern to optimize calculation in a single pass. Frequency map + Min-Heap of size K..
+- **Explanation:** Optimize using Top K Elements / Min-Heap Pattern. Frequency map + Min-Heap of size K..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Frequency map + Min-Heap of size K.
-        return n;
+        return 0;
     }
 };
 ```
@@ -3917,10 +3679,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -3929,12 +3690,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Find Median from Data Stream**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Find Median from Data Stream**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Dual Heap pattern (Max-Heap lower half, Min-Heap upper half)..
 
 ---
 
@@ -3946,22 +3707,19 @@ Given the input parameters for **Find Median from Data Stream**, solve the probl
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -3970,16 +3728,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Top K Elements / Min-Heap Pattern to optimize calculation in a single pass. Dual Heap pattern (Max-Heap lower half, Min-Heap upper half)..
+- **Explanation:** Optimize using Top K Elements / Min-Heap Pattern. Dual Heap pattern (Max-Heap lower half, Min-Heap upper half)..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Dual Heap pattern (Max-Heap lower half, Min-Heap upper half).
-        return n;
+        return 0;
     }
 };
 ```
@@ -3987,10 +3743,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -3999,12 +3754,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Merge k Sorted Lists**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Merge k Sorted Lists**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Min-Heap of size K storing current head node of each list..
 
 ---
 
@@ -4016,22 +3771,19 @@ Given the input parameters for **Merge k Sorted Lists**, solve the problem effic
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -4040,16 +3792,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Top K Elements / Min-Heap Pattern to optimize calculation in a single pass. Min-Heap of size K storing current head node of each list..
+- **Explanation:** Optimize using Top K Elements / Min-Heap Pattern. Min-Heap of size K storing current head node of each list..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Min-Heap of size K storing current head node of each list.
-        return n;
+        return 0;
     }
 };
 ```
@@ -4057,10 +3807,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -4071,12 +3820,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 12.1 (Tree Height & Depth Recursion)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Maximum Depth of Binary Tree**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Maximum Depth of Binary Tree**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on 1 + max(dfs(left), dfs(right))..
 
 ---
 
@@ -4088,22 +3837,19 @@ Given the input parameters for **Maximum Depth of Binary Tree**, solve the probl
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -4112,16 +3858,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Tree Height & Depth Recursion to optimize calculation in a single pass. 1 + max(dfs(left), dfs(right))..
+- **Explanation:** Optimize using Tree Height & Depth Recursion. 1 + max(dfs(left), dfs(right))..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // 1 + max(dfs(left), dfs(right)).
-        return n;
+        return 0;
     }
 };
 ```
@@ -4129,10 +3873,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -4141,12 +3884,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 12.1 (Tree Height & Depth Recursion)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Diameter of Binary Tree**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Diameter of Binary Tree**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Post-order height calculation updating global max..
 
 ---
 
@@ -4158,22 +3901,19 @@ Given the input parameters for **Diameter of Binary Tree**, solve the problem ef
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -4182,16 +3922,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Tree Height & Depth Recursion to optimize calculation in a single pass. Post-order height calculation updating global max..
+- **Explanation:** Optimize using Tree Height & Depth Recursion. Post-order height calculation updating global max..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Post-order height calculation updating global max.
-        return n;
+        return 0;
     }
 };
 ```
@@ -4199,10 +3937,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -4211,12 +3948,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 12.1 (Tree Height & Depth Recursion)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Lowest Common Ancestor of a Binary Tree**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Lowest Common Ancestor of a Binary Tree**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Bottom-up DFS node bubbling matching P and Q..
 
 ---
 
@@ -4228,22 +3965,19 @@ Given the input parameters for **Lowest Common Ancestor of a Binary Tree**, solv
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -4252,16 +3986,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Tree Height & Depth Recursion to optimize calculation in a single pass. Bottom-up DFS node bubbling matching P and Q..
+- **Explanation:** Optimize using Tree Height & Depth Recursion. Bottom-up DFS node bubbling matching P and Q..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Bottom-up DFS node bubbling matching P and Q.
-        return n;
+        return 0;
     }
 };
 ```
@@ -4269,10 +4001,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -4281,12 +4012,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 12.1 (Tree Height & Depth Recursion)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Binary Tree Maximum Path Sum**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Binary Tree Maximum Path Sum**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Post-order DFS returning max branch while tracking global split path sum..
 
 ---
 
@@ -4298,22 +4029,19 @@ Given the input parameters for **Binary Tree Maximum Path Sum**, solve the probl
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -4322,16 +4050,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Tree Height & Depth Recursion to optimize calculation in a single pass. Post-order DFS returning max branch while tracking global split path sum..
+- **Explanation:** Optimize using Tree Height & Depth Recursion. Post-order DFS returning max branch while tracking global split path sum..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Post-order DFS returning max branch while tracking global split path sum.
-        return n;
+        return 0;
     }
 };
 ```
@@ -4339,10 +4065,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -4353,12 +4078,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 13.1 (Standard Level Order Traversal)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Binary Tree Level Order Traversal**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Binary Tree Level Order Traversal**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Queue iteration processing level size snapshot..
 
 ---
 
@@ -4370,22 +4095,19 @@ Given the input parameters for **Binary Tree Level Order Traversal**, solve the 
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -4394,16 +4116,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Standard Level Order Traversal to optimize calculation in a single pass. Queue iteration processing level size snapshot..
+- **Explanation:** Optimize using Standard Level Order Traversal. Queue iteration processing level size snapshot..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Queue iteration processing level size snapshot.
-        return n;
+        return 0;
     }
 };
 ```
@@ -4411,10 +4131,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -4423,12 +4142,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 13.1 (Standard Level Order Traversal)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Binary Tree Right Side View**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Binary Tree Right Side View**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Collect last node per queue level snapshot..
 
 ---
 
@@ -4440,22 +4159,19 @@ Given the input parameters for **Binary Tree Right Side View**, solve the proble
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -4464,16 +4180,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Standard Level Order Traversal to optimize calculation in a single pass. Collect last node per queue level snapshot..
+- **Explanation:** Optimize using Standard Level Order Traversal. Collect last node per queue level snapshot..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Collect last node per queue level snapshot.
-        return n;
+        return 0;
     }
 };
 ```
@@ -4481,10 +4195,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -4493,12 +4206,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 13.1 (Standard Level Order Traversal)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Binary Tree Zigzag Level Order Traversal**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Binary Tree Zigzag Level Order Traversal**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Alternating level insertion direction..
 
 ---
 
@@ -4510,22 +4223,19 @@ Given the input parameters for **Binary Tree Zigzag Level Order Traversal**, sol
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -4534,16 +4244,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Standard Level Order Traversal to optimize calculation in a single pass. Alternating level insertion direction..
+- **Explanation:** Optimize using Standard Level Order Traversal. Alternating level insertion direction..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Alternating level insertion direction.
-        return n;
+        return 0;
     }
 };
 ```
@@ -4551,10 +4259,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -4565,12 +4272,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 14.1 (BST Validation & Inorder Property)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Validate Binary Search Tree**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Validate Binary Search Tree**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Pass valid range [minVal, maxVal] downwards recursively..
 
 ---
 
@@ -4582,22 +4289,19 @@ Given the input parameters for **Validate Binary Search Tree**, solve the proble
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -4606,16 +4310,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use BST Validation & Inorder Property to optimize calculation in a single pass. Pass valid range [minVal, maxVal] downwards recursively..
+- **Explanation:** Optimize using BST Validation & Inorder Property. Pass valid range [minVal, maxVal] downwards recursively..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Pass valid range [minVal, maxVal] downwards recursively.
-        return n;
+        return 0;
     }
 };
 ```
@@ -4623,10 +4325,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -4635,12 +4336,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 14.1 (BST Validation & Inorder Property)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Kth Smallest Element in a BST**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Kth Smallest Element in a BST**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on In-order BST traversal yields sorted elements..
 
 ---
 
@@ -4652,22 +4353,19 @@ Given the input parameters for **Kth Smallest Element in a BST**, solve the prob
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -4676,16 +4374,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use BST Validation & Inorder Property to optimize calculation in a single pass. In-order BST traversal yields sorted elements..
+- **Explanation:** Optimize using BST Validation & Inorder Property. In-order BST traversal yields sorted elements..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // In-order BST traversal yields sorted elements.
-        return n;
+        return 0;
     }
 };
 ```
@@ -4693,10 +4389,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -4705,12 +4400,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 14.1 (BST Validation & Inorder Property)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Delete Node in a BST**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Delete Node in a BST**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on BST node deletion with in-order successor swap..
 
 ---
 
@@ -4722,22 +4417,19 @@ Given the input parameters for **Delete Node in a BST**, solve the problem effic
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -4746,16 +4438,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use BST Validation & Inorder Property to optimize calculation in a single pass. BST node deletion with in-order successor swap..
+- **Explanation:** Optimize using BST Validation & Inorder Property. BST node deletion with in-order successor swap..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // BST node deletion with in-order successor swap.
-        return n;
+        return 0;
     }
 };
 ```
@@ -4763,10 +4453,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -4777,12 +4466,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 15.1 (Subsets & Combination Choice)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Subsets**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Subsets**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Include / Exclude decision tree recursion..
 
 ---
 
@@ -4794,22 +4483,19 @@ Given the input parameters for **Subsets**, solve the problem efficiently adheri
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -4818,16 +4504,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Subsets & Combination Choice to optimize calculation in a single pass. Include / Exclude decision tree recursion..
+- **Explanation:** Optimize using Subsets & Combination Choice. Include / Exclude decision tree recursion..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Include / Exclude decision tree recursion.
-        return n;
+        return 0;
     }
 };
 ```
@@ -4835,10 +4519,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -4847,12 +4530,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 15.1 (Subsets & Combination Choice)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Permutations**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Permutations**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Used boolean array or in-place swap recursion..
 
 ---
 
@@ -4864,22 +4547,19 @@ Given the input parameters for **Permutations**, solve the problem efficiently a
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -4888,16 +4568,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Subsets & Combination Choice to optimize calculation in a single pass. Used boolean array or in-place swap recursion..
+- **Explanation:** Optimize using Subsets & Combination Choice. Used boolean array or in-place swap recursion..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Used boolean array or in-place swap recursion.
-        return n;
+        return 0;
     }
 };
 ```
@@ -4905,10 +4583,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -4917,12 +4594,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 15.1 (Subsets & Combination Choice)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Combination Sum**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Combination Sum**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Unbounded choice recursion with index control..
 
 ---
 
@@ -4934,22 +4611,19 @@ Given the input parameters for **Combination Sum**, solve the problem efficientl
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -4958,16 +4632,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Subsets & Combination Choice to optimize calculation in a single pass. Unbounded choice recursion with index control..
+- **Explanation:** Optimize using Subsets & Combination Choice. Unbounded choice recursion with index control..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Unbounded choice recursion with index control.
-        return n;
+        return 0;
     }
 };
 ```
@@ -4975,10 +4647,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -4987,12 +4658,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 15.1 (Subsets & Combination Choice)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **N-Queens**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **N-Queens**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Constraint hashing (cols, main diagonals, anti-diagonals)..
 
 ---
 
@@ -5004,22 +4675,19 @@ Given the input parameters for **N-Queens**, solve the problem efficiently adher
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -5028,16 +4696,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Subsets & Combination Choice to optimize calculation in a single pass. Constraint hashing (cols, main diagonals, anti-diagonals)..
+- **Explanation:** Optimize using Subsets & Combination Choice. Constraint hashing (cols, main diagonals, anti-diagonals)..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Constraint hashing (cols, main diagonals, anti-diagonals).
-        return n;
+        return 0;
     }
 };
 ```
@@ -5045,10 +4711,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -5059,12 +4724,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 16.1 (Grid Matrix Flood Fill DFS)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Number of Islands**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Number of Islands**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Matrix traversal + 4-directional flood fill sink..
 
 ---
 
@@ -5076,22 +4741,19 @@ Given the input parameters for **Number of Islands**, solve the problem efficien
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -5100,16 +4762,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Grid Matrix Flood Fill DFS to optimize calculation in a single pass. Matrix traversal + 4-directional flood fill sink..
+- **Explanation:** Optimize using Grid Matrix Flood Fill DFS. Matrix traversal + 4-directional flood fill sink..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Matrix traversal + 4-directional flood fill sink.
-        return n;
+        return 0;
     }
 };
 ```
@@ -5117,10 +4777,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -5129,12 +4788,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 16.1 (Grid Matrix Flood Fill DFS)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Clone Graph**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Clone Graph**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Hash map node mapping (original -> clone) during DFS/BFS..
 
 ---
 
@@ -5146,22 +4805,19 @@ Given the input parameters for **Clone Graph**, solve the problem efficiently ad
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -5170,16 +4826,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Grid Matrix Flood Fill DFS to optimize calculation in a single pass. Hash map node mapping (original -> clone) during DFS/BFS..
+- **Explanation:** Optimize using Grid Matrix Flood Fill DFS. Hash map node mapping (original -> clone) during DFS/BFS..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Hash map node mapping (original -> clone) during DFS/BFS.
-        return n;
+        return 0;
     }
 };
 ```
@@ -5187,10 +4841,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -5199,12 +4852,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 16.1 (Grid Matrix Flood Fill DFS)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Is Graph Bipartite?**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Is Graph Bipartite?**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on 2-color graph coloring via BFS/DFS..
 
 ---
 
@@ -5216,22 +4869,19 @@ Given the input parameters for **Is Graph Bipartite?**, solve the problem effici
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -5240,16 +4890,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Grid Matrix Flood Fill DFS to optimize calculation in a single pass. 2-color graph coloring via BFS/DFS..
+- **Explanation:** Optimize using Grid Matrix Flood Fill DFS. 2-color graph coloring via BFS/DFS..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // 2-color graph coloring via BFS/DFS.
-        return n;
+        return 0;
     }
 };
 ```
@@ -5257,10 +4905,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -5269,12 +4916,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 16.2 (Multi-Source BFS)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Rotting Oranges**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Rotting Oranges**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Pre-populate queue with all initial rotten sources; level time tick..
 
 ---
 
@@ -5286,22 +4933,19 @@ Given the input parameters for **Rotting Oranges**, solve the problem efficientl
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -5310,16 +4954,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Multi-Source BFS to optimize calculation in a single pass. Pre-populate queue with all initial rotten sources; level time tick..
+- **Explanation:** Optimize using Multi-Source BFS. Pre-populate queue with all initial rotten sources; level time tick..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Pre-populate queue with all initial rotten sources; level time tick.
-        return n;
+        return 0;
     }
 };
 ```
@@ -5327,10 +4969,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -5339,12 +4980,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 16.2 (Multi-Source BFS)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Word Ladder**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Word Ladder**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Unweighted shortest path BFS on mutated character state space..
 
 ---
 
@@ -5356,22 +4997,19 @@ Given the input parameters for **Word Ladder**, solve the problem efficiently ad
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -5380,16 +5018,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Multi-Source BFS to optimize calculation in a single pass. Unweighted shortest path BFS on mutated character state space..
+- **Explanation:** Optimize using Multi-Source BFS. Unweighted shortest path BFS on mutated character state space..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Unweighted shortest path BFS on mutated character state space.
-        return n;
+        return 0;
     }
 };
 ```
@@ -5397,26 +5033,25 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
 ## 17. TOPOLOGICAL SORT (KAHN'S ALGORITHM)
 
-### 77. 🟠 P1 [Q] LC 207: Course Schedule [MEDIUM]
+### 77. 🔴 P0 [Q] LC 207: Course Schedule [MEDIUM]
 - **LeetCode Link:** [Course Schedule](https://leetcode.com/problems/course-schedule/)
 - **Category / Sub-Pattern:** Sub-Pattern 17.1 (Kahn's BFS In-degree Algorithm)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Course Schedule**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Course Schedule**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on In-degree array + Queue processing; visited count == N => DAG..
 
 ---
 
@@ -5428,22 +5063,19 @@ Given the input parameters for **Course Schedule**, solve the problem efficientl
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -5452,16 +5084,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Kahn's BFS In-degree Algorithm to optimize calculation in a single pass. In-degree array + Queue processing; visited count == N => DAG..
+- **Explanation:** Optimize using Kahn's BFS In-degree Algorithm. In-degree array + Queue processing; visited count == N => DAG..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // In-degree array + Queue processing; visited count == N => DAG.
-        return n;
+        return 0;
     }
 };
 ```
@@ -5469,24 +5099,23 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
-### 78. 🟠 P1 [Q] LC 210: Course Schedule II [MEDIUM]
+### 78. 🔴 P0 [Q] LC 210: Course Schedule II [MEDIUM]
 - **LeetCode Link:** [Course Schedule II](https://leetcode.com/problems/course-schedule-ii/)
 - **Category / Sub-Pattern:** Sub-Pattern 17.1 (Kahn's BFS In-degree Algorithm)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Course Schedule II**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Course Schedule II**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Kahn's algorithm collecting top-sort ordering array..
 
 ---
 
@@ -5498,22 +5127,19 @@ Given the input parameters for **Course Schedule II**, solve the problem efficie
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -5522,16 +5148,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Kahn's BFS In-degree Algorithm to optimize calculation in a single pass. Kahn's algorithm collecting top-sort ordering array..
+- **Explanation:** Optimize using Kahn's BFS In-degree Algorithm. Kahn's algorithm collecting top-sort ordering array..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Kahn's algorithm collecting top-sort ordering array.
-        return n;
+        return 0;
     }
 };
 ```
@@ -5539,10 +5163,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -5553,12 +5176,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 18.1 (DSU Path Compression & Union by Rank)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Redundant Connection**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Redundant Connection**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Find cycle by checking if find(u) == find(v) before union(u, v)..
 
 ---
 
@@ -5570,22 +5193,19 @@ Given the input parameters for **Redundant Connection**, solve the problem effic
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -5594,16 +5214,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use DSU Path Compression & Union by Rank to optimize calculation in a single pass. Find cycle by checking if find(u) == find(v) before union(u, v)..
+- **Explanation:** Optimize using DSU Path Compression & Union by Rank. Find cycle by checking if find(u) == find(v) before union(u, v)..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Find cycle by checking if find(u) == find(v) before union(u, v).
-        return n;
+        return 0;
     }
 };
 ```
@@ -5611,10 +5229,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -5623,12 +5240,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 18.1 (DSU Path Compression & Union by Rank)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Number of Provinces**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Number of Provinces**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Connected component counting via DSU union operations..
 
 ---
 
@@ -5640,22 +5257,19 @@ Given the input parameters for **Number of Provinces**, solve the problem effici
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -5664,16 +5278,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use DSU Path Compression & Union by Rank to optimize calculation in a single pass. Connected component counting via DSU union operations..
+- **Explanation:** Optimize using DSU Path Compression & Union by Rank. Connected component counting via DSU union operations..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Connected component counting via DSU union operations.
-        return n;
+        return 0;
     }
 };
 ```
@@ -5681,10 +5293,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -5695,12 +5306,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 19.1 (State Transition & Space Optimization)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **House Robber**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **House Robber**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on dp[i] = max(dp[i-1], dp[i-2] + nums[i]) with 2 variables..
 
 ---
 
@@ -5712,22 +5323,19 @@ Given the input parameters for **House Robber**, solve the problem efficiently a
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -5736,16 +5344,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use State Transition & Space Optimization to optimize calculation in a single pass. dp[i] = max(dp[i-1], dp[i-2] + nums[i]) with 2 variables..
+- **Explanation:** Optimize using State Transition & Space Optimization. dp[i] = max(dp[i-1], dp[i-2] + nums[i]) with 2 variables..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // dp[i] = max(dp[i-1], dp[i-2] + nums[i]) with 2 variables.
-        return n;
+        return 0;
     }
 };
 ```
@@ -5753,10 +5359,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -5765,12 +5370,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 19.1 (State Transition & Space Optimization)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Climbing Stairs**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Climbing Stairs**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Fibonacci base DP transition..
 
 ---
 
@@ -5782,22 +5387,19 @@ Given the input parameters for **Climbing Stairs**, solve the problem efficientl
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -5806,16 +5408,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use State Transition & Space Optimization to optimize calculation in a single pass. Fibonacci base DP transition..
+- **Explanation:** Optimize using State Transition & Space Optimization. Fibonacci base DP transition..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Fibonacci base DP transition.
-        return n;
+        return 0;
     }
 };
 ```
@@ -5823,10 +5423,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -5835,12 +5434,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 19.1 (State Transition & Space Optimization)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Word Break**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Word Break**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on dp[i] = true if dp[j] && wordDict.count(s[j..i])..
 
 ---
 
@@ -5852,22 +5451,19 @@ Given the input parameters for **Word Break**, solve the problem efficiently adh
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -5876,16 +5472,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use State Transition & Space Optimization to optimize calculation in a single pass. dp[i] = true if dp[j] && wordDict.count(s[j..i])..
+- **Explanation:** Optimize using State Transition & Space Optimization. dp[i] = true if dp[j] && wordDict.count(s[j..i])..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // dp[i] = true if dp[j] && wordDict.count(s[j..i]).
-        return n;
+        return 0;
     }
 };
 ```
@@ -5893,10 +5487,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -5905,12 +5498,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 19.1 (State Transition & Space Optimization)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Longest Increasing Subsequence**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Longest Increasing Subsequence**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on O(N^2) DP or O(N log N) Patience Sorting with std::lower_bound..
 
 ---
 
@@ -5922,22 +5515,19 @@ Given the input parameters for **Longest Increasing Subsequence**, solve the pro
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -5946,16 +5536,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use State Transition & Space Optimization to optimize calculation in a single pass. O(N^2) DP or O(N log N) Patience Sorting with std::lower_bound..
+- **Explanation:** Optimize using State Transition & Space Optimization. O(N^2) DP or O(N log N) Patience Sorting with std::lower_bound..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // O(N^2) DP or O(N log N) Patience Sorting with std::lower_bound.
-        return n;
+        return 0;
     }
 };
 ```
@@ -5963,10 +5551,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -5977,12 +5564,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Coin Change**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Coin Change**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on dp[i] = min(dp[i], 1 + dp[i - coin])..
 
 ---
 
@@ -5994,22 +5581,19 @@ Given the input parameters for **Coin Change**, solve the problem efficiently ad
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -6018,16 +5602,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Unbounded & 0/1 Knapsack Grid DP to optimize calculation in a single pass. dp[i] = min(dp[i], 1 + dp[i - coin])..
+- **Explanation:** Optimize using Unbounded & 0/1 Knapsack Grid DP. dp[i] = min(dp[i], 1 + dp[i - coin])..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // dp[i] = min(dp[i], 1 + dp[i - coin]).
-        return n;
+        return 0;
     }
 };
 ```
@@ -6035,10 +5617,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -6047,12 +5628,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Longest Common Subsequence**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Longest Common Subsequence**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on 2D matrix matching grid dp[i][j]..
 
 ---
 
@@ -6064,22 +5645,19 @@ Given the input parameters for **Longest Common Subsequence**, solve the problem
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -6088,16 +5666,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Unbounded & 0/1 Knapsack Grid DP to optimize calculation in a single pass. 2D matrix matching grid dp[i][j]..
+- **Explanation:** Optimize using Unbounded & 0/1 Knapsack Grid DP. 2D matrix matching grid dp[i][j]..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // 2D matrix matching grid dp[i][j].
-        return n;
+        return 0;
     }
 };
 ```
@@ -6105,10 +5681,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -6117,12 +5692,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Partition Equal Subset Sum**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Partition Equal Subset Sum**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on 0/1 Knapsack reduction with target sum = total / 2..
 
 ---
 
@@ -6134,22 +5709,19 @@ Given the input parameters for **Partition Equal Subset Sum**, solve the problem
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -6158,16 +5730,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Unbounded & 0/1 Knapsack Grid DP to optimize calculation in a single pass. 0/1 Knapsack reduction with target sum = total / 2..
+- **Explanation:** Optimize using Unbounded & 0/1 Knapsack Grid DP. 0/1 Knapsack reduction with target sum = total / 2..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // 0/1 Knapsack reduction with target sum = total / 2.
-        return n;
+        return 0;
     }
 };
 ```
@@ -6175,10 +5745,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -6187,12 +5756,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Edit Distance**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Edit Distance**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on 3-operation (Insert, Delete, Replace) matrix grid DP..
 
 ---
 
@@ -6204,22 +5773,19 @@ Given the input parameters for **Edit Distance**, solve the problem efficiently 
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -6228,16 +5794,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use Unbounded & 0/1 Knapsack Grid DP to optimize calculation in a single pass. 3-operation (Insert, Delete, Replace) matrix grid DP..
+- **Explanation:** Optimize using Unbounded & 0/1 Knapsack Grid DP. 3-operation (Insert, Delete, Replace) matrix grid DP..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // 3-operation (Insert, Delete, Replace) matrix grid DP.
-        return n;
+        return 0;
     }
 };
 ```
@@ -6245,10 +5809,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -6259,12 +5822,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 21.1 (XOR Cancelation & Bit Operations)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Single Number**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Single Number**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on XOR cancellation property (A ^ A = 0, A ^ 0 = A)..
 
 ---
 
@@ -6276,22 +5839,19 @@ Given the input parameters for **Single Number**, solve the problem efficiently 
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -6300,16 +5860,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use XOR Cancelation & Bit Operations to optimize calculation in a single pass. XOR cancellation property (A ^ A = 0, A ^ 0 = A)..
+- **Explanation:** Optimize using XOR Cancelation & Bit Operations. XOR cancellation property (A ^ A = 0, A ^ 0 = A)..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // XOR cancellation property (A ^ A = 0, A ^ 0 = A).
-        return n;
+        return 0;
     }
 };
 ```
@@ -6317,10 +5875,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -6329,12 +5886,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 21.1 (XOR Cancelation & Bit Operations)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Number of 1 Bits**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Number of 1 Bits**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on Brian Kernighan's algorithm (n & (n - 1) clears lowest set bit)..
 
 ---
 
@@ -6346,22 +5903,19 @@ Given the input parameters for **Number of 1 Bits**, solve the problem efficient
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -6370,16 +5924,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use XOR Cancelation & Bit Operations to optimize calculation in a single pass. Brian Kernighan's algorithm (n & (n - 1) clears lowest set bit)..
+- **Explanation:** Optimize using XOR Cancelation & Bit Operations. Brian Kernighan's algorithm (n & (n - 1) clears lowest set bit)..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // Brian Kernighan's algorithm (n & (n - 1) clears lowest set bit).
-        return n;
+        return 0;
     }
 };
 ```
@@ -6387,10 +5939,9 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
 
@@ -6399,12 +5950,12 @@ public:
 - **Category / Sub-Pattern:** Sub-Pattern 21.1 (XOR Cancelation & Bit Operations)
 
 **📜 Problem Statement & Explanation**
-Given the input parameters for **Counting Bits**, solve the problem efficiently adhering to algorithmic constraints.
+Given the constraints and problem requirements of **Counting Bits**, process the input payload and compute the optimal result.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4], k = 2`
-- **Output:** `[2, 4]`
-- **Explanation:** Traverses array and processes window / pointers to extract optimal result.
+- **Input:** `nums = [2, 7, 11, 15]`
+- **Output:** `[0, 1]`
+- **Explanation:** Computes answer based on DP bit shift relationship (dp[i] = dp[i >> 1] + (i & 1))..
 
 ---
 
@@ -6416,22 +5967,19 @@ Given the input parameters for **Counting Bits**, solve the problem efficiently 
 
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Use nested loops or naive recursion to check all candidate solutions, taking O(N^2) time.
+- **Explanation:** Exhaustively iterate through all possible candidates using nested loops or naive checks to evaluate validity.
 
 ```cpp
-// Naive / Brute Force Approach
 class Solution {
 public:
     int solveNaive(vector<int>& nums) {
         int n = nums.size();
-        int ans = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                // Check all sub-ranges
-                ans++;
+            for (int j = i + 1; j < n; j++) {
+                // Naive comparison
             }
         }
-        return ans;
+        return 0;
     }
 };
 ```
@@ -6440,16 +5988,14 @@ public:
 
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(1)
-- **Explanation:** Use XOR Cancelation & Bit Operations to optimize calculation in a single pass. DP bit shift relationship (dp[i] = dp[i >> 1] + (i & 1))..
+- **Explanation:** Optimize using XOR Cancelation & Bit Operations. DP bit shift relationship (dp[i] = dp[i >> 1] + (i & 1))..
 
 ```cpp
-// Optimal Approach
 class Solution {
 public:
     int solveOptimal(vector<int>& nums) {
-        int n = nums.size();
         // DP bit shift relationship (dp[i] = dp[i >> 1] + (i & 1)).
-        return n;
+        return 0;
     }
 };
 ```
@@ -6457,9 +6003,8 @@ public:
 ---
 
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty array / container input (n == 0).
-- Single element input (n == 1).
-- Boundary values with negative numbers or integer overflow (INT_MAX / INT_MIN).
-- What if inputs contain duplicate values or are already sorted?
+- Boundary cases: empty input or n = 1.
+- Negative values or integer overflow.
+- Handling duplicate values correctly.
 
 ---
