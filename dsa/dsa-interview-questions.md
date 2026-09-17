@@ -842,17 +842,27 @@ Given the constraints for **Find Peak Element**, compute the target response usi
 - **Category / Sub-Pattern:** Sub-Pattern 8.1 (Interval Merging & Insertion)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Merge Intervals**, compute the target response using LeetCode function signature `solve`.
+Given an array of `intervals` where `intervals[i] = [start_i, end_i]`, merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Sort by start time, merge overlapping bounds..
+- **Input:** `intervals = [[1,3],[2,6],[8,10],[15,18]]`
+- **Output:** `[[1,6],[8,10],[15,18]]`
+- **Explanation:** Since intervals `[1,3]` and `[2,6]` overlap, merge them into `[1,6]`.
+
+**Example 2:**
+- **Input:** `intervals = [[1,4],[4,5]]`
+- **Output:** `[[1,5]]`
+- **Explanation:** Intervals `[1,4]` and `[4,5]` are considered overlapping.
+
+**Constraints:**
+- `1 <= intervals.length <= 10^4`
+- `intervals[i].length == 2`
+- `0 <= start_i <= end_i <= 10^4`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 8.1 (Interval Merging & Insertion)
-- **Key Takeaway:** Sort by start time, merge overlapping bounds.
+- **Key Takeaway:** Sort by start time, merge overlapping bounds (`res.back()[1] = max(res.back()[1], interval[1])`).
 
 ---
 
@@ -861,17 +871,30 @@ Given the constraints for **Merge Intervals**, compute the target response using
 - **Category / Sub-Pattern:** Sub-Pattern 8.1 (Interval Merging & Insertion)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Insert Interval**, compute the target response using LeetCode function signature `solve`.
+You are given an array of non-overlapping intervals `intervals` where `intervals[i] = [start_i, end_i]` sorted in ascending order by `start_i`. You are also given an interval `newInterval = [start, end]` that represents the start and end of another interval.
+
+Insert `newInterval` into `intervals` such that `intervals` is still sorted in ascending order by `start_i` and `intervals` still has no overlapping intervals (merge overlapping intervals if necessary). Return `intervals` after the insertion.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using 3-phase linear insertion (left, merged mid, right)..
+- **Input:** `intervals = [[1,3],[6,9]], newInterval = [2,5]`
+- **Output:** `[[1,5],[6,9]]`
+
+**Example 2:**
+- **Input:** `intervals = [[1,2],[3,5],[6,7],[8,10],[12,16]], newInterval = [4,8]`
+- **Output:** `[[1,2],[3,10],[12,16]]`
+- **Explanation:** Because the new interval `[4,8]` overlaps with `[3,5],[6,7],[8,10]`.
+
+**Constraints:**
+- `0 <= intervals.length <= 10^4`
+- `intervals[i].length == 2`
+- `0 <= start_i <= end_i <= 10^5`
+- `intervals` is sorted by `start_i` in ascending order.
+- `newInterval.length == 2`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 8.1 (Interval Merging & Insertion)
-- **Key Takeaway:** 3-phase linear insertion (left, merged mid, right).
+- **Key Takeaway:** 3-phase linear insertion (left non-overlapping, merged overlapping mid, right non-overlapping).
 
 ---
 
@@ -880,17 +903,32 @@ Given the constraints for **Insert Interval**, compute the target response using
 - **Category / Sub-Pattern:** Sub-Pattern 8.1 (Interval Merging & Insertion)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Non-overlapping Intervals**, compute the target response using LeetCode function signature `solve`.
+Given an array of intervals `intervals` where `intervals[i] = [start_i, end_i]`, return the minimum number of intervals you need to remove to make the rest of the intervals non-overlapping.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Greedy scheduling sorted by end time..
+- **Input:** `intervals = [[1,2],[2,3],[3,4],[1,3]]`
+- **Output:** `1`
+- **Explanation:** `[1,3]` can be removed and the rest of the intervals are non-overlapping.
+
+**Example 2:**
+- **Input:** `intervals = [[1,2],[1,2],[1,2]]`
+- **Output:** `2`
+- **Explanation:** You need to remove two `[1,2]` to make the rest of the intervals non-overlapping.
+
+**Example 3:**
+- **Input:** `intervals = [[1,2],[2,3]]`
+- **Output:** `0`
+- **Explanation:** You don't need to remove any of the intervals since they are already non-overlapping.
+
+**Constraints:**
+- `1 <= intervals.length <= 10^5`
+- `intervals[i].length == 2`
+- `-5 * 10^4 <= start_i < end_i <= 5 * 10^4`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 8.1 (Interval Merging & Insertion)
-- **Key Takeaway:** Greedy scheduling sorted by end time.
+- **Key Takeaway:** Greedy scheduling: Sort by **end time** `intervals[i][1]`, discard current if `start < prevEnd`.
 
 ---
 
@@ -899,17 +937,25 @@ Given the constraints for **Non-overlapping Intervals**, compute the target resp
 - **Category / Sub-Pattern:** Sub-Pattern 8.1 (Interval Merging & Insertion)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Meeting Rooms II**, compute the target response using LeetCode function signature `solve`.
+Given an array of meeting time intervals `intervals` where `intervals[i] = [start_i, end_i]`, return the minimum number of conference rooms required to hold all meetings.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Sort by start time + Min-Heap of active room end-times..
+- **Input:** `intervals = [[0,30],[5,10],[15,20]]`
+- **Output:** `2`
+- **Explanation:** Room 1 handles `[0,30]`. Room 2 handles `[5,10]` and `[15,20]`.
+
+**Example 2:**
+- **Input:** `intervals = [[7,10],[2,4]]`
+- **Output:** `1`
+
+**Constraints:**
+- `1 <= intervals.length <= 10^4`
+- `0 <= start_i < end_i <= 10^6`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 8.1 (Interval Merging & Insertion)
-- **Key Takeaway:** Sort by start time + Min-Heap of active room end-times.
+- **Key Takeaway:** Sort by start time + Min-Heap of active room end-times (`minHeap.top() <= start` to reuse room).
 
 ---
 
