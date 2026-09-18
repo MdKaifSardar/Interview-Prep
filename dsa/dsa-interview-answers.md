@@ -12,16 +12,26 @@ Companion answer key to `dsa-interview-questions.md`. Every single answer strict
 ## 1. MATRIX SIMULATION & ARRAY TRANSFORMATIONS
 
 ### 1. 🔴 P0 [Q] LC 54: Spiral Matrix [MEDIUM]
-- **LeetCode Link:** [Spiral Matrix](https://leetcode.com/problems/spiral-matrix/)
+- **LeetCode Link:** [LC 54: Spiral Matrix](https://leetcode.com/problems/spiral-matrix/)
 - **Category / Sub-Pattern:** Sub-Pattern 1.1 (Matrix Spiral Traversal & Generation)
 
 **📜 Problem Statement & Explanation**
-Given an `m x n` matrix, return all elements of the matrix in spiral order.
+Given an `m x n` matrix, return all elements of the matrix in spiral order starting from top-left and moving clockwise.
 
 **Example 1:**
-- **Input:** `matrix = [[1,2,3],[4,5,6],[7,8,9]]`
+- **Input:** `matrix = [[1,2,3],[4,5,6],[7,8,9]]` 
 - **Output:** `[1,2,3,6,9,8,7,4,5]`
 - **Explanation:** Traverse top row (1,2,3), right col (6,9), bottom row (8,7), left col (4), inner (5).
+
+**Example 2:**
+- **Input:** `matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]`
+- **Output:** `[1,2,3,4,8,12,11,10,9,5,6,7]`
+
+**Constraints:**
+- `m == matrix.length`
+- `n == matrix[i].length`
+- `1 <= m, n <= 10`
+- `-100 <= matrix[i][j] <= 100`
 
 ---
 **🧠 Short Solution Summary & Revision Notes**
@@ -31,7 +41,7 @@ Given an `m x n` matrix, return all elements of the matrix in spiral order.
 ---
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(M * N) | **Space:** O(M * N)
-- **Explanation:** Maintain a 2D boolean `visited[m][n]` grid and direction vectors for right, down, left, up.
+- **Explanation:** Maintain a 2D boolean array `visited[m][n]` and four directional vectors `dr = {0, 1, 0, -1}` and `dc = {1, 0, -1, 0}` representing Right, Down, Left, and Up. Start at `(0, 0)` moving right. At each step, calculate next position `(nr, nc)`. If out of bounds or visited, turn right by updating direction index `di = (di + 1) % 4`. Iterate M * N times.
 
 ```cpp
 class Solution {
@@ -62,7 +72,12 @@ public:
 ---
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(M * N) | **Space:** O(1) auxiliary
-- **Explanation:** Maintain 4 boundary pointers: `top`, `bottom`, `left`, `right`. Traverse boundaries clockwise.
+- **Explanation:** Use 4 boundary pointers: `top = 0`, `bottom = m - 1`, `left = 0`, `right = n - 1`. Traverse clockwise:
+1. Top row: from `left` to `right` along `matrix[top][j]`, then increment `top++`.
+2. Right column: from `top` to `bottom` along `matrix[i][right]`, then decrement `right--`.
+3. Bottom row (if `top <= bottom`): from `right` to `left` along `matrix[bottom][j]`, then decrement `bottom--`.
+4. Left column (if `left <= right`): from `bottom` to `top` along `matrix[i][left]`, then increment `left++`.
+Repeat while `top <= bottom && left <= right`.
 
 ```cpp
 class Solution {
@@ -94,43 +109,52 @@ public:
 ---
 **⚠️ Edge Cases & Interview Gotchas**
 - Single row or single column matrix.
-- Empty matrix.
+- 1 x 1 matrix `[[5]]`.
+- Non-square rectangular matrices.
 
 ---
 
 ### 2. 🔴 P0 [Q] LC 59: Spiral Matrix II [MEDIUM]
-- **LeetCode Link:** [Spiral Matrix II](https://leetcode.com/problems/spiral-matrix-ii/)
+- **LeetCode Link:** [LC 59: Spiral Matrix II](https://leetcode.com/problems/spiral-matrix-ii/)
 - **Category / Sub-Pattern:** Sub-Pattern 1.1 (Matrix Spiral Traversal & Generation)
 
 **📜 Problem Statement & Explanation**
 Given a positive integer `n`, generate an `n x n` matrix filled with elements from `1` to `n^2` in spiral order.
 
 **Example 1:**
-- **Input:** `n = 3`
-- **Output:** `[[1,2,3],[8,9,4],[7,6,5]]`
-- **Explanation:** Fills 3x3 matrix in spiral order.
+- **Input:** `n = 3` 
+- **Output:** `[[1,2,3],[8,9,4],[7,6,5]]` 
+
+**Example 2:**
+- **Input:** `n = 1` 
+- **Output:** `[[1]]`
+
+**Constraints:**
+- `1 <= n <= 20`
 
 ---
 **🧠 Short Solution Summary & Revision Notes**
 - **Main Pattern:** Sub-Pattern 1.1 (Matrix Spiral Traversal & Generation)
-- **Memory Mnemonic:** *"Generating N x N matrix in spiral order filling 1..N^2."*
+- **Memory Mnemonic:** *"Sequential filling 1..N^2 with 4-boundary shrinking loop."*
 
 ---
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(N^2)
-- **Explanation:** Simulate direction turning using direction arrays `dr` and `dc`.
+- **Explanation:** Allocate an N x N grid initialized with zeros and a boolean `visited` grid. Maintain directional vectors `dr` and `dc` for Right, Down, Left, Up. Sequentially assign value `val` from 1 to N^2 while stepping through coordinates, turning right whenever a wall or visited cell is reached.
 
 ```cpp
 class Solution {
 public:
     vector<vector<int>> generateMatrix(int n) {
         vector<vector<int>> res(n, vector<int>(n, 0));
+        vector<vector<bool>> visited(n, vector<bool>(n, false));
         int dr[] = {0, 1, 0, -1}, dc[] = {1, 0, -1, 0};
         int r = 0, c = 0, di = 0;
         for (int val = 1; val <= n * n; val++) {
             res[r][c] = val;
+            visited[r][c] = true;
             int nr = r + dr[di], nc = c + dc[di];
-            if (nr >= 0 && nr < n && nc >= 0 && nc < n && res[nr][nc] == 0) {
+            if (nr >= 0 && nr < n && nc >= 0 && nc < n && !visited[nr][nc]) {
                 r = nr; c = nc;
             } else {
                 di = (di + 1) % 4;
@@ -145,24 +169,35 @@ public:
 ---
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1) auxiliary
-- **Explanation:** Use 4 boundary variables `top`, `bottom`, `left`, `right` and fill elements 1 to `n^2`.
+- **Explanation:** Initialize an N x N matrix and boundary variables: `top = 0`, `bottom = n - 1`, `left = 0`, `right = n - 1`. Maintain counter `val = 1`.
+Execute a 4-phase loop:
+1. Fill top row `left` to `right` at `res[top][j]`, then `top++`.
+2. Fill right column `top` to `bottom` at `res[i][right]`, then `right--`.
+3. Fill bottom row `right` to `left` at `res[bottom][j]`, then `bottom--`.
+4. Fill left column `bottom` to `top` at `res[i][left]`, then `left++`.
+Continue until `val > n * n`.
 
 ```cpp
 class Solution {
 public:
     vector<vector<int>> generateMatrix(int n) {
-        vector<vector<int>> res(n, vector<int>(n));
-        int top = 0, bottom = n - 1, left = 0, right = n - 1;
+        vector<vector<int>> res(n, vector<int>(n, 0));
+        int top = 0, bottom = n - 1;
+        int left = 0, right = n - 1;
         int val = 1;
         while (top <= bottom && left <= right) {
-            for (int col = left; col <= right; col++) res[top][col] = val++;
+            for (int j = left; j <= right; j++) res[top][j] = val++;
             top++;
-            for (int row = top; row <= bottom; row++) res[row][right] = val++;
+            for (int i = top; i <= bottom; i++) res[i][right] = val++;
             right--;
-            for (int col = right; col >= left; col--) res[bottom][col] = val++;
-            bottom--;
-            for (int row = bottom; row >= top; row--) res[left][row] = val++;
-            left++;
+            if (top <= bottom) {
+                for (int j = right; j >= left; j--) res[bottom][j] = val++;
+                bottom--;
+            }
+            if (left <= right) {
+                for (int i = bottom; i >= top; i--) res[i][left] = val++;
+                left++;
+            }
         }
         return res;
     }
@@ -171,52 +206,63 @@ public:
 
 ---
 **⚠️ Edge Cases & Interview Gotchas**
-- n = 1 single element matrix.
+- `n = 1` (returns `[[1]]`).
+- Maximum boundary `n = 20`.
 
 ---
 
 ### 3. 🔴 P0 [Q] LC 48: Rotate Image [MEDIUM]
-- **LeetCode Link:** [Rotate Image](https://leetcode.com/problems/rotate-image/)
+- **LeetCode Link:** [LC 48: Rotate Image](https://leetcode.com/problems/rotate-image/)
 - **Category / Sub-Pattern:** Sub-Pattern 1.2 (Matrix Symmetry & In-Place Rotations)
 
 **📜 Problem Statement & Explanation**
-Rotate an `n x n` 2D matrix representing an image by 90 degrees (clockwise) in-place.
+You are given an `n x n` 2D matrix representing an image, rotate the image by 90 degrees (clockwise) in-place.
 
 **Example 1:**
-- **Input:** `matrix = [[1,2,3],[4,5,6],[7,8,9]]`
-- **Output:** `[[7,4,1],[8,5,2],[9,6,3]]`
-- **Explanation:** Matrix rotated 90 degrees clockwise in-place.
+- **Input:** `matrix = [[1,2,3],[4,5,6],[7,8,9]]` 
+- **Output:** `[[7,4,1],[8,5,2],[9,6,3]]` 
+
+**Example 2:**
+- **Input:** `matrix = [[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]]` 
+- **Output:** `[[15,13,2,5],[14,3,4,1],[12,6,8,9],[16,7,10,11]]`
+
+**Constraints:**
+- `n == matrix.length == matrix[i].length` 
+- `1 <= n <= 20` 
+- `-1000 <= matrix[i][j] <= 1000`
 
 ---
 **🧠 Short Solution Summary & Revision Notes**
 - **Main Pattern:** Sub-Pattern 1.2 (Matrix Symmetry & In-Place Rotations)
-- **Memory Mnemonic:** *"Transpose matrix (swap A[i][j] & A[j][i]) + reverse each row in-place."*
+- **Memory Mnemonic:** *"Transpose matrix + reverse each row in-place."*
 
 ---
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(N^2)
-- **Explanation:** Allocate auxiliary `temp` matrix. Copy `matrix[r][c]` to `temp[c][n-1-r]`.
+- **Explanation:** Allocate a separate N x N auxiliary matrix `rotated`. Map cell `matrix[i][j]` in original grid to `rotated[j][n - 1 - i]`. Once populated, copy all values from `rotated` back into `matrix` to satisfy in-place signature.
 
 ```cpp
 class Solution {
 public:
     void rotate(vector<vector<int>>& matrix) {
         int n = matrix.size();
-        vector<vector<int>> temp(n, vector<int>(n));
-        for (int r = 0; r < n; r++) {
-            for (int c = 0; c < n; c++) {
-                temp[c][n - 1 - r] = matrix[r][c];
+        vector<vector<int>> rotated(n, vector<int>(n));
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                rotated[j][n - 1 - i] = matrix[i][j];
             }
         }
-        matrix = temp;
+        matrix = rotated;
     }
 };
 ```
 
 ---
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1) in-place
-- **Explanation:** 1) Transpose matrix (swap `matrix[i][j]` with `matrix[j][i]`). 2) Reverse each row.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(1) auxiliary
+- **Explanation:** Apply a 2-step geometric decomposition:
+1. **Transpose Matrix:** Swap element `matrix[i][j]` with `matrix[j][i]` for all i < j. This flips the matrix across its main diagonal.
+2. **Reverse Each Row:** Reverse the elements of each row horizontally (`reverse(matrix[i].begin(), matrix[i].end())`). Combining transpose + horizontal reflection yields an exact 90° clockwise rotation in O(1) space.
 
 ```cpp
 class Solution {
@@ -237,21 +283,30 @@ public:
 
 ---
 **⚠️ Edge Cases & Interview Gotchas**
-- 1x1 matrix.
+- 1 x 1 matrix `[[1]]`.
+- 2 x 2 matrix `[[1,2],[3,4]]`.
+- Matrix with negative elements.
 
 ---
 
 ### 4. 🔴 P0 [Q] Custom / Interview: Rotate Matrix 90 Deg Anti-Clockwise [MEDIUM]
-- **LeetCode Link:** [Rotate Matrix 90 Deg Anti-Clockwise](#)
+- **LeetCode Link:** [Custom / Interview: Rotate Matrix 90 Deg Anti-Clockwise](https://leetcode.com/problems/rotate-image/)
 - **Category / Sub-Pattern:** Sub-Pattern 1.2 (Matrix Symmetry & In-Place Rotations)
 
 **📜 Problem Statement & Explanation**
-Rotate an `n x n` 2D matrix by 90 degrees anti-clockwise in-place.
+Given an `n x n` 2D matrix, rotate the matrix by 90 degrees anti-clockwise (counter-clockwise) in-place.
 
 **Example 1:**
-- **Input:** `matrix = [[1,2,3],[4,5,6],[7,8,9]]`
-- **Output:** `[[3,6,9],[2,5,8],[1,4,7]]`
-- **Explanation:** Rotated anti-clockwise.
+- **Input:** `matrix = [[1,2,3],[4,5,6],[7,8,9]]` 
+- **Output:** `[[3,6,9],[2,5,8],[1,4,7]]` 
+
+**Example 2:**
+- **Input:** `matrix = [[1,2],[3,4]]` 
+- **Output:** `[[2,4],[1,3]]`
+
+**Constraints:**
+- `n == matrix.length == matrix[i].length` 
+- `1 <= n <= 20`
 
 ---
 **🧠 Short Solution Summary & Revision Notes**
@@ -261,38 +316,47 @@ Rotate an `n x n` 2D matrix by 90 degrees anti-clockwise in-place.
 ---
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(N^2)
-- **Explanation:** Use auxiliary `temp` matrix.
+- **Explanation:** Allocate an auxiliary matrix `rotated[n][n]`. For anti-clockwise rotation, element `matrix[i][j]` is placed into `rotated[n - 1 - j][i]`. Copy result back to input matrix.
 
 ```cpp
 class Solution {
 public:
     void rotateAntiClockwise(vector<vector<int>>& matrix) {
         int n = matrix.size();
-        vector<vector<int>> temp(n, vector<int>(n));
-        for (int r = 0; r < n; r++)
-            for (int c = 0; c < n; c++)
-                temp[n - 1 - c][r] = matrix[r][c];
-        matrix = temp;
+        vector<vector<int>> rotated(n, vector<int>(n));
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                rotated[n - 1 - j][i] = matrix[i][j];
+            }
+        }
+        matrix = rotated;
     }
 };
 ```
 
 ---
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(1) in-place
-- **Explanation:** 1) Transpose matrix. 2) Reverse each column.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(1) auxiliary
+- **Explanation:** Apply a 2-step geometric transformation:
+1. **Transpose Matrix:** Swap `matrix[i][j]` with `matrix[j][i]` for all i < j.
+2. **Reverse Each Column:** For each column j, swap element `matrix[top][j]` with `matrix[bottom][j]` moving `top` down and `bottom` up. This flips the matrix vertically, achieving 90° counter-clockwise rotation.
 
 ```cpp
 class Solution {
 public:
     void rotateAntiClockwise(vector<vector<int>>& matrix) {
         int n = matrix.size();
-        for (int i = 0; i < n; i++)
-            for (int j = i + 1; j < n; j++)
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
                 swap(matrix[i][j], matrix[j][i]);
-        for (int c = 0; c < n; c++) {
+            }
+        }
+        for (int j = 0; j < n; j++) {
             int top = 0, bottom = n - 1;
-            while (top < bottom) swap(matrix[top++][c], matrix[bottom--][c]);
+            while (top < bottom) {
+                swap(matrix[top][j], matrix[bottom][j]);
+                top++; bottom--;
+            }
         }
     }
 };
@@ -300,21 +364,31 @@ public:
 
 ---
 **⚠️ Edge Cases & Interview Gotchas**
-- 1x1 matrix.
+- 1 x 1 matrix.
+- 2 x 2 matrix.
 
 ---
 
 ### 5. 🔴 P0 [Q] LC 73: Set Matrix Zeroes [MEDIUM]
-- **LeetCode Link:** [Set Matrix Zeroes](https://leetcode.com/problems/set-matrix-zeroes/)
+- **LeetCode Link:** [LC 73: Set Matrix Zeroes](https://leetcode.com/problems/set-matrix-zeroes/)
 - **Category / Sub-Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
 
 **📜 Problem Statement & Explanation**
-Given an `m x n` integer matrix, if an element is `0`, set its entire row and column to `0`s in-place.
+Given an `m x n` integer matrix `matrix`, if an element is `0`, set its entire row and column to `0`'s. You must do it in-place.
 
 **Example 1:**
-- **Input:** `matrix = [[1,1,1],[1,0,1],[1,1,1]]`
-- **Output:** `[[1,0,1],[0,0,0],[1,0,1]]`
-- **Explanation:** Row 1 and Col 1 set to 0.
+- **Input:** `matrix = [[1,1,1],[1,0,1],[1,1,1]]` 
+- **Output:** `[[1,0,1],[0,0,0],[1,0,1]]` 
+
+**Example 2:**
+- **Input:** `matrix = [[0,1,2,0],[3,4,5,2],[1,3,1,5]]` 
+- **Output:** `[[0,0,0,0],[0,4,5,0],[0,3,1,0]]`
+
+**Constraints:**
+- `m == matrix.length` 
+- `n == matrix[0].length` 
+- `1 <= m, n <= 200` 
+- `-2^31 <= matrix[i][j] <= 2^31 - 1`
 
 ---
 **🧠 Short Solution Summary & Revision Notes**
@@ -323,24 +397,32 @@ Given an `m x n` integer matrix, if an element is `0`, set its entire row and co
 
 ---
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(M*N*(M+N)) | **Space:** O(M*N)
-- **Explanation:** Make matrix copy `clone`. On zero in matrix, zero out row/col in `clone`.
+- **Complexity:** **Time:** O(M * N) | **Space:** O(M + N)
+- **Explanation:** Maintain two separate boolean arrays: `rowHasZero[m]` and `colHasZero[n]`. Perform a first pass over `matrix` to mark `rowHasZero[i] = true` and `colHasZero[j] = true` whenever `matrix[i][j] == 0`. Perform a second pass: if `rowHasZero[i] || colHasZero[j]` is true, set `matrix[i][j] = 0`.
 
 ```cpp
 class Solution {
 public:
     void setZeroes(vector<vector<int>>& matrix) {
         int m = matrix.size(), n = matrix[0].size();
-        vector<vector<int>> clone = matrix;
-        for (int r = 0; r < m; r++) {
-            for (int c = 0; c < n; c++) {
-                if (matrix[r][c] == 0) {
-                    for (int k = 0; k < n; k++) clone[r][k] = 0;
-                    for (int k = 0; k < m; k++) clone[k][c] = 0;
+        vector<bool> rowHasZero(m, false);
+        vector<bool> colHasZero(n, false);
+        
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 0) {
+                    rowHasZero[i] = true;
+                    colHasZero[j] = true;
                 }
             }
         }
-        matrix = clone;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (rowHasZero[i] || colHasZero[j]) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
     }
 };
 ```
@@ -348,49 +430,68 @@ public:
 ---
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(M * N) | **Space:** O(1) auxiliary
-- **Explanation:** Use first row and first column as dummy markers, plus `col0` for column 0.
+- **Explanation:** Use the matrix's own **first row** (`matrix[0][j]`) and **first column** (`matrix[i][0]`) as state storage arrays to eliminate auxiliary memory!
+1. Use two variables `firstRowZero` and `firstColZero` to track if row 0 or col 0 initially contain any zeros.
+2. Iterate through grid (i=1..m-1, j=1..n-1). If `matrix[i][j] == 0`, mark `matrix[i][0] = 0` and `matrix[0][j] = 0`.
+3. Iterate (i=1..m-1, j=1..n-1) and set `matrix[i][j] = 0` if `matrix[i][0] == 0 || matrix[0][j] == 0`.
+4. Finally, update row 0 if `firstRowZero` is true, and col 0 if `firstColZero` is true.
 
 ```cpp
 class Solution {
 public:
     void setZeroes(vector<vector<int>>& matrix) {
         int m = matrix.size(), n = matrix[0].size();
-        bool col0 = false;
-        for (int i = 0; i < m; i++) {
-            if (matrix[i][0] == 0) col0 = true;
+        bool firstRowZero = false, firstColZero = false;
+        
+        for (int j = 0; j < n; j++) if (matrix[0][j] == 0) firstRowZero = true;
+        for (int i = 0; i < m; i++) if (matrix[i][0] == 0) firstColZero = true;
+        
+        for (int i = 1; i < m; i++) {
             for (int j = 1; j < n; j++) {
                 if (matrix[i][j] == 0) {
-                    matrix[i][0] = 0; matrix[0][j] = 0;
+                    matrix[i][0] = 0;
+                    matrix[0][j] = 0;
                 }
             }
         }
-        for (int i = m - 1; i >= 0; i--) {
-            for (int j = n - 1; j >= 1; j--) {
-                if (matrix[i][0] == 0 || matrix[0][j] == 0) matrix[i][j] = 0;
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                if (matrix[i][0] == 0 || matrix[0][j] == 0) {
+                    matrix[i][j] = 0;
+                }
             }
-            if (col0) matrix[i][0] = 0;
         }
+        if (firstRowZero) for (int j = 0; j < n; j++) matrix[0][j] = 0;
+        if (firstColZero) for (int i = 0; i < m; i++) matrix[i][0] = 0;
     }
 };
 ```
 
 ---
 **⚠️ Edge Cases & Interview Gotchas**
-- Zero in first row or col.
+- Zeros already in row 0 or col 0.
+- Matrix with all zeros or no zeros.
+- Single row / single column matrices.
 
 ---
 
 ### 6. 🔴 P0 [Q] LC 118: Pascal's Triangle [EASY]
-- **LeetCode Link:** [Pascal's Triangle](https://leetcode.com/problems/pascals-triangle/)
+- **LeetCode Link:** [LC 118: Pascal's Triangle](https://leetcode.com/problems/pascals-triangle/)
 - **Category / Sub-Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
 
 **📜 Problem Statement & Explanation**
-Return first `numRows` of Pascal's triangle.
+Given an integer `numRows`, return the first `numRows` of Pascal's triangle.
 
 **Example 1:**
-- **Input:** `numRows = 5`
-- **Output:** `[[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]`
-- **Explanation:** Sums of adjacent numbers above.
+- **Input:** `numRows = 5` 
+- **Output:** `[[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]` 
+
+**Example 2:**
+- **Input:** `numRows = 1` 
+- **Output:** `[[1]]`
+
+**Constraints:**
+- `1 <= numRows <= 30`
 
 ---
 **🧠 Short Solution Summary & Revision Notes**
@@ -399,66 +500,90 @@ Return first `numRows` of Pascal's triangle.
 
 ---
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^3) | **Space:** O(N^2)
-- **Explanation:** Calculate each element using combinations `nCr`.
+- **Complexity:** **Time:** O(numRows^3) | **Space:** O(1) auxiliary
+- **Explanation:** Calculate each value in Pascal's triangle at row r and column c using combination formula nCr = r! / (c! * (r-c)!). Computing factorials for every cell causes redundant multiplication and integer overflow for r > 12.
 
 ```cpp
 class Solution {
+private:
     long long nCr(int n, int r) {
         long long res = 1;
-        for (int i = 0; i < r; i++) res = res * (n - i) / (i + 1);
+        for (int i = 0; i < r; i++) {
+            res = res * (n - i);
+            res = res / (i + 1);
+        }
         return res;
     }
 public:
     vector<vector<int>> generate(int numRows) {
-        vector<vector<int>> res;
-        for (int r = 0; r < numRows; r++) {
+        vector<vector<int>> triangle;
+        for (int i = 0; i < numRows; i++) {
             vector<int> row;
-            for (int c = 0; c <= r; c++) row.push_back(nCr(r, c));
-            res.push_back(row);
+            for (int j = 0; j <= i; j++) {
+                row.push_back(nCr(i, j));
+            }
+            triangle.push_back(row);
         }
-        return res;
+        return triangle;
     }
 };
 ```
 
 ---
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(N^2)
-- **Explanation:** Build row `i` from previous row `i-1` by adding `res[i-1][j-1] + res[i-1][j]`.
+- **Complexity:** **Time:** O(numRows^2) | **Space:** O(1) auxiliary
+- **Explanation:** Use dynamic programming to build rows iteratively:
+1. Initialize `triangle` vector.
+2. For each row i from 0 to `numRows - 1`: create a vector `row` of size `i + 1` filled with `1`s.
+3. For middle elements (j=1..i-1), compute `row[j] = triangle[i - 1][j - 1] + triangle[i - 1][j]`.
+4. Push `row` into `triangle`.
 
 ```cpp
 class Solution {
 public:
     vector<vector<int>> generate(int numRows) {
-        vector<vector<int>> res;
+        vector<vector<int>> triangle;
         for (int i = 0; i < numRows; i++) {
             vector<int> row(i + 1, 1);
-            for (int j = 1; j < i; j++) row[j] = res[i - 1][j - 1] + res[i - 1][j];
-            res.push_back(row);
+            for (int j = 1; j < i; j++) {
+                row[j] = triangle[i - 1][j - 1] + triangle[i - 1][j];
+            }
+            triangle.push_back(row);
         }
-        return res;
+        return triangle;
     }
 };
 ```
 
 ---
 **⚠️ Edge Cases & Interview Gotchas**
-- numRows = 1.
+- `numRows = 1` (returns `[[1]]`).
+- `numRows = 2` (returns `[[1],[1,1]]`).
 
 ---
 
 ### 7. 🔴 P0 [Q] LC 31: Next Permutation [MEDIUM]
-- **LeetCode Link:** [Next Permutation](https://leetcode.com/problems/next-permutation/)
+- **LeetCode Link:** [LC 31: Next Permutation](https://leetcode.com/problems/next-permutation/)
 - **Category / Sub-Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
 
 **📜 Problem Statement & Explanation**
-Rearrange numbers into lexicographically next greater permutation in-place.
+A permutation of an array of integers is an arrangement of its members into a sequence or linear order. Rearrange numbers into the lexicographically next greater permutation of numbers in-place.
 
 **Example 1:**
-- **Input:** `nums = [1,2,3]`
-- **Output:** `[1,3,2]`
-- **Explanation:** Next permutation of [1,2,3] is [1,3,2].
+- **Input:** `nums = [1,2,3]` 
+- **Output:** `[1,3,2]` 
+
+**Example 2:**
+- **Input:** `nums = [3,2,1]` 
+- **Output:** `[1,2,3]` 
+
+**Example 3:**
+- **Input:** `nums = [1,1,5]` 
+- **Output:** `[1,5,1]`
+
+**Constraints:**
+- `1 <= nums.length <= 100` 
+- `0 <= nums[i] <= 100`
 
 ---
 **🧠 Short Solution Summary & Revision Notes**
@@ -468,19 +593,32 @@ Rearrange numbers into lexicographically next greater permutation in-place.
 ---
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N! * N) | **Space:** O(N! * N)
-- **Explanation:** Generate all N! permutations, sort, find current, pick next.
+- **Explanation:** Generate all N! permutations recursively using backtracking, store them in a sorted list, locate `nums` in the list, and select the next permutation. Time complexity O(N! * N) causes TLE for N > 10.
 
 ```cpp
 class Solution {
+private:
+    void permute(vector<int>& nums, int start, vector<vector<int>>& allPerms) {
+        if (start == nums.size()) {
+            allPerms.push_back(nums);
+            return;
+        }
+        for (int i = start; i < nums.size(); i++) {
+            swap(nums[start], nums[i]);
+            permute(nums, start + 1, allPerms);
+            swap(nums[start], nums[i]);
+        }
+    }
 public:
     void nextPermutation(vector<int>& nums) {
-        vector<vector<int>> all;
-        vector<int> cur = nums;
-        sort(cur.begin(), cur.end());
-        do { all.push_back(cur); } while(next_permutation(cur.begin(), cur.end()));
-        for (int i = 0; i < all.size(); i++) {
-            if (all[i] == nums) {
-                nums = all[(i + 1) % all.size()];
+        vector<vector<int>> allPerms;
+        vector<int> copy = nums;
+        permute(copy, 0, allPerms);
+        sort(allPerms.begin(), allPerms.end());
+        for (int i = 0; i < allPerms.size(); i++) {
+            if (allPerms[i] == nums) {
+                if (i + 1 < allPerms.size()) nums = allPerms[i + 1];
+                else nums = allPerms[0];
                 return;
             }
         }
@@ -490,18 +628,26 @@ public:
 
 ---
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(1) in-place
-- **Explanation:** 1) Find rightmost dip `nums[i] < nums[i+1]`. 2) Swap with next larger. 3) Reverse suffix.
+- **Complexity:** **Time:** O(N) | **Space:** O(1) auxiliary
+- **Explanation:** 3-step algorithm operating right-to-left:
+1. **Find Pivot Index i:** Scan right-to-left to find first `nums[i] < nums[i + 1]`. If no such i, reverse whole array.
+2. **Find Swap Element j:** Scan right-to-left to find first `j > i` with `nums[j] > nums[i]`. Swap `nums[i]` and `nums[j]`.
+3. **Reverse Suffix:** Reverse subarray from `i + 1` to end of `nums`.
 
 ```cpp
 class Solution {
 public:
     void nextPermutation(vector<int>& nums) {
-        int n = nums.size(), i = n - 2;
-        while (i >= 0 && nums[i] >= nums[i + 1]) i--;
+        int n = nums.size();
+        int i = n - 2;
+        while (i >= 0 && nums[i] >= nums[i + 1]) {
+            i--;
+        }
         if (i >= 0) {
             int j = n - 1;
-            while (nums[j] <= nums[i]) j--;
+            while (j >= 0 && nums[j] <= nums[i]) {
+                j--;
+            }
             swap(nums[i], nums[j]);
         }
         reverse(nums.begin() + i + 1, nums.end());
@@ -511,23 +657,27 @@ public:
 
 ---
 **⚠️ Edge Cases & Interview Gotchas**
-- Array sorted in descending order.
+- Fully descending array e.g., `[3,2,1]` (reverses to `[1,2,3]`).
+- Array with duplicates e.g., `[1,1,5]`.
 
 ---
+
 
 ## 2. COMPLETE SORTING ALGORITHMS SUITE
 
 ### 8. 🟠 P1 [Q] ALG 1: Selection Sort Algorithm Blueprint [EASY]
-- **LeetCode Link:** [Selection Sort Algorithm Blueprint](#)
+- **LeetCode Link:** [ALG 1: Selection Sort Algorithm Blueprint](https://leetcode.com/problems/sort-an-array/)
 - **Category / Sub-Pattern:** Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2)))
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Selection Sort Algorithm Blueprint**, compute the target response using LeetCode function signature `solve`.
+Implement Selection Sort to sort an array of integers in non-decreasing order.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Find min element in unsorted partition and swap with start..
+- **Input:** `nums = [64, 25, 12, 22, 11]` 
+- **Output:** `[11, 12, 22, 25, 64]`
+
+**Constraints:**
+- `1 <= nums.length <= 5000`
 
 ---
 **🧠 Short Solution Summary & Revision Notes**
@@ -537,58 +687,68 @@ Given the constraints for **Selection Sort Algorithm Blueprint**, compute the ta
 ---
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(N)
-- **Explanation:** Exhaustively evaluate candidates for Selection Sort Algorithm Blueprint.
+- **Explanation:** Create an extra array `sorted`. Iteratively find the minimum element in `nums`, append it to `sorted`, and remove it from `nums`. Involves vector deletions shifting memory.
 
 ```cpp
 class Solution {
 public:
-    int solve(vector<int>& nums) {
-        int n = nums.size(), ans = 0;
-        for (int i = 0; i < n; i++) {
-            int sum = 0;
-            for (int j = i; j < n; j++) {
-                sum += nums[j]; ans = max(ans, sum);
-            }
+    vector<int> selectionSort(vector<int>& nums) {
+        vector<int> sorted;
+        while (!nums.empty()) {
+            auto minIt = min_element(nums.begin(), nums.end());
+            sorted.push_back(*minIt);
+            nums.erase(minIt);
         }
-        return ans;
+        return sorted;
     }
 };
 ```
 
 ---
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(N)
-- **Explanation:** Optimal resolution using Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2))). Core takeaway: Find min element in unsorted partition and swap with start..
+- **Complexity:** **Time:** O(N^2) | **Space:** O(1) auxiliary
+- **Explanation:** Perform in-place selection sort. Loop `i` from 0 to `N - 2`. Find the index `minIdx` of the smallest element in the subarray `nums[i...N-1]`. Swap `nums[i]` with `nums[minIdx]`. Performs exactly N-1 swaps.
 
 ```cpp
 class Solution {
 public:
-    int solve(vector<int>& nums) {
-        unordered_map<int, int> mp;
-        for (int x : nums) mp[x]++;
-        return mp.size();
+    vector<int> selectionSort(vector<int>& nums) {
+        int n = nums.size();
+        for (int i = 0; i < n - 1; i++) {
+            int minIdx = i;
+            for (int j = i + 1; j < n; j++) {
+                if (nums[j] < nums[minIdx]) {
+                    minIdx = j;
+                }
+            }
+            swap(nums[i], nums[minIdx]);
+        }
+        return nums;
     }
 };
 ```
 
 ---
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty container or single element.
-- Boundary negative numbers or overflow.
+- Already sorted array.
+- Reverse sorted array.
+- Array with duplicate values.
 
 ---
 
 ### 9. 🟠 P1 [Q] ALG 2: Bubble Sort Algorithm Blueprint [EASY]
-- **LeetCode Link:** [Bubble Sort Algorithm Blueprint](#)
+- **LeetCode Link:** [ALG 2: Bubble Sort Algorithm Blueprint](https://leetcode.com/problems/sort-an-array/)
 - **Category / Sub-Pattern:** Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2)))
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Bubble Sort Algorithm Blueprint**, compute the target response using LeetCode function signature `solve`.
+Implement Bubble Sort with early exit optimization to sort an array in non-decreasing order.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Repeatedly swap adjacent inverted pairs with early exit flag..
+- **Input:** `nums = [5, 1, 4, 2, 8]` 
+- **Output:** `[1, 2, 4, 5, 8]`
+
+**Constraints:**
+- `1 <= nums.length <= 5000`
 
 ---
 **🧠 Short Solution Summary & Revision Notes**
@@ -597,59 +757,71 @@ Given the constraints for **Bubble Sort Algorithm Blueprint**, compute the targe
 
 ---
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(N)
-- **Explanation:** Exhaustively evaluate candidates for Bubble Sort Algorithm Blueprint.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
+- **Explanation:** Unoptimized nested loops running full N^2 iterations comparing adjacent elements `nums[j]` and `nums[j+1]` without tracking whether swaps occurred.
 
 ```cpp
 class Solution {
 public:
-    int solve(vector<int>& nums) {
-        int n = nums.size(), ans = 0;
+    vector<int> bubbleSort(vector<int>& nums) {
+        int n = nums.size();
         for (int i = 0; i < n; i++) {
-            int sum = 0;
-            for (int j = i; j < n; j++) {
-                sum += nums[j]; ans = max(ans, sum);
+            for (int j = 0; j < n - 1; j++) {
+                if (nums[j] > nums[j + 1]) {
+                    swap(nums[j], nums[j + 1]);
+                }
             }
         }
-        return ans;
+        return nums;
     }
 };
 ```
 
 ---
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(N)
-- **Explanation:** Optimal resolution using Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2))). Core takeaway: Repeatedly swap adjacent inverted pairs with early exit flag..
+- **Complexity:** **Time:** O(N) best, O(N^2) worst | **Space:** O(1) auxiliary
+- **Explanation:** Add a `swapped` boolean flag inside outer loop. Inner loop compares `nums[j]` and `nums[j+1]` up to `n - 1 - i`. If no swaps occur in a pass, the array is already sorted—break early in O(N) time!
 
 ```cpp
 class Solution {
 public:
-    int solve(vector<int>& nums) {
-        unordered_map<int, int> mp;
-        for (int x : nums) mp[x]++;
-        return mp.size();
+    vector<int> bubbleSort(vector<int>& nums) {
+        int n = nums.size();
+        for (int i = 0; i < n - 1; i++) {
+            bool swapped = false;
+            for (int j = 0; j < n - 1 - i; j++) {
+                if (nums[j] > nums[j + 1]) {
+                    swap(nums[j], nums[j + 1]);
+                    swapped = true;
+                }
+            }
+            if (!swapped) break;
+        }
+        return nums;
     }
 };
 ```
 
 ---
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty container or single element.
-- Boundary negative numbers or overflow.
+- Already sorted array (exits after 1 pass in O(N)).
+- Reverse sorted array.
 
 ---
 
 ### 10. 🟠 P1 [Q] ALG 3: Insertion Sort Algorithm Blueprint [EASY]
-- **LeetCode Link:** [Insertion Sort Algorithm Blueprint](#)
+- **LeetCode Link:** [ALG 3: Insertion Sort Algorithm Blueprint](https://leetcode.com/problems/sort-an-array/)
 - **Category / Sub-Pattern:** Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2)))
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Insertion Sort Algorithm Blueprint**, compute the target response using LeetCode function signature `solve`.
+Implement Insertion Sort to sort an array of integers in non-decreasing order.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Shift elements right to insert key into sorted prefix..
+- **Input:** `nums = [12, 11, 13, 5, 6]` 
+- **Output:** `[5, 6, 11, 12, 13]`
+
+**Constraints:**
+- `1 <= nums.length <= 5000`
 
 ---
 **🧠 Short Solution Summary & Revision Notes**
@@ -659,180 +831,254 @@ Given the constraints for **Insertion Sort Algorithm Blueprint**, compute the ta
 ---
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(N)
-- **Explanation:** Exhaustively evaluate candidates for Insertion Sort Algorithm Blueprint.
+- **Explanation:** Build a new array by finding insertion positions using linear search and calling vector insert, incurring shift overhead.
 
 ```cpp
 class Solution {
 public:
-    int solve(vector<int>& nums) {
-        int n = nums.size(), ans = 0;
-        for (int i = 0; i < n; i++) {
-            int sum = 0;
-            for (int j = i; j < n; j++) {
-                sum += nums[j]; ans = max(ans, sum);
-            }
+    vector<int> insertionSort(vector<int>& nums) {
+        vector<int> sorted;
+        for (int x : nums) {
+            auto it = sorted.begin();
+            while (it != sorted.end() && *it < x) it++;
+            sorted.insert(it, x);
         }
-        return ans;
+        return sorted;
     }
 };
 ```
 
 ---
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(N)
-- **Explanation:** Optimal resolution using Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2))). Core takeaway: Shift elements right to insert key into sorted prefix..
+- **Complexity:** **Time:** O(N) best, O(N^2) worst | **Space:** O(1) auxiliary
+- **Explanation:** In-place Insertion Sort. Loop `i` from 1 to `N - 1`. Store `key = nums[i]`. Shift all elements in sorted prefix `nums[0...i-1]` rightwards while `j >= 0 && nums[j] > key`. Insert `key` at position `j + 1`.
 
 ```cpp
 class Solution {
 public:
-    int solve(vector<int>& nums) {
-        unordered_map<int, int> mp;
-        for (int x : nums) mp[x]++;
-        return mp.size();
+    vector<int> insertionSort(vector<int>& nums) {
+        int n = nums.size();
+        for (int i = 1; i < n; i++) {
+            int key = nums[i];
+            int j = i - 1;
+            while (j >= 0 && nums[j] > key) {
+                nums[j + 1] = nums[j];
+                j--;
+            }
+            nums[j + 1] = key;
+        }
+        return nums;
     }
 };
 ```
 
 ---
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty container or single element.
-- Boundary negative numbers or overflow.
+- Already sorted array (O(N) time).
+- Reverse sorted array (O(N^2) shifts).
 
 ---
 
 ### 11. 🔴 P0 [Q] ALG 4: Merge Sort & Inversion Counting Blueprint [MEDIUM]
-- **LeetCode Link:** [Merge Sort & Inversion Counting Blueprint](#)
+- **LeetCode Link:** [ALG 4: Merge Sort & Inversion Counting Blueprint](https://leetcode.com/problems/sort-an-array/)
 - **Category / Sub-Pattern:** Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts (O(N log N)))
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Merge Sort & Inversion Counting Blueprint**, compute the target response using LeetCode function signature `solve`.
+Implement Merge Sort and count total inversion pairs `(i, j)` where `i < j` and `nums[i] > nums[j]`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Divide halves recursively and merge in O(N log N) time..
+- **Input:** `nums = [8, 4, 2, 1]` 
+- **Output:** Inversions = 6, Sorted = `[1, 2, 4, 8]`
+
+**Constraints:**
+- `1 <= nums.length <= 50000`
 
 ---
 **🧠 Short Solution Summary & Revision Notes**
 - **Main Pattern:** Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts (O(N log N)))
-- **Memory Mnemonic:** *"Divide halves recursively and merge in O(N log N) time."*
+- **Memory Mnemonic:** *"Divide halves recursively and count inversions during merge phase."*
 
 ---
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
-- **Explanation:** Exhaustively evaluate candidates for Merge Sort & Inversion Counting Blueprint.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
+- **Explanation:** Check all pairs `(i, j)` with `i < j` in O(N^2) nested loops to count inversions.
 
 ```cpp
 class Solution {
 public:
-    int solve(vector<int>& nums) {
-        int n = nums.size(), ans = 0;
+    long long countInversions(vector<int>& nums) {
+        long long count = 0;
+        int n = nums.size();
         for (int i = 0; i < n; i++) {
-            int sum = 0;
-            for (int j = i; j < n; j++) {
-                sum += nums[j]; ans = max(ans, sum);
+            for (int j = i + 1; j < n; j++) {
+                if (nums[i] > nums[j]) count++;
             }
         }
-        return ans;
+        return count;
     }
 };
 ```
 
 ---
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(N)
-- **Explanation:** Optimal resolution using Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts (O(N log N))). Core takeaway: Divide halves recursively and merge in O(N log N) time..
+- **Complexity:** **Time:** O(N log N) | **Space:** O(N) auxiliary
+- **Explanation:** Divide & Conquer Merge Sort. When merging two sorted halves `left` and `right`, if `left[i] > right[j]`, then ALL remaining elements in left half `(mid - i + 1)` are greater than `right[j]`. Add `(mid - i + 1)` to inversion count during merge.
 
 ```cpp
 class Solution {
+private:
+    long long mergeAndCount(vector<int>& nums, int low, int mid, int high) {
+        vector<int> temp;
+        int i = low, j = mid + 1;
+        long long invCount = 0;
+        
+        while (i <= mid && j <= high) {
+            if (nums[i] <= nums[j]) {
+                temp.push_back(nums[i++]);
+            } else {
+                temp.push_back(nums[j++]);
+                invCount += (mid - i + 1);
+            }
+        }
+        while (i <= mid) temp.push_back(nums[i++]);
+        while (j <= high) temp.push_back(nums[j++]);
+        for (int k = low; k <= high; k++) nums[k] = temp[k - low];
+        return invCount;
+    }
+    
+    long long mergeSort(vector<int>& nums, int low, int high) {
+        long long invCount = 0;
+        if (low < high) {
+            int mid = low + (high - low) / 2;
+            invCount += mergeSort(nums, low, mid);
+            invCount += mergeSort(nums, mid + 1, high);
+            invCount += mergeAndCount(nums, low, mid, high);
+        }
+        return invCount;
+    }
 public:
-    int solve(vector<int>& nums) {
-        unordered_map<int, int> mp;
-        for (int x : nums) mp[x]++;
-        return mp.size();
+    long long countInversionsAndSort(vector<int>& nums) {
+        return mergeSort(nums, 0, nums.size() - 1);
     }
 };
 ```
 
 ---
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty container or single element.
-- Boundary negative numbers or overflow.
+- Sorted array (0 inversions).
+- Reverse sorted array (N(N-1)/2 inversions).
 
 ---
 
 ### 12. 🔴 P0 [Q] ALG 5: Quick Sort Algorithm Blueprint [MEDIUM]
-- **LeetCode Link:** [Quick Sort Algorithm Blueprint](#)
+- **LeetCode Link:** [ALG 5: Quick Sort Algorithm Blueprint](https://leetcode.com/problems/sort-an-array/)
 - **Category / Sub-Pattern:** Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts (O(N log N)))
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Quick Sort Algorithm Blueprint**, compute the target response using LeetCode function signature `solve`.
+Implement Quick Sort with randomized pivot selection to sort an array in non-decreasing order.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Lomuto/Hoare randomized pivot partitioning..
+- **Input:** `nums = [10, 7, 8, 9, 1, 5]` 
+- **Output:** `[1, 5, 7, 8, 9, 10]`
+
+**Constraints:**
+- `1 <= nums.length <= 50000`
 
 ---
 **🧠 Short Solution Summary & Revision Notes**
 - **Main Pattern:** Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts (O(N log N)))
-- **Memory Mnemonic:** *"Lomuto/Hoare randomized pivot partitioning."*
+- **Memory Mnemonic:** *"Randomized Lomuto/Hoare pivot partitioning."*
 
 ---
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
-- **Explanation:** Exhaustively evaluate candidates for Quick Sort Algorithm Blueprint.
+- **Complexity:** **Time:** O(N log N) avg, O(N^2) worst | **Space:** O(N)
+- **Explanation:** Standard Quick Sort picking first/last element as pivot without randomization. On pre-sorted inputs, recurses N times causing O(N^2) stack overflow.
 
 ```cpp
 class Solution {
-public:
-    int solve(vector<int>& nums) {
-        int n = nums.size(), ans = 0;
-        for (int i = 0; i < n; i++) {
-            int sum = 0;
-            for (int j = i; j < n; j++) {
-                sum += nums[j]; ans = max(ans, sum);
+private:
+    int partition(vector<int>& nums, int low, int high) {
+        int pivot = nums[high];
+        int i = low - 1;
+        for (int j = low; j < high; j++) {
+            if (nums[j] < pivot) {
+                i++;
+                swap(nums[i], nums[j]);
             }
         }
-        return ans;
+        swap(nums[i + 1], nums[high]);
+        return i + 1;
+    }
+public:
+    void quickSort(vector<int>& nums, int low, int high) {
+        if (low < high) {
+            int p = partition(nums, low, high);
+            quickSort(nums, low, p - 1);
+            quickSort(nums, p + 1, high);
+        }
     }
 };
 ```
 
 ---
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(N)
-- **Explanation:** Optimal resolution using Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts (O(N log N))). Core takeaway: Lomuto/Hoare randomized pivot partitioning..
+- **Complexity:** **Time:** O(N log N) | **Space:** O(log N) auxiliary
+- **Explanation:** Randomized Quick Sort. Swap `nums[high]` with a random element in `[low, high]` before partitioning. Prevents O(N^2) worst-case performance on sorted or identical array inputs.
 
 ```cpp
 class Solution {
+private:
+    int randomizedPartition(vector<int>& nums, int low, int high) {
+        int randIdx = low + rand() % (high - low + 1);
+        swap(nums[randIdx], nums[high]);
+        int pivot = nums[high];
+        int i = low - 1;
+        for (int j = low; j < high; j++) {
+            if (nums[j] < pivot) {
+                i++;
+                swap(nums[i], nums[j]);
+            }
+        }
+        swap(nums[i + 1], nums[high]);
+        return i + 1;
+    }
+    
+    void quickSortHelper(vector<int>& nums, int low, int high) {
+        if (low < high) {
+            int p = randomizedPartition(nums, low, high);
+            quickSortHelper(nums, low, p - 1);
+            quickSortHelper(nums, p + 1, high);
+        }
+    }
 public:
-    int solve(vector<int>& nums) {
-        unordered_map<int, int> mp;
-        for (int x : nums) mp[x]++;
-        return mp.size();
+    vector<int> quickSort(vector<int>& nums) {
+        quickSortHelper(nums, 0, nums.size() - 1);
+        return nums;
     }
 };
 ```
 
 ---
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty container or single element.
-- Boundary negative numbers or overflow.
+- Pre-sorted array.
+- All elements identical.
 
 ---
 
 ### 13. 🟠 P1 [Q] ALG 6: Counting Sort Algorithm Blueprint [EASY]
-- **LeetCode Link:** [Counting Sort Algorithm Blueprint](#)
+- **LeetCode Link:** [ALG 6: Counting Sort Algorithm Blueprint](https://leetcode.com/problems/sort-an-array/)
 - **Category / Sub-Pattern:** Sub-Pattern 2.3 (Linear Non-Comparison Sorts (O(N)))
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Counting Sort Algorithm Blueprint**, compute the target response using LeetCode function signature `solve`.
+Implement Counting Sort for integers in bounded range `[minVal, maxVal]`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Frequency array for bounded integer range [0, K]..
+- **Input:** `nums = [4, 2, 2, 8, 3, 3, 1]` 
+- **Output:** `[1, 2, 2, 3, 3, 4, 8]`
+
+**Constraints:**
+- `1 <= nums.length <= 50000` 
+- Bounded range `maxVal - minVal <= 10^5`
 
 ---
 **🧠 Short Solution Summary & Revision Notes**
@@ -841,59 +1087,77 @@ Given the constraints for **Counting Sort Algorithm Blueprint**, compute the tar
 
 ---
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(N)
-- **Explanation:** Exhaustively evaluate candidates for Counting Sort Algorithm Blueprint.
+- **Complexity:** **Time:** O(N log N) | **Space:** O(N)
+- **Explanation:** Using comparison-based sort (O(N log N)) when elements are integers in a small bounded range.
 
 ```cpp
 class Solution {
 public:
-    int solve(vector<int>& nums) {
-        int n = nums.size(), ans = 0;
-        for (int i = 0; i < n; i++) {
-            int sum = 0;
-            for (int j = i; j < n; j++) {
-                sum += nums[j]; ans = max(ans, sum);
-            }
-        }
-        return ans;
+    vector<int> countingSort(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        return nums;
     }
 };
 ```
 
 ---
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(N)
-- **Explanation:** Optimal resolution using Sub-Pattern 2.3 (Linear Non-Comparison Sorts (O(N))). Core takeaway: Frequency array for bounded integer range [0, K]..
+- **Complexity:** **Time:** O(N + K) | **Space:** O(K) auxiliary
+- **Explanation:** Non-comparison linear sort:
+1. Find `minVal` and `maxVal` in `nums` (K = maxVal - minVal + 1).
+2. Build frequency map array `freq[K]`.
+3. Compute prefix sums of `freq` to get exact output index positions.
+4. Build stable output array iterating input backwards.
 
 ```cpp
 class Solution {
 public:
-    int solve(vector<int>& nums) {
-        unordered_map<int, int> mp;
-        for (int x : nums) mp[x]++;
-        return mp.size();
+    vector<int> countingSort(vector<int>& nums) {
+        if (nums.empty()) return nums;
+        int minVal = *min_element(nums.begin(), nums.end());
+        int maxVal = *max_element(nums.begin(), nums.end());
+        int range = maxVal - minVal + 1;
+        
+        vector<int> count(range, 0);
+        vector<int> output(nums.size());
+        
+        for (int x : nums) count[x - minVal]++;
+        for (int i = 1; i < range; i++) count[i] += count[i - 1];
+        
+        for (int i = nums.size() - 1; i >= 0; i--) {
+            output[count[nums[i] - minVal] - 1] = nums[i];
+            count[nums[i] - minVal]--;
+        }
+        return output;
     }
 };
 ```
 
 ---
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty container or single element.
-- Boundary negative numbers or overflow.
+- Negative integers (handled by offset `x - minVal`).
+- Range K larger than 10^6.
 
 ---
 
 ### 14. 🔴 P0 [Q] LC 179: Largest Number [MEDIUM]
-- **LeetCode Link:** [Largest Number](https://leetcode.com/problems/largest-number/)
+- **LeetCode Link:** [LC 179: Largest Number](https://leetcode.com/problems/largest-number/)
 - **Category / Sub-Pattern:** Sub-Pattern 2.4 (Custom Comparators & String Sorting)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Largest Number**, compute the target response using LeetCode function signature `solve`.
+Given a list of non-negative integers `nums`, arrange them such that they form the largest number and return it as a string.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Custom string concatenation comparator (a + b > b + a)..
+- **Input:** `nums = [10,2]` 
+- **Output:** `"210"` 
+
+**Example 2:**
+- **Input:** `nums = [3,30,34,5,9]` 
+- **Output:** `"9534330"`
+
+**Constraints:**
+- `1 <= nums.length <= 100` 
+- `0 <= nums[i] <= 10^9`
 
 ---
 **🧠 Short Solution Summary & Revision Notes**
@@ -902,61 +1166,80 @@ Given the constraints for **Largest Number**, compute the target response using 
 
 ---
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
-- **Explanation:** Exhaustively evaluate candidates for Largest Number.
+- **Complexity:** **Time:** O(N! * N) | **Space:** O(N! * N)
+- **Explanation:** Generate all N! string permutations, concatenate them, and find the lexicographically largest string.
 
 ```cpp
 class Solution {
 public:
-    int solve(vector<int>& nums) {
-        int n = nums.size(), ans = 0;
-        for (int i = 0; i < n; i++) {
-            int sum = 0;
-            for (int j = i; j < n; j++) {
-                sum += nums[j]; ans = max(ans, sum);
-            }
-        }
-        return ans;
+    string largestNumber(vector<int>& nums) {
+        vector<string> strNums;
+        for (int x : nums) strNums.push_back(to_string(x));
+        string maxStr = "";
+        sort(strNums.begin(), strNums.end());
+        do {
+            string curr = "";
+            for (string& s : strNums) curr += s;
+            if (curr > maxStr) maxStr = curr;
+        } while (next_permutation(strNums.begin(), strNums.end()));
+        return maxStr;
     }
 };
 ```
 
 ---
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(N)
-- **Explanation:** Optimal resolution using Sub-Pattern 2.4 (Custom Comparators & String Sorting). Core takeaway: Custom string concatenation comparator (a + b > b + a)..
+- **Complexity:** **Time:** O(N log N * L) | **Space:** O(N * L)
+- **Explanation:** Convert integers to strings. Sort strings with custom comparator `[](string &a, string &b){ return a + b > b + a; }`. Concatenate sorted strings. If highest value string is `"0"`, return `"0"`.
 
 ```cpp
 class Solution {
 public:
-    int solve(vector<int>& nums) {
-        unordered_map<int, int> mp;
-        for (int x : nums) mp[x]++;
-        return mp.size();
+    string largestNumber(vector<int>& nums) {
+        vector<string> strNums;
+        for (int x : nums) strNums.push_back(to_string(x));
+        
+        sort(strNums.begin(), strNums.end(), [](const string& a, const string& b) {
+            return a + b > b + a;
+        });
+        
+        if (strNums[0] == "0") return "0";
+        
+        string res = "";
+        for (const string& s : strNums) res += s;
+        return res;
     }
 };
 ```
 
 ---
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty container or single element.
-- Boundary negative numbers or overflow.
+- Array containing all zeros `[0, 0]` (must return `"0"`, not `"00"`).
+- Prefixed numbers like `[3, 30]` (`"330" > "303"`).
 
 ---
+
 
 ## 3. HASHING / FREQUENCY COUNTING
 
 ### 15. 🟠 P1 [Q] LC 217: Contains Duplicate [EASY]
-- **LeetCode Link:** [Contains Duplicate](https://leetcode.com/problems/contains-duplicate/)
+- **LeetCode Link:** [LC 217: Contains Duplicate](https://leetcode.com/problems/contains-duplicate/)
 - **Category / Sub-Pattern:** Sub-Pattern 3.1 (Frequency Counting & Anagrams)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Contains Duplicate**, compute the target response using LeetCode function signature `solve`.
+Given an integer array `nums`, return `true` if any value appears at least twice in the array, and return `false` if every element is distinct.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using O(1) set presence check..
+- **Input:** `nums = [1,2,3,1]` 
+- **Output:** `true` 
+
+**Example 2:**
+- **Input:** `nums = [1,2,3,4]` 
+- **Output:** `false`
+
+**Constraints:**
+- `1 <= nums.length <= 10^5` 
+- `-10^9 <= nums[i] <= 10^9`
 
 ---
 **🧠 Short Solution Summary & Revision Notes**
@@ -965,21 +1248,20 @@ Given the constraints for **Contains Duplicate**, compute the target response us
 
 ---
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(N^2) | **Space:** O(N)
-- **Explanation:** Exhaustively evaluate candidates for Contains Duplicate.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
+- **Explanation:** Nested loops checking every pair `(i, j)` with `i != j` to test equality `nums[i] == nums[j]`.
 
 ```cpp
 class Solution {
 public:
-    int solve(vector<int>& nums) {
-        int n = nums.size(), ans = 0;
+    bool containsDuplicate(vector<int>& nums) {
+        int n = nums.size();
         for (int i = 0; i < n; i++) {
-            int sum = 0;
-            for (int j = i; j < n; j++) {
-                sum += nums[j]; ans = max(ans, sum);
+            for (int j = i + 1; j < n; j++) {
+                if (nums[i] == nums[j]) return true;
             }
         }
-        return ans;
+        return false;
     }
 };
 ```
@@ -987,37 +1269,44 @@ public:
 ---
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(N)
-- **Explanation:** Optimal resolution using Sub-Pattern 3.1 (Frequency Counting & Anagrams). Core takeaway: O(1) set presence check..
+- **Explanation:** Use an `unordered_set<int>`. For each `x` in `nums`, check if `seen.count(x)` exists; if so return `true`. Else insert `x`. Average time complexity O(N).
 
 ```cpp
 class Solution {
 public:
-    int solve(vector<int>& nums) {
-        unordered_map<int, int> mp;
-        for (int x : nums) mp[x]++;
-        return mp.size();
+    bool containsDuplicate(vector<int>& nums) {
+        unordered_set<int> seen;
+        for (int x : nums) {
+            if (seen.count(x)) return true;
+            seen.insert(x);
+        }
+        return false;
     }
 };
 ```
 
 ---
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty container or single element.
-- Boundary negative numbers or overflow.
+- All unique elements.
+- Single element array.
+- Large negative and positive values.
 
 ---
 
 ### 16. 🔴 P0 [Q] LC 49: Group Anagrams [MEDIUM]
-- **LeetCode Link:** [Group Anagrams](https://leetcode.com/problems/group-anagrams/)
+- **LeetCode Link:** [LC 49: Group Anagrams](https://leetcode.com/problems/group-anagrams/)
 - **Category / Sub-Pattern:** Sub-Pattern 3.1 (Frequency Counting & Anagrams)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Group Anagrams**, compute the target response using LeetCode function signature `solve`.
+Given an array of strings `strs`, group the anagrams together. You can return the answer in any order.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using 26-char frequency vector encoding as map key..
+- **Input:** `strs = ["eat","tea","tan","ate","nat","bat"]` 
+- **Output:** `[["bat"],["nat","tan"],["ate","eat","tea"]]`
+
+**Constraints:**
+- `1 <= strs.length <= 10^4` 
+- `0 <= strs[i].length <= 100`
 
 ---
 **🧠 Short Solution Summary & Revision Notes**
@@ -1026,59 +1315,92 @@ Given the constraints for **Group Anagrams**, compute the target response using 
 
 ---
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
-- **Explanation:** Exhaustively evaluate candidates for Group Anagrams.
+- **Complexity:** **Time:** O(N^2 * K) | **Space:** O(N * K)
+- **Explanation:** Compare each string against all previously formed groups by counting character frequencies.
 
 ```cpp
 class Solution {
+private:
+    bool isAnagram(const string& a, const string& b) {
+        if (a.length() != b.length()) return false;
+        int count[26] = {0};
+        for (char c : a) count[c - 'a']++;
+        for (char c : b) count[c - 'a']--;
+        for (int x : count) if (x != 0) return false;
+        return true;
+    }
 public:
-    int solve(vector<int>& nums) {
-        int n = nums.size(), ans = 0;
-        for (int i = 0; i < n; i++) {
-            int sum = 0;
-            for (int j = i; j < n; j++) {
-                sum += nums[j]; ans = max(ans, sum);
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        vector<vector<string>> res;
+        for (const string& s : strs) {
+            bool added = false;
+            for (auto& group : res) {
+                if (isAnagram(group[0], s)) {
+                    group.push_back(s);
+                    added = true;
+                    break;
+                }
             }
+            if (!added) res.push_back({s});
         }
-        return ans;
+        return res;
     }
 };
 ```
 
 ---
 **🚀 Optimal Approach**
-- **Complexity:** **Time:** O(N) | **Space:** O(N)
-- **Explanation:** Optimal resolution using Sub-Pattern 3.1 (Frequency Counting & Anagrams). Core takeaway: 26-char frequency vector encoding as map key..
+- **Complexity:** **Time:** O(N * K) | **Space:** O(N * K)
+- **Explanation:** Encode each string using a 26-character frequency count string as the key in an `unordered_map<string, vector<string>> mp`. Append original string to `mp[key]`. Collect map values.
 
 ```cpp
 class Solution {
 public:
-    int solve(vector<int>& nums) {
-        unordered_map<int, int> mp;
-        for (int x : nums) mp[x]++;
-        return mp.size();
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        unordered_map<string, vector<string>> mp;
+        for (const string& s : strs) {
+            vector<int> count(26, 0);
+            for (char c : s) count[c - 'a']++;
+            string key = "";
+            for (int i = 0; i < 26; i++) {
+                key += "#" + to_string(count[i]);
+            }
+            mp[key].push_back(s);
+        }
+        vector<vector<string>> res;
+        for (auto& pair : mp) {
+            res.push_back(pair.second);
+        }
+        return res;
     }
 };
 ```
 
 ---
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty container or single element.
-- Boundary negative numbers or overflow.
+- Empty string input `[""]`.
+- Single character strings.
 
 ---
 
 ### 17. 🔴 P0 [Q] LC 1: Two Sum [EASY]
-- **LeetCode Link:** [Two Sum](https://leetcode.com/problems/two-sum/)
+- **LeetCode Link:** [LC 1: Two Sum](https://leetcode.com/problems/two-sum/)
 - **Category / Sub-Pattern:** Sub-Pattern 3.2 (O(1) Pair & Complement Lookup)
 
 **📜 Problem Statement & Explanation**
 Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.
 
 **Example 1:**
-- **Input:** `nums = [2,7,11,15], target = 9`
-- **Output:** `[0,1]`
-- **Explanation:** nums[0] + nums[1] == 9.
+- **Input:** `nums = [2,7,11,15], target = 9` 
+- **Output:** `[0,1]` 
+
+**Example 2:**
+- **Input:** `nums = [3,2,4], target = 6` 
+- **Output:** `[1,2]`
+
+**Constraints:**
+- `2 <= nums.length <= 10^4` 
+- `-10^9 <= nums[i] <= 10^9`
 
 ---
 **🧠 Short Solution Summary & Revision Notes**
@@ -1088,16 +1410,18 @@ Given an array of integers `nums` and an integer `target`, return indices of the
 ---
 **🐢 Brute Force Approach**
 - **Complexity:** **Time:** O(N^2) | **Space:** O(1)
-- **Explanation:** Exhaustively check all pairs (i, j).
+- **Explanation:** Nested loops checking every pair `(i, j)` with `i < j` to see if `nums[i] + nums[j] == target`.
 
 ```cpp
 class Solution {
 public:
     vector<int> twoSum(vector<int>& nums, int target) {
         int n = nums.size();
-        for (int i = 0; i < n; i++)
-            for (int j = i + 1; j < n; j++)
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
                 if (nums[i] + nums[j] == target) return {i, j};
+            }
+        }
         return {};
     }
 };
@@ -1106,7 +1430,7 @@ public:
 ---
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(N)
-- **Explanation:** Hash map complement lookup `target - nums[i]`.
+- **Explanation:** Single pass Hash Map lookup. Maintain `unordered_map<int, int> numToIdx`. For `nums[i]`, compute `complement = target - nums[i]`. If `numToIdx.count(complement)`, return `{numToIdx[complement], i}`. Else store `numToIdx[nums[i]] = i`.
 
 ```cpp
 class Solution {
@@ -1114,8 +1438,10 @@ public:
     vector<int> twoSum(vector<int>& nums, int target) {
         unordered_map<int, int> mp;
         for (int i = 0; i < nums.size(); i++) {
-            int comp = target - nums[i];
-            if (mp.count(comp)) return {mp[comp], i};
+            int complement = target - nums[i];
+            if (mp.count(complement)) {
+                return {mp[complement], i};
+            }
             mp[nums[i]] = i;
         }
         return {};
@@ -1125,21 +1451,30 @@ public:
 
 ---
 **⚠️ Edge Cases & Interview Gotchas**
-- Duplicate values, negative target.
+- Negative numbers and zero.
+- Duplicate values sum to target e.g., `[3,3], target = 6`.
 
 ---
 
 ### 18. 🔴 P0 [Q] LC 128: Longest Consecutive Sequence [MEDIUM]
-- **LeetCode Link:** [Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/)
+- **LeetCode Link:** [LC 128: Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/)
 - **Category / Sub-Pattern:** Sub-Pattern 3.2 (O(1) Pair & Complement Lookup)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Longest Consecutive Sequence**, compute the target response using LeetCode function signature `solve`.
+Given an unsorted array of integers `nums`, return the length of the longest consecutive elements sequence in O(N) time.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using O(1) set lookup for sequence start boundary (!set.count(num - 1))..
+- **Input:** `nums = [100,4,200,1,3,2]` 
+- **Output:** `4` 
+- **Explanation:** Longest sequence is `[1, 2, 3, 4]`. 
+
+**Example 2:**
+- **Input:** `nums = [0,3,7,2,5,8,4,6,0,1]` 
+- **Output:** `9`
+
+**Constraints:**
+- `0 <= nums.length <= 10^5` 
+- `-10^9 <= nums[i] <= 10^9`
 
 ---
 **🧠 Short Solution Summary & Revision Notes**
@@ -1148,21 +1483,26 @@ Given the constraints for **Longest Consecutive Sequence**, compute the target r
 
 ---
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
-- **Explanation:** Exhaustively evaluate candidates for Longest Consecutive Sequence.
+- **Complexity:** **Time:** O(N log N) | **Space:** O(1)
+- **Explanation:** Sort array `nums` in O(N log N) time, remove duplicates, and iterate to find longest continuous incrementing sequence.
 
 ```cpp
 class Solution {
 public:
-    int solve(vector<int>& nums) {
-        int n = nums.size(), ans = 0;
-        for (int i = 0; i < n; i++) {
-            int sum = 0;
-            for (int j = i; j < n; j++) {
-                sum += nums[j]; ans = max(ans, sum);
+    int longestConsecutive(vector<int>& nums) {
+        if (nums.empty()) return 0;
+        sort(nums.begin(), nums.end());
+        int maxLen = 1, currLen = 1;
+        for (int i = 1; i < nums.size(); i++) {
+            if (nums[i] == nums[i - 1]) continue;
+            if (nums[i] == nums[i - 1] + 1) {
+                currLen++;
+            } else {
+                maxLen = max(maxLen, currLen);
+                currLen = 1;
             }
         }
-        return ans;
+        return max(maxLen, currLen);
     }
 };
 ```
@@ -1170,37 +1510,54 @@ public:
 ---
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(N)
-- **Explanation:** Optimal resolution using Sub-Pattern 3.2 (O(1) Pair & Complement Lookup). Core takeaway: O(1) set lookup for sequence start boundary (!set.count(num - 1))..
+- **Explanation:** Insert all elements into `unordered_set<int> numSet`. Iterate through set: check if `x` is sequence start (`!numSet.count(x - 1)`). If start, loop `curr = x` while `numSet.count(curr + 1)`, incrementing sequence length. Overall time O(N) since each element is visited at most twice.
 
 ```cpp
 class Solution {
 public:
-    int solve(vector<int>& nums) {
-        unordered_map<int, int> mp;
-        for (int x : nums) mp[x]++;
-        return mp.size();
+    int longestConsecutive(vector<int>& nums) {
+        unordered_set<int> st(nums.begin(), nums.end());
+        int maxLen = 0;
+        
+        for (int x : st) {
+            if (!st.count(x - 1)) {
+                int curr = x;
+                int currLen = 1;
+                while (st.count(curr + 1)) {
+                    curr++;
+                    currLen++;
+                }
+                maxLen = max(maxLen, currLen);
+            }
+        }
+        return maxLen;
     }
 };
 ```
 
 ---
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty container or single element.
-- Boundary negative numbers or overflow.
+- Empty array `nums = []` (returns 0).
+- Array with negative numbers.
 
 ---
 
 ### 19. 🔴 P0 [Q] IB 1: Subarray with Given XOR [MEDIUM]
-- **LeetCode Link:** [Subarray with Given XOR](#)
+- **LeetCode Link:** [IB 1: Subarray with Given XOR](https://www.interviewbit.com/problems/subarray-with-given-xor/)
 - **Category / Sub-Pattern:** Sub-Pattern 3.3 (Prefix XOR & Bitwise Hashing)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Subarray with Given XOR**, compute the target response using LeetCode function signature `solve`.
+Given an array of integers `A` and an integer `B`, find the total number of subarrays having bitwise XOR equal to `B`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Maintain running XOR sum (xr). Lookup (xr ^ target) in map..
+- **Input:** `A = [4, 2, 2, 6, 4], B = 6` 
+- **Output:** `4` 
+- **Explanation:** Subarrays: `[4, 2]`, `[4, 2, 2, 6, 4]`, `[2, 2, 6]`, `[6]`.
+
+**Constraints:**
+- `1 <= A.length <= 10^5` 
+- `1 <= A[i] <= 10^9` 
+- `1 <= B <= 10^9`
 
 ---
 **🧠 Short Solution Summary & Revision Notes**
@@ -1209,21 +1566,22 @@ Given the constraints for **Subarray with Given XOR**, compute the target respon
 
 ---
 **🐢 Brute Force Approach**
-- **Complexity:** **Time:** O(2^N) | **Space:** O(N)
-- **Explanation:** Exhaustively evaluate candidates for Subarray with Given XOR.
+- **Complexity:** **Time:** O(N^2) | **Space:** O(1)
+- **Explanation:** Nested loops checking every subarray `A[i...j]` by computing XOR sum and incrementing count when XOR equals `B`.
 
 ```cpp
 class Solution {
 public:
-    int solve(vector<int>& nums) {
-        int n = nums.size(), ans = 0;
+    int solve(vector<int>& A, int B) {
+        int n = A.size(), count = 0;
         for (int i = 0; i < n; i++) {
-            int sum = 0;
+            int xr = 0;
             for (int j = i; j < n; j++) {
-                sum += nums[j]; ans = max(ans, sum);
+                xr ^= A[j];
+                if (xr == B) count++;
             }
         }
-        return ans;
+        return count;
     }
 };
 ```
@@ -1231,25 +1589,36 @@ public:
 ---
 **🚀 Optimal Approach**
 - **Complexity:** **Time:** O(N) | **Space:** O(N)
-- **Explanation:** Optimal resolution using Sub-Pattern 3.3 (Prefix XOR & Bitwise Hashing). Core takeaway: Maintain running XOR sum (xr). Lookup (xr ^ target) in map..
+- **Explanation:** Maintain running XOR `xr` and frequency hash map `unordered_map<int, int> freq`. At index `i`, update `xr ^= A[i]`. If `xr == B`, increment `count++`. Look up `target = xr ^ B` in `freq` map and add `freq[target]` to `count`. Insert `freq[xr]++`.
 
 ```cpp
 class Solution {
 public:
-    int solve(vector<int>& nums) {
-        unordered_map<int, int> mp;
-        for (int x : nums) mp[x]++;
-        return mp.size();
+    int solve(vector<int>& A, int B) {
+        unordered_map<int, int> freq;
+        int xr = 0, count = 0;
+        
+        for (int x : A) {
+            xr ^= x;
+            if (xr == B) count++;
+            int target = xr ^ B;
+            if (freq.count(target)) {
+                count += freq[target];
+            }
+            freq[xr]++;
+        }
+        return count;
     }
 };
 ```
 
 ---
 **⚠️ Edge Cases & Interview Gotchas**
-- Empty container or single element.
-- Boundary negative numbers or overflow.
+- `B = 0` (subarrays with XOR sum 0).
+- Single element array.
 
 ---
+
 
 ## 4. PREFIX SUM & DIFFERENCE ARRAYS
 

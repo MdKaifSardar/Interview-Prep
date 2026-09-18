@@ -7,369 +7,479 @@ Master repository of 91 high-yield, curated interview questions. Designed for ra
 ## 1. MATRIX SIMULATION & ARRAY TRANSFORMATIONS
 
 ### 1. 🔴 P0 [Q] LC 54: Spiral Matrix [MEDIUM]
-- **LeetCode Link:** [Spiral Matrix](https://leetcode.com/problems/spiral-matrix/)
+- **LeetCode Link:** [LC 54: Spiral Matrix](https://leetcode.com/problems/spiral-matrix/)
 - **Category / Sub-Pattern:** Sub-Pattern 1.1 (Matrix Spiral Traversal & Generation)
 
 **📜 Problem Statement & Explanation**
-Given an `m x n` matrix, return all elements of the matrix in spiral order.
+Given an `m x n` matrix, return all elements of the matrix in spiral order starting from top-left and moving clockwise.
 
 **Example 1:**
-- **Input:** `matrix = [[1,2,3],[4,5,6],[7,8,9]]`
+- **Input:** `matrix = [[1,2,3],[4,5,6],[7,8,9]]` 
 - **Output:** `[1,2,3,6,9,8,7,4,5]`
 - **Explanation:** Traverse top row (1,2,3), right col (6,9), bottom row (8,7), left col (4), inner (5).
+
+**Example 2:**
+- **Input:** `matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]`
+- **Output:** `[1,2,3,4,8,12,11,10,9,5,6,7]`
+
+**Constraints:**
+- `m == matrix.length`
+- `n == matrix[i].length`
+- `1 <= m, n <= 10`
+- `-100 <= matrix[i][j] <= 100`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 1.1 (Matrix Spiral Traversal & Generation)
-- **Key Takeaway:** 4-boundary shrinking loop (top, bottom, left, right).
+- **Key Takeaway:** Maintain 4 boundary pointers (`top`, `bottom`, `left`, `right`) and shrink boundaries after completing each side.
 
 ---
 
 ### 2. 🔴 P0 [Q] LC 59: Spiral Matrix II [MEDIUM]
-- **LeetCode Link:** [Spiral Matrix II](https://leetcode.com/problems/spiral-matrix-ii/)
+- **LeetCode Link:** [LC 59: Spiral Matrix II](https://leetcode.com/problems/spiral-matrix-ii/)
 - **Category / Sub-Pattern:** Sub-Pattern 1.1 (Matrix Spiral Traversal & Generation)
 
 **📜 Problem Statement & Explanation**
 Given a positive integer `n`, generate an `n x n` matrix filled with elements from `1` to `n^2` in spiral order.
 
 **Example 1:**
-- **Input:** `n = 3`
-- **Output:** `[[1,2,3],[8,9,4],[7,6,5]]`
-- **Explanation:** Fills 3x3 matrix in spiral order.
+- **Input:** `n = 3` 
+- **Output:** `[[1,2,3],[8,9,4],[7,6,5]]` 
+
+**Example 2:**
+- **Input:** `n = 1` 
+- **Output:** `[[1]]`
+
+**Constraints:**
+- `1 <= n <= 20`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 1.1 (Matrix Spiral Traversal & Generation)
-- **Key Takeaway:** Generating N x N matrix in spiral order filling 1..N^2.
+- **Key Takeaway:** Fill values 1..N^2 directly using boundary pointers without needing extra visited matrix.
 
 ---
 
 ### 3. 🔴 P0 [Q] LC 48: Rotate Image [MEDIUM]
-- **LeetCode Link:** [Rotate Image](https://leetcode.com/problems/rotate-image/)
+- **LeetCode Link:** [LC 48: Rotate Image](https://leetcode.com/problems/rotate-image/)
 - **Category / Sub-Pattern:** Sub-Pattern 1.2 (Matrix Symmetry & In-Place Rotations)
 
 **📜 Problem Statement & Explanation**
-Rotate an `n x n` 2D matrix representing an image by 90 degrees (clockwise) in-place.
+You are given an `n x n` 2D matrix representing an image, rotate the image by 90 degrees (clockwise) in-place.
 
 **Example 1:**
-- **Input:** `matrix = [[1,2,3],[4,5,6],[7,8,9]]`
-- **Output:** `[[7,4,1],[8,5,2],[9,6,3]]`
-- **Explanation:** Matrix rotated 90 degrees clockwise in-place.
+- **Input:** `matrix = [[1,2,3],[4,5,6],[7,8,9]]` 
+- **Output:** `[[7,4,1],[8,5,2],[9,6,3]]` 
+
+**Example 2:**
+- **Input:** `matrix = [[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]]` 
+- **Output:** `[[15,13,2,5],[14,3,4,1],[12,6,8,9],[16,7,10,11]]`
+
+**Constraints:**
+- `n == matrix.length == matrix[i].length` 
+- `1 <= n <= 20` 
+- `-1000 <= matrix[i][j] <= 1000`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 1.2 (Matrix Symmetry & In-Place Rotations)
-- **Key Takeaway:** Transpose matrix (swap A[i][j] & A[j][i]) + reverse each row in-place.
+- **Key Takeaway:** Clockwise 90° rotation = Transpose + Reverse Rows. Counter-clockwise 90° = Transpose + Reverse Columns.
 
 ---
 
 ### 4. 🔴 P0 [Q] Custom / Interview: Rotate Matrix 90 Deg Anti-Clockwise [MEDIUM]
-- **LeetCode Link:** [Rotate Matrix 90 Deg Anti-Clockwise](#)
+- **LeetCode Link:** [Custom / Interview: Rotate Matrix 90 Deg Anti-Clockwise](https://leetcode.com/problems/rotate-image/)
 - **Category / Sub-Pattern:** Sub-Pattern 1.2 (Matrix Symmetry & In-Place Rotations)
 
 **📜 Problem Statement & Explanation**
-Rotate an `n x n` 2D matrix by 90 degrees anti-clockwise in-place.
+Given an `n x n` 2D matrix, rotate the matrix by 90 degrees anti-clockwise (counter-clockwise) in-place.
 
 **Example 1:**
-- **Input:** `matrix = [[1,2,3],[4,5,6],[7,8,9]]`
-- **Output:** `[[3,6,9],[2,5,8],[1,4,7]]`
-- **Explanation:** Rotated anti-clockwise.
+- **Input:** `matrix = [[1,2,3],[4,5,6],[7,8,9]]` 
+- **Output:** `[[3,6,9],[2,5,8],[1,4,7]]` 
+
+**Example 2:**
+- **Input:** `matrix = [[1,2],[3,4]]` 
+- **Output:** `[[2,4],[1,3]]`
+
+**Constraints:**
+- `n == matrix.length == matrix[i].length` 
+- `1 <= n <= 20`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 1.2 (Matrix Symmetry & In-Place Rotations)
-- **Key Takeaway:** Transpose matrix + reverse each column.
+- **Key Takeaway:** Anti-clockwise rotation = Transpose + Reverse Columns (or Reverse Rows + Transpose).
 
 ---
 
 ### 5. 🔴 P0 [Q] LC 73: Set Matrix Zeroes [MEDIUM]
-- **LeetCode Link:** [Set Matrix Zeroes](https://leetcode.com/problems/set-matrix-zeroes/)
+- **LeetCode Link:** [LC 73: Set Matrix Zeroes](https://leetcode.com/problems/set-matrix-zeroes/)
 - **Category / Sub-Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
 
 **📜 Problem Statement & Explanation**
-Given an `m x n` integer matrix, if an element is `0`, set its entire row and column to `0`s in-place.
+Given an `m x n` integer matrix `matrix`, if an element is `0`, set its entire row and column to `0`'s. You must do it in-place.
 
 **Example 1:**
-- **Input:** `matrix = [[1,1,1],[1,0,1],[1,1,1]]`
-- **Output:** `[[1,0,1],[0,0,0],[1,0,1]]`
-- **Explanation:** Row 1 and Col 1 set to 0.
+- **Input:** `matrix = [[1,1,1],[1,0,1],[1,1,1]]` 
+- **Output:** `[[1,0,1],[0,0,0],[1,0,1]]` 
+
+**Example 2:**
+- **Input:** `matrix = [[0,1,2,0],[3,4,5,2],[1,3,1,5]]` 
+- **Output:** `[[0,0,0,0],[0,4,5,0],[0,3,1,0]]`
+
+**Constraints:**
+- `m == matrix.length` 
+- `n == matrix[0].length` 
+- `1 <= m, n <= 200` 
+- `-2^31 <= matrix[i][j] <= 2^31 - 1`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
-- **Key Takeaway:** Use 1st row and 1st column as dummy markers for O(1) space.
+- **Key Takeaway:** Store flags in first row/col to achieve true O(1) space complexity.
 
 ---
 
 ### 6. 🔴 P0 [Q] LC 118: Pascal's Triangle [EASY]
-- **LeetCode Link:** [Pascal's Triangle](https://leetcode.com/problems/pascals-triangle/)
+- **LeetCode Link:** [LC 118: Pascal's Triangle](https://leetcode.com/problems/pascals-triangle/)
 - **Category / Sub-Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
 
 **📜 Problem Statement & Explanation**
-Return first `numRows` of Pascal's triangle.
+Given an integer `numRows`, return the first `numRows` of Pascal's triangle.
 
 **Example 1:**
-- **Input:** `numRows = 5`
-- **Output:** `[[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]`
-- **Explanation:** Sums of adjacent numbers above.
+- **Input:** `numRows = 5` 
+- **Output:** `[[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]` 
+
+**Example 2:**
+- **Input:** `numRows = 1` 
+- **Output:** `[[1]]`
+
+**Constraints:**
+- `1 <= numRows <= 30`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
-- **Key Takeaway:** Dynamic row generation using previous row element sums.
+- **Key Takeaway:** Each interior element is the sum of the two elements directly above it in the previous row.
 
 ---
 
 ### 7. 🔴 P0 [Q] LC 31: Next Permutation [MEDIUM]
-- **LeetCode Link:** [Next Permutation](https://leetcode.com/problems/next-permutation/)
+- **LeetCode Link:** [LC 31: Next Permutation](https://leetcode.com/problems/next-permutation/)
 - **Category / Sub-Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
 
 **📜 Problem Statement & Explanation**
-Rearrange numbers into lexicographically next greater permutation in-place.
+A permutation of an array of integers is an arrangement of its members into a sequence or linear order. Rearrange numbers into the lexicographically next greater permutation of numbers in-place.
 
 **Example 1:**
-- **Input:** `nums = [1,2,3]`
-- **Output:** `[1,3,2]`
-- **Explanation:** Next permutation of [1,2,3] is [1,3,2].
+- **Input:** `nums = [1,2,3]` 
+- **Output:** `[1,3,2]` 
+
+**Example 2:**
+- **Input:** `nums = [3,2,1]` 
+- **Output:** `[1,2,3]` 
+
+**Example 3:**
+- **Input:** `nums = [1,1,5]` 
+- **Output:** `[1,5,1]`
+
+**Constraints:**
+- `1 <= nums.length <= 100` 
+- `0 <= nums[i] <= 100`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
-- **Key Takeaway:** Find decrease pivot -> swap with next larger -> reverse suffix.
+- **Key Takeaway:** Find first decrease pivot from right -> swap with next larger from right -> reverse suffix.
 
 ---
+
 
 ## 2. COMPLETE SORTING ALGORITHMS SUITE
 
 ### 8. 🟠 P1 [Q] ALG 1: Selection Sort Algorithm Blueprint [EASY]
-- **LeetCode Link:** [Selection Sort Algorithm Blueprint](#)
+- **LeetCode Link:** [ALG 1: Selection Sort Algorithm Blueprint](https://leetcode.com/problems/sort-an-array/)
 - **Category / Sub-Pattern:** Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2)))
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Selection Sort Algorithm Blueprint**, compute the target response using LeetCode function signature `solve`.
+Implement Selection Sort to sort an array of integers in non-decreasing order.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Find min element in unsorted partition and swap with start..
+- **Input:** `nums = [64, 25, 12, 22, 11]` 
+- **Output:** `[11, 12, 22, 25, 64]`
+
+**Constraints:**
+- `1 <= nums.length <= 5000`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2)))
-- **Key Takeaway:** Find min element in unsorted partition and swap with start.
+- **Key Takeaway:** Repeatedly pick the minimum element from the unsorted region and swap it into the sorted position.
 
 ---
 
 ### 9. 🟠 P1 [Q] ALG 2: Bubble Sort Algorithm Blueprint [EASY]
-- **LeetCode Link:** [Bubble Sort Algorithm Blueprint](#)
+- **LeetCode Link:** [ALG 2: Bubble Sort Algorithm Blueprint](https://leetcode.com/problems/sort-an-array/)
 - **Category / Sub-Pattern:** Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2)))
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Bubble Sort Algorithm Blueprint**, compute the target response using LeetCode function signature `solve`.
+Implement Bubble Sort with early exit optimization to sort an array in non-decreasing order.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Repeatedly swap adjacent inverted pairs with early exit flag..
+- **Input:** `nums = [5, 1, 4, 2, 8]` 
+- **Output:** `[1, 2, 4, 5, 8]`
+
+**Constraints:**
+- `1 <= nums.length <= 5000`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2)))
-- **Key Takeaway:** Repeatedly swap adjacent inverted pairs with early exit flag.
+- **Key Takeaway:** Early exit flag reduces best-case runtime to O(N) for nearly sorted inputs.
 
 ---
 
 ### 10. 🟠 P1 [Q] ALG 3: Insertion Sort Algorithm Blueprint [EASY]
-- **LeetCode Link:** [Insertion Sort Algorithm Blueprint](#)
+- **LeetCode Link:** [ALG 3: Insertion Sort Algorithm Blueprint](https://leetcode.com/problems/sort-an-array/)
 - **Category / Sub-Pattern:** Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2)))
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Insertion Sort Algorithm Blueprint**, compute the target response using LeetCode function signature `solve`.
+Implement Insertion Sort to sort an array of integers in non-decreasing order.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Shift elements right to insert key into sorted prefix..
+- **Input:** `nums = [12, 11, 13, 5, 6]` 
+- **Output:** `[5, 6, 11, 12, 13]`
+
+**Constraints:**
+- `1 <= nums.length <= 5000`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 2.1 (Elementary Comparison Sorts (O(N^2)))
-- **Key Takeaway:** Shift elements right to insert key into sorted prefix.
+- **Key Takeaway:** Shift elements of sorted prefix to right to insert key into correct sorted position.
 
 ---
 
 ### 11. 🔴 P0 [Q] ALG 4: Merge Sort & Inversion Counting Blueprint [MEDIUM]
-- **LeetCode Link:** [Merge Sort & Inversion Counting Blueprint](#)
+- **LeetCode Link:** [ALG 4: Merge Sort & Inversion Counting Blueprint](https://leetcode.com/problems/sort-an-array/)
 - **Category / Sub-Pattern:** Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts (O(N log N)))
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Merge Sort & Inversion Counting Blueprint**, compute the target response using LeetCode function signature `solve`.
+Implement Merge Sort and count total inversion pairs `(i, j)` where `i < j` and `nums[i] > nums[j]`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Divide halves recursively and merge in O(N log N) time..
+- **Input:** `nums = [8, 4, 2, 1]` 
+- **Output:** Inversions = 6, Sorted = `[1, 2, 4, 8]`
+
+**Constraints:**
+- `1 <= nums.length <= 50000`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts (O(N log N)))
-- **Key Takeaway:** Divide halves recursively and merge in O(N log N) time.
+- **Key Takeaway:** Merge step counts cross-inversions in O(N log N) total time.
 
 ---
 
 ### 12. 🔴 P0 [Q] ALG 5: Quick Sort Algorithm Blueprint [MEDIUM]
-- **LeetCode Link:** [Quick Sort Algorithm Blueprint](#)
+- **LeetCode Link:** [ALG 5: Quick Sort Algorithm Blueprint](https://leetcode.com/problems/sort-an-array/)
 - **Category / Sub-Pattern:** Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts (O(N log N)))
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Quick Sort Algorithm Blueprint**, compute the target response using LeetCode function signature `solve`.
+Implement Quick Sort with randomized pivot selection to sort an array in non-decreasing order.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Lomuto/Hoare randomized pivot partitioning..
+- **Input:** `nums = [10, 7, 8, 9, 1, 5]` 
+- **Output:** `[1, 5, 7, 8, 9, 10]`
+
+**Constraints:**
+- `1 <= nums.length <= 50000`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts (O(N log N)))
-- **Key Takeaway:** Lomuto/Hoare randomized pivot partitioning.
+- **Key Takeaway:** Randomized pivot selection guarantees expected O(N log N) time.
 
 ---
 
 ### 13. 🟠 P1 [Q] ALG 6: Counting Sort Algorithm Blueprint [EASY]
-- **LeetCode Link:** [Counting Sort Algorithm Blueprint](#)
+- **LeetCode Link:** [ALG 6: Counting Sort Algorithm Blueprint](https://leetcode.com/problems/sort-an-array/)
 - **Category / Sub-Pattern:** Sub-Pattern 2.3 (Linear Non-Comparison Sorts (O(N)))
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Counting Sort Algorithm Blueprint**, compute the target response using LeetCode function signature `solve`.
+Implement Counting Sort for integers in bounded range `[minVal, maxVal]`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Frequency array for bounded integer range [0, K]..
+- **Input:** `nums = [4, 2, 2, 8, 3, 3, 1]` 
+- **Output:** `[1, 2, 2, 3, 3, 4, 8]`
+
+**Constraints:**
+- `1 <= nums.length <= 50000` 
+- Bounded range `maxVal - minVal <= 10^5`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 2.3 (Linear Non-Comparison Sorts (O(N)))
-- **Key Takeaway:** Frequency array for bounded integer range [0, K].
+- **Key Takeaway:** Linear time O(N + K) sort for bounded integer ranges.
 
 ---
 
 ### 14. 🔴 P0 [Q] LC 179: Largest Number [MEDIUM]
-- **LeetCode Link:** [Largest Number](https://leetcode.com/problems/largest-number/)
+- **LeetCode Link:** [LC 179: Largest Number](https://leetcode.com/problems/largest-number/)
 - **Category / Sub-Pattern:** Sub-Pattern 2.4 (Custom Comparators & String Sorting)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Largest Number**, compute the target response using LeetCode function signature `solve`.
+Given a list of non-negative integers `nums`, arrange them such that they form the largest number and return it as a string.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Custom string concatenation comparator (a + b > b + a)..
+- **Input:** `nums = [10,2]` 
+- **Output:** `"210"` 
+
+**Example 2:**
+- **Input:** `nums = [3,30,34,5,9]` 
+- **Output:** `"9534330"`
+
+**Constraints:**
+- `1 <= nums.length <= 100` 
+- `0 <= nums[i] <= 10^9`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 2.4 (Custom Comparators & String Sorting)
-- **Key Takeaway:** Custom string concatenation comparator (a + b > b + a).
+- **Key Takeaway:** Sort strings by checking if concatenation `a + b > b + a`.
 
 ---
+
 
 ## 3. HASHING / FREQUENCY COUNTING
 
 ### 15. 🟠 P1 [Q] LC 217: Contains Duplicate [EASY]
-- **LeetCode Link:** [Contains Duplicate](https://leetcode.com/problems/contains-duplicate/)
+- **LeetCode Link:** [LC 217: Contains Duplicate](https://leetcode.com/problems/contains-duplicate/)
 - **Category / Sub-Pattern:** Sub-Pattern 3.1 (Frequency Counting & Anagrams)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Contains Duplicate**, compute the target response using LeetCode function signature `solve`.
+Given an integer array `nums`, return `true` if any value appears at least twice in the array, and return `false` if every element is distinct.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using O(1) set presence check..
+- **Input:** `nums = [1,2,3,1]` 
+- **Output:** `true` 
+
+**Example 2:**
+- **Input:** `nums = [1,2,3,4]` 
+- **Output:** `false`
+
+**Constraints:**
+- `1 <= nums.length <= 10^5` 
+- `-10^9 <= nums[i] <= 10^9`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 3.1 (Frequency Counting & Anagrams)
-- **Key Takeaway:** O(1) set presence check.
+- **Key Takeaway:** Hash set allows O(1) duplicate checking in O(N) single pass.
 
 ---
 
 ### 16. 🔴 P0 [Q] LC 49: Group Anagrams [MEDIUM]
-- **LeetCode Link:** [Group Anagrams](https://leetcode.com/problems/group-anagrams/)
+- **LeetCode Link:** [LC 49: Group Anagrams](https://leetcode.com/problems/group-anagrams/)
 - **Category / Sub-Pattern:** Sub-Pattern 3.1 (Frequency Counting & Anagrams)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Group Anagrams**, compute the target response using LeetCode function signature `solve`.
+Given an array of strings `strs`, group the anagrams together. You can return the answer in any order.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using 26-char frequency vector encoding as map key..
+- **Input:** `strs = ["eat","tea","tan","ate","nat","bat"]` 
+- **Output:** `[["bat"],["nat","tan"],["ate","eat","tea"]]`
+
+**Constraints:**
+- `1 <= strs.length <= 10^4` 
+- `0 <= strs[i].length <= 100`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 3.1 (Frequency Counting & Anagrams)
-- **Key Takeaway:** 26-char frequency vector encoding as map key.
+- **Key Takeaway:** 26-char frequency string key yields O(N * K) grouping time.
 
 ---
 
 ### 17. 🔴 P0 [Q] LC 1: Two Sum [EASY]
-- **LeetCode Link:** [Two Sum](https://leetcode.com/problems/two-sum/)
+- **LeetCode Link:** [LC 1: Two Sum](https://leetcode.com/problems/two-sum/)
 - **Category / Sub-Pattern:** Sub-Pattern 3.2 (O(1) Pair & Complement Lookup)
 
 **📜 Problem Statement & Explanation**
 Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.
 
 **Example 1:**
-- **Input:** `nums = [2,7,11,15], target = 9`
-- **Output:** `[0,1]`
-- **Explanation:** nums[0] + nums[1] == 9.
+- **Input:** `nums = [2,7,11,15], target = 9` 
+- **Output:** `[0,1]` 
+
+**Example 2:**
+- **Input:** `nums = [3,2,4], target = 6` 
+- **Output:** `[1,2]`
+
+**Constraints:**
+- `2 <= nums.length <= 10^4` 
+- `-10^9 <= nums[i] <= 10^9`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 3.2 (O(1) Pair & Complement Lookup)
-- **Key Takeaway:** Complement lookup (target - nums[i]) in unordered_map.
+- **Key Takeaway:** Store index in hash map for O(1) complement lookup.
 
 ---
 
 ### 18. 🔴 P0 [Q] LC 128: Longest Consecutive Sequence [MEDIUM]
-- **LeetCode Link:** [Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/)
+- **LeetCode Link:** [LC 128: Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/)
 - **Category / Sub-Pattern:** Sub-Pattern 3.2 (O(1) Pair & Complement Lookup)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Longest Consecutive Sequence**, compute the target response using LeetCode function signature `solve`.
+Given an unsorted array of integers `nums`, return the length of the longest consecutive elements sequence in O(N) time.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using O(1) set lookup for sequence start boundary (!set.count(num - 1))..
+- **Input:** `nums = [100,4,200,1,3,2]` 
+- **Output:** `4` 
+- **Explanation:** Longest sequence is `[1, 2, 3, 4]`. 
+
+**Example 2:**
+- **Input:** `nums = [0,3,7,2,5,8,4,6,0,1]` 
+- **Output:** `9`
+
+**Constraints:**
+- `0 <= nums.length <= 10^5` 
+- `-10^9 <= nums[i] <= 10^9`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 3.2 (O(1) Pair & Complement Lookup)
-- **Key Takeaway:** O(1) set lookup for sequence start boundary (!set.count(num - 1)).
+- **Key Takeaway:** Only check sequences starting at `!st.count(x - 1)` to guarantee O(N) linear time.
 
 ---
 
 ### 19. 🔴 P0 [Q] IB 1: Subarray with Given XOR [MEDIUM]
-- **LeetCode Link:** [Subarray with Given XOR](#)
+- **LeetCode Link:** [IB 1: Subarray with Given XOR](https://www.interviewbit.com/problems/subarray-with-given-xor/)
 - **Category / Sub-Pattern:** Sub-Pattern 3.3 (Prefix XOR & Bitwise Hashing)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Subarray with Given XOR**, compute the target response using LeetCode function signature `solve`.
+Given an array of integers `A` and an integer `B`, find the total number of subarrays having bitwise XOR equal to `B`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Maintain running XOR sum (xr). Lookup (xr ^ target) in map..
+- **Input:** `A = [4, 2, 2, 6, 4], B = 6` 
+- **Output:** `4` 
+- **Explanation:** Subarrays: `[4, 2]`, `[4, 2, 2, 6, 4]`, `[2, 2, 6]`, `[6]`.
+
+**Constraints:**
+- `1 <= A.length <= 10^5` 
+- `1 <= A[i] <= 10^9` 
+- `1 <= B <= 10^9`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 3.3 (Prefix XOR & Bitwise Hashing)
-- **Key Takeaway:** Maintain running XOR sum (xr). Lookup (xr ^ target) in map.
+- **Key Takeaway:** Prefix XOR property: `xr[i..j] = xr[0..j] ^ xr[0..i-1]`. Look up `xr ^ B` in map.
 
 ---
+
 
 ## 4. PREFIX SUM & DIFFERENCE ARRAYS
 
