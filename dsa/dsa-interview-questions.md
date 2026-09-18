@@ -484,466 +484,572 @@ Given an array of integers `A` and an integer `B`, find the total number of suba
 ## 4. PREFIX SUM & DIFFERENCE ARRAYS
 
 ### 20. 🔴 P0 [Q] LC 560: Subarray Sum Equals K [MEDIUM]
-- **LeetCode Link:** [Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/)
+- **LeetCode Link:** [LC 560: Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/)
 - **Category / Sub-Pattern:** Sub-Pattern 4.1 (Standard Prefix Sum & Subarray Sum K)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Subarray Sum Equals K**, compute the target response using LeetCode function signature `solve`.
+Given an array of integers `nums` and an integer `k`, return the total number of subarrays whose sum equals to `k`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Running sum - K hash map lookup..
+- **Input:** `nums = [1,1,1], k = 2` 
+- **Output:** `2` 
+
+**Example 2:**
+- **Input:** `nums = [1,2,3], k = 3` 
+- **Output:** `2`
+
+**Constraints:**
+- `1 <= nums.length <= 2 * 10^4` 
+- `-1000 <= nums[i] <= 1000` 
+- `-10^7 <= k <= 10^7`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 4.1 (Standard Prefix Sum & Subarray Sum K)
-- **Key Takeaway:** Running sum - K hash map lookup.
+- **Key Takeaway:** If prefix sum at j is S_j and at i is S_i, then sum(i..j) = S_j - S_i = k -> look up S_j - k in hash map.
 
 ---
 
 ### 21. 🔴 P0 [Q] LC 525: Contiguous Array [MEDIUM]
-- **LeetCode Link:** [Contiguous Array](https://leetcode.com/problems/contiguous-array/)
+- **LeetCode Link:** [LC 525: Contiguous Array](https://leetcode.com/problems/contiguous-array/)
 - **Category / Sub-Pattern:** Sub-Pattern 4.1 (Standard Prefix Sum & Subarray Sum K)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Contiguous Array**, compute the target response using LeetCode function signature `solve`.
+Given a binary array `nums`, return the maximum length of a contiguous subarray with an equal number of `0` and `1`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Convert 0 to -1, track earliest index of prefix sum..
+- **Input:** `nums = [0,1]` 
+- **Output:** `2` 
+
+**Example 2:**
+- **Input:** `nums = [0,1,0]` 
+- **Output:** `2`
+
+**Constraints:**
+- `1 <= nums.length <= 10^5` 
+- `nums[i]` is either `0` or `1`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 4.1 (Standard Prefix Sum & Subarray Sum K)
-- **Key Takeaway:** Convert 0 to -1, track earliest index of prefix sum.
+- **Key Takeaway:** Map 0 -> -1 so equal 0s and 1s becomes Subarray Sum = 0. Store earliest index of prefix sum.
 
 ---
 
 ### 22. 🟠 P1 [Q] LC 1109: Corporate Flight Bookings [MEDIUM]
-- **LeetCode Link:** [Corporate Flight Bookings](https://leetcode.com/problems/corporate-flight-bookings/)
+- **LeetCode Link:** [LC 1109: Corporate Flight Bookings](https://leetcode.com/problems/corporate-flight-bookings/)
 - **Category / Sub-Pattern:** Sub-Pattern 4.2 (Difference Array & Range Updates)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Corporate Flight Bookings**, compute the target response using LeetCode function signature `solve`.
+There are `n` flights numbered `1` to `n`. You are given bookings `bookings[i] = [first, last, seats]`. Return an array of length `n` where `ans[i]` is total seats booked for flight `i`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Difference array +val at L, -val at R+1; compute prefix sum at end..
+- **Input:** `bookings = [[1,2,10],[2,3,20],[2,5,25]], n = 5` 
+- **Output:** `[10,55,45,25,25]`
+
+**Constraints:**
+- `1 <= n <= 2 * 10^4` 
+- `1 <= bookings.length <= 2 * 10^4` 
+- `1 <= first <= last <= n`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 4.2 (Difference Array & Range Updates)
-- **Key Takeaway:** Difference array +val at L, -val at R+1; compute prefix sum at end.
+- **Key Takeaway:** Range updates `[L, R] += val` in $O(1)$ by setting `diff[L] += val` and `diff[R+1] -= val`.
 
 ---
 
 ### 23. 🔴 P0 [Q] LC 238: Product of Array Except Self [MEDIUM]
-- **LeetCode Link:** [Product of Array Except Self](https://leetcode.com/problems/product-of-array-except-self/)
+- **LeetCode Link:** [LC 238: Product of Array Except Self](https://leetcode.com/problems/product-of-array-except-self/)
 - **Category / Sub-Pattern:** Sub-Pattern 4.3 (Prefix & Suffix Products)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Product of Array Except Self**, compute the target response using LeetCode function signature `solve`.
+Given an integer array `nums`, return an array `answer` such that `answer[i]` is equal to the product of all the elements of `nums` except `nums[i]`. You must write an algorithm that runs in $O(N)$ time without using division.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Prefix products from left x running suffix product from right without division..
+- **Input:** `nums = [1,2,3,4]` 
+- **Output:** `[24,12,8,6]` 
+
+**Example 2:**
+- **Input:** `nums = [-1,1,0,-3,3]` 
+- **Output:** `[0,0,9,0,0]`
+
+**Constraints:**
+- `2 <= nums.length <= 10^5` 
+- `-30 <= nums[i] <= 30`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 4.3 (Prefix & Suffix Products)
-- **Key Takeaway:** Prefix products from left x running suffix product from right without division.
+- **Key Takeaway:** Combine left prefix product array with right suffix product accumulator to avoid division.
 
 ---
 
 ### 24. 🔴 P0 [Q] LC 523: Continuous Subarray Sum [MEDIUM]
-- **LeetCode Link:** [Continuous Subarray Sum](https://leetcode.com/problems/continuous-subarray-sum/)
+- **LeetCode Link:** [LC 523: Continuous Subarray Sum](https://leetcode.com/problems/continuous-subarray-sum/)
 - **Category / Sub-Pattern:** Sub-Pattern 4.4 (Prefix Sum with Modulo Arithmetic)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Continuous Subarray Sum**, compute the target response using LeetCode function signature `solve`.
+Given an integer array `nums` and an integer `k`, return `true` if `nums` has a good subarray of size at least 2 whose sum is a multiple of `k`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Store earliest index of (running_sum % k) in map (len >= 2)..
+- **Input:** `nums = [23,2,4,6,7], k = 6` 
+- **Output:** `true` 
+- **Explanation:** `[2, 4]` is a continuous subarray of size 2 whose sum is 6.
+
+**Constraints:**
+- `1 <= nums.length <= 10^5` 
+- `0 <= nums[i] <= 10^9` 
+- `1 <= k <= 2^31 - 1`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 4.4 (Prefix Sum with Modulo Arithmetic)
-- **Key Takeaway:** Store earliest index of (running_sum % k) in map (len >= 2).
+- **Key Takeaway:** Store EARLIEST index of remainder `running_sum % k` to satisfy length >= 2 constraint.
 
 ---
+
 
 ## 5. TWO POINTERS
 
 ### 25. 🔴 P0 [Q] LC 167: Two Sum II - Input Array Is Sorted [MEDIUM]
-- **LeetCode Link:** [Two Sum II - Input Array Is Sorted](https://leetcode.com/problems/two-sum-ii---input-array-is-sorted/)
+- **LeetCode Link:** [LC 167: Two Sum II - Input Array Is Sorted](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/)
 - **Category / Sub-Pattern:** Sub-Pattern 5.1 (Opposite Direction Pointers)
 
 **📜 Problem Statement & Explanation**
-Given 1-indexed sorted array `numbers`, find two numbers adding to `target`.
+Given a 1-indexed array of integers `numbers` that is already sorted in non-decreasing order, find two numbers such that they add up to a specific `target` number.
 
 **Example 1:**
-- **Input:** `numbers = [2,7,11,15], target = 9`
+- **Input:** `numbers = [2,7,11,15], target = 9` 
 - **Output:** `[1,2]`
-- **Explanation:** 2 + 7 = 9. 1-indexed indices [1, 2].
+
+**Constraints:**
+- `2 <= numbers.length <= 3 * 10^4` 
+- `-1000 <= numbers[i] <= 1000`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 5.1 (Opposite Direction Pointers)
-- **Key Takeaway:** Opposite pointers converging inward.
+- **Key Takeaway:** Sorted array allows linear inward convergence of opposite pointers in O(1) space.
 
 ---
 
 ### 26. 🔴 P0 [Q] LC 15: 3Sum [MEDIUM]
-- **LeetCode Link:** [3Sum](https://leetcode.com/problems/3sum/)
+- **LeetCode Link:** [LC 15: 3Sum](https://leetcode.com/problems/3sum/)
 - **Category / Sub-Pattern:** Sub-Pattern 5.1 (Opposite Direction Pointers)
 
 **📜 Problem Statement & Explanation**
-Return all unique triplets `[nums[i], nums[j], nums[k]]` summing to 0.
+Given an integer array `nums`, return all the triplets `[nums[i], nums[j], nums[k]]` such that `i != j`, `i != k`, and `j != k`, and `nums[i] + nums[j] + nums[k] == 0` without duplicates.
 
 **Example 1:**
-- **Input:** `nums = [-1,0,1,2,-1,-4]`
+- **Input:** `nums = [-1,0,1,2,-1,-4]` 
 - **Output:** `[[-1,-1,2],[-1,0,1]]`
-- **Explanation:** Unique triplets summing to 0.
+
+**Constraints:**
+- `3 <= nums.length <= 3000` 
+- `-10^5 <= nums[i] <= 10^5`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 5.1 (Opposite Direction Pointers)
-- **Key Takeaway:** Sorted array + outer loop + opposite pointers with duplicate skipping.
+- **Key Takeaway:** Fix outer index `i`, then run Two Pointers on remaining sorted subarray while skipping duplicates.
 
 ---
 
 ### 27. 🔴 P0 [Q] LC 11: Container With Most Water [MEDIUM]
-- **LeetCode Link:** [Container With Most Water](https://leetcode.com/problems/container-with-most-water/)
+- **LeetCode Link:** [LC 11: Container With Most Water](https://leetcode.com/problems/container-with-most-water/)
 - **Category / Sub-Pattern:** Sub-Pattern 5.1 (Opposite Direction Pointers)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Container With Most Water**, compute the target response using LeetCode function signature `solve`.
+You are given an integer array `height` of length `n`. Find two lines that together with the x-axis form a container, such that the container contains the most water.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Shrinking boundary pointers, moving shorter height inward..
+- **Input:** `height = [1,8,6,2,5,4,8,3,7]` 
+- **Output:** `49`
+
+**Constraints:**
+- `n == height.length` 
+- `2 <= n <= 10^5` 
+- `0 <= height[i] <= 10^4`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 5.1 (Opposite Direction Pointers)
-- **Key Takeaway:** Shrinking boundary pointers, moving shorter height inward.
+- **Key Takeaway:** Moving the shorter line inward is the only way to possibly get a taller container boundary.
 
 ---
 
 ### 28. 🔴 P0 [Q] LC 42: Trapping Rain Water [HARD]
-- **LeetCode Link:** [Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/)
+- **LeetCode Link:** [LC 42: Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/)
 - **Category / Sub-Pattern:** Sub-Pattern 5.1 (Opposite Direction Pointers)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Trapping Rain Water**, compute the target response using LeetCode function signature `solve`.
+Given `n` non-negative integers representing an elevation map where the width of each bar is `1`, compute how much water it can trap after raining.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Two pointers tracking maxLeft and maxRight heights..
+- **Input:** `height = [0,1,0,2,1,0,1,3,2,1,2,1]` 
+- **Output:** `6`
+
+**Constraints:**
+- `n == height.length` 
+- `1 <= n <= 2 * 10^4` 
+- `0 <= height[i] <= 10^5`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 5.1 (Opposite Direction Pointers)
-- **Key Takeaway:** Two pointers tracking maxLeft and maxRight heights.
+- **Key Takeaway:** Process pointer with smaller boundary max height since it determines the water level bottleneck.
 
 ---
 
 ### 29. 🔴 P0 [Q] LC 75: Sort Colors (Dutch National Flag) [MEDIUM]
-- **LeetCode Link:** [Sort Colors (Dutch National Flag)](https://leetcode.com/problems/sort-colors-dutch-national-flag/)
+- **LeetCode Link:** [LC 75: Sort Colors (Dutch National Flag)](https://leetcode.com/problems/sort-colors/)
 - **Category / Sub-Pattern:** Sub-Pattern 5.2 (Partitioning & Backward Pointers)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Sort Colors (Dutch National Flag)**, compute the target response using LeetCode function signature `solve`.
+Given an array `nums` with `n` objects colored red, white, or blue (represented by `0`, `1`, `2`), sort them in-place so that objects of the same color are adjacent in order `0`, `1`, `2`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Dutch National Flag 3-way low, mid, high pointer algorithm..
+- **Input:** `nums = [2,0,2,1,1,0]` 
+- **Output:** `[0,0,1,1,2,2]`
+
+**Constraints:**
+- `n == nums.length` 
+- `1 <= n <= 300` 
+- `nums[i]` is `0`, `1`, or `2`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 5.2 (Partitioning & Backward Pointers)
-- **Key Takeaway:** Dutch National Flag 3-way low, mid, high pointer algorithm.
+- **Key Takeaway:** Partition array into 3 sections `[0..low-1] = 0`, `[low..high] = 1`, `[high+1..N-1] = 2` in single pass.
 
 ---
 
 ### 30. 🟠 P1 [Q] LC 88: Merge Sorted Array [EASY]
-- **LeetCode Link:** [Merge Sorted Array](https://leetcode.com/problems/merge-sorted-array/)
+- **LeetCode Link:** [LC 88: Merge Sorted Array](https://leetcode.com/problems/merge-sorted-array/)
 - **Category / Sub-Pattern:** Sub-Pattern 5.2 (Partitioning & Backward Pointers)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Merge Sorted Array**, compute the target response using LeetCode function signature `solve`.
+You are given two integer arrays `nums1` and `nums2`, sorted in non-decreasing order, and two integers `m` and `n`. Merge `nums1` and `nums2` into `nums1` as one sorted array in-place.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Fill destination array backwards from (m + n - 1)..
+- **Input:** `nums1 = [1,2,3,0,0,0], m = 3, nums2 = [2,5,6], n = 3` 
+- **Output:** `[1,2,2,3,5,6]`
+
+**Constraints:**
+- `nums1.length == m + n` 
+- `nums2.length == n` 
+- `0 <= m, n <= 200`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 5.2 (Partitioning & Backward Pointers)
-- **Key Takeaway:** Fill destination array backwards from (m + n - 1).
+- **Key Takeaway:** Merge from back to front to utilize empty padding space without extra memory.
 
 ---
+
 
 ## 6. SLIDING WINDOW
 
 ### 31. 🔴 P0 [Q] LC 3: Longest Substring Without Repeating Characters [MEDIUM]
-- **LeetCode Link:** [Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/)
+- **LeetCode Link:** [LC 3: Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/)
 - **Category / Sub-Pattern:** Sub-Pattern 6.1 (Variable Length Sliding Window)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Longest Substring Without Repeating Characters**, compute the target response using LeetCode function signature `solve`.
+Given a string `s`, find the length of the longest substring without repeating characters.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Expand right, shrink left when duplicate character found..
+- **Input:** `s = "abcabcbb"` 
+- **Output:** `3` 
+- **Explanation:** Longest substring is `"abc"`.
+
+**Constraints:**
+- `0 <= s.length <= 5 * 10^4` 
+- `s` consists of English letters, digits, symbols and spaces.
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 6.1 (Variable Length Sliding Window)
-- **Key Takeaway:** Expand right, shrink left when duplicate character found.
+- **Key Takeaway:** Jump `left` pointer directly past the last duplicate index to achieve $O(N)$ single pass.
 
 ---
 
 ### 32. 🔴 P0 [Q] LC 209: Minimum Size Subarray Sum [MEDIUM]
-- **LeetCode Link:** [Minimum Size Subarray Sum](https://leetcode.com/problems/minimum-size-subarray-sum/)
+- **LeetCode Link:** [LC 209: Minimum Size Subarray Sum](https://leetcode.com/problems/minimum-size-subarray-sum/)
 - **Category / Sub-Pattern:** Sub-Pattern 6.1 (Variable Length Sliding Window)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Minimum Size Subarray Sum**, compute the target response using LeetCode function signature `solve`.
+Given an array of positive integers `nums` and a positive integer `target`, return the minimal length of a subarray whose sum is greater than or equal to `target`. If there is no such subarray, return `0`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Expand right until sum >= target, shrink left to minimize length..
+- **Input:** `target = 7, nums = [2,3,1,2,4,3]` 
+- **Output:** `2` 
+- **Explanation:** Subarray `[4,3]` has minimal length 2.
+
+**Constraints:**
+- `1 <= target <= 10^9` 
+- `1 <= nums.length <= 10^5` 
+- `1 <= nums[i] <= 10^4`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 6.1 (Variable Length Sliding Window)
-- **Key Takeaway:** Expand right until sum >= target, shrink left to minimize length.
+- **Key Takeaway:** Shrink `left` pointer aggressively while `sum >= target` to minimize window length.
 
 ---
 
 ### 33. 🔴 P0 [Q] LC 76: Minimum Window Substring [HARD]
-- **LeetCode Link:** [Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/)
+- **LeetCode Link:** [LC 76: Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/)
 - **Category / Sub-Pattern:** Sub-Pattern 6.1 (Variable Length Sliding Window)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Minimum Window Substring**, compute the target response using LeetCode function signature `solve`.
+Given two strings `s` and `t` of lengths `m` and `n`, return the minimum window substring of `s` such that every character in `t` (including duplicates) is included in the window. If there is no such substring, return `""`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Gold-standard variable window with required match counter..
+- **Input:** `s = "ADOBECODEBANC", t = "ABC"` 
+- **Output:** `"BANC"`
+
+**Constraints:**
+- `m == s.length`, `n == t.length` 
+- `1 <= m, n <= 10^5`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 6.1 (Variable Length Sliding Window)
-- **Key Takeaway:** Gold-standard variable window with required match counter.
+- **Key Takeaway:** Track `formed == required` distinct character matches to shrink window in $O(|S| + |T|)$.
 
 ---
 
 ### 34. 🔴 P0 [Q] LC 438: Find All Anagrams in a String [MEDIUM]
-- **LeetCode Link:** [Find All Anagrams in a String](https://leetcode.com/problems/find-all-anagrams-in-a-string/)
+- **LeetCode Link:** [LC 438: Find All Anagrams in a String](https://leetcode.com/problems/find-all-anagrams-in-a-string/)
 - **Category / Sub-Pattern:** Sub-Pattern 6.2 (Fixed-Size Sliding Window)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Find All Anagrams in a String**, compute the target response using LeetCode function signature `solve`.
+Given two strings `s` and `p`, return an array of all the start indices of `p`'s anagrams in `s`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Fixed window of size |P| with 26-char frequency comparison..
+- **Input:** `s = "cbaebabacd", p = "abc"` 
+- **Output:** `[0,6]` 
+- **Explanation:** Substrings starting at index 0 (`"cba"`) and index 6 (`"bac"`) are anagrams.
+
+**Constraints:**
+- `1 <= s.length, p.length <= 3 * 10^4` 
+- `s` and `p` consist of lowercase English letters.
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 6.2 (Fixed-Size Sliding Window)
-- **Key Takeaway:** Fixed window of size |P| with 26-char frequency comparison.
+- **Key Takeaway:** Fixed window of size `k`: vector equality comparison `pCount == sCount` takes $O(26) = O(1)$.
 
 ---
 
 ### 35. 🔴 P0 [Q] LC 1004: Max Consecutive Ones III [MEDIUM]
-- **LeetCode Link:** [Max Consecutive Ones III](https://leetcode.com/problems/max-consecutive-ones-iii/)
+- **LeetCode Link:** [LC 1004: Max Consecutive Ones III](https://leetcode.com/problems/max-consecutive-ones-iii/)
 - **Category / Sub-Pattern:** Sub-Pattern 6.3 (Variable Window with K Operations / Replacement)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Max Consecutive Ones III**, compute the target response using LeetCode function signature `solve`.
+Given a binary array `nums` and an integer `k`, return the maximum number of consecutive `1`'s in the array if you can flip at most `k` `0`'s.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Track zero count in window; shrink left when zero count > K..
+- **Input:** `nums = [1,1,1,0,0,0,1,1,1,1,0], k = 2` 
+- **Output:** `6`
+
+**Constraints:**
+- `1 <= nums.length <= 10^5` 
+- `nums[i]` is either `0` or `1` 
+- `0 <= k <= nums.length`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 6.3 (Variable Window with K Operations / Replacement)
-- **Key Takeaway:** Track zero count in window; shrink left when zero count > K.
+- **Key Takeaway:** Shrink `left` whenever zero count exceeds budget `k`.
 
 ---
 
 ### 36. 🔴 P0 [Q] LC 424: Longest Repeating Character Replacement [MEDIUM]
-- **LeetCode Link:** [Longest Repeating Character Replacement](https://leetcode.com/problems/longest-repeating-character-replacement/)
+- **LeetCode Link:** [LC 424: Longest Repeating Character Replacement](https://leetcode.com/problems/longest-repeating-character-replacement/)
 - **Category / Sub-Pattern:** Sub-Pattern 6.3 (Variable Window with K Operations / Replacement)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Longest Repeating Character Replacement**, compute the target response using LeetCode function signature `solve`.
+You are given a string `s` and an integer `k`. You can choose any character of the string and change it to any other uppercase English character at most `k` times. Return the length of the longest substring containing the same letter.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Track max_freq in window; shrink left when (window_len - max_freq) > K..
+- **Input:** `s = "ABAB", k = 2` 
+- **Output:** `4` 
+- **Explanation:** Replace 2 'A's with 'B's or vice versa.
+
+**Constraints:**
+- `1 <= s.length <= 10^5` 
+- `s` consists of uppercase English letters. 
+- `0 <= k <= s.length`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 6.3 (Variable Window with K Operations / Replacement)
-- **Key Takeaway:** Track max_freq in window; shrink left when (window_len - max_freq) > K.
+- **Key Takeaway:** Window is valid if `(window_len - max_freq) <= k`.
 
 ---
+
 
 ## 7. BINARY SEARCH
 
 ### 37. 🟠 P1 [Q] LC 704: Binary Search [EASY]
-- **LeetCode Link:** [Binary Search](https://leetcode.com/problems/binary-search/)
+- **LeetCode Link:** [LC 704: Binary Search](https://leetcode.com/problems/binary-search/)
 - **Category / Sub-Pattern:** Sub-Pattern 7.1 (Standard & Boundary Search)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Binary Search**, compute the target response using LeetCode function signature `search`.
+Given an array of integers `nums` which is sorted in ascending order, and an integer `target`, write a function to search `target` in `nums`. Return its index if target exists, else return `-1`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Classic low <= high midpoint search..
+- **Input:** `nums = [-1,0,3,5,9,12], target = 9` 
+- **Output:** `4`
+
+**Constraints:**
+- `1 <= nums.length <= 10^4` 
+- `-10^4 < nums[i], target < 10^4` 
+- All integers in `nums` are unique.
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 7.1 (Standard & Boundary Search)
-- **Key Takeaway:** Classic low <= high midpoint search.
+- **Key Takeaway:** Use `low + (high - low) / 2` to prevent integer overflow.
 
 ---
 
 ### 38. 🔴 P0 [Q] LC 33: Search In Rotated Sorted Array [MEDIUM]
-- **LeetCode Link:** [Search In Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/)
+- **LeetCode Link:** [LC 33: Search In Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/)
 - **Category / Sub-Pattern:** Sub-Pattern 7.2 (Rotated & Modified Array Search)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Search In Rotated Sorted Array**, compute the target response using LeetCode function signature `search`.
+Given a rotated sorted array `nums` of unique values and an integer `target`, return the index of `target` if it is in `nums`, or `-1` if it is not.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Compare mid with left/right to determine sorted half..
+- **Input:** `nums = [4,5,6,7,0,1,2], target = 0` 
+- **Output:** `4`
+
+**Constraints:**
+- `1 <= nums.length <= 5000` 
+- All values of `nums` are unique.
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 7.2 (Rotated & Modified Array Search)
-- **Key Takeaway:** Compare mid with left/right to determine sorted half.
+- **Key Takeaway:** At least one half (left or right) is ALWAYS strictly sorted in a rotated array.
 
 ---
 
 ### 39. 🔴 P0 [Q] LC 153: Find Minimum in Rotated Sorted Array [MEDIUM]
-- **LeetCode Link:** [Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/)
+- **LeetCode Link:** [LC 153: Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/)
 - **Category / Sub-Pattern:** Sub-Pattern 7.2 (Rotated & Modified Array Search)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Find Minimum in Rotated Sorted Array**, compute the target response using LeetCode function signature `findMin`.
+Given a rotated sorted array `nums` of unique elements, return the minimum element of this array.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Compare mid with high (mid > high => min in right half)..
+- **Input:** `nums = [3,4,5,1,2]` 
+- **Output:** `1`
+
+**Constraints:**
+- `n == nums.length` 
+- `1 <= n <= 5000` 
+- All integers in `nums` are unique.
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 7.2 (Rotated & Modified Array Search)
-- **Key Takeaway:** Compare mid with high (mid > high => min in right half).
+- **Key Takeaway:** Compare `nums[mid]` against `nums[high]` to determine which side contains the pivot point.
 
 ---
 
 ### 40. 🔴 P0 [Q] LC 875: Koko Eating Bananas [MEDIUM]
-- **LeetCode Link:** [Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/)
+- **LeetCode Link:** [LC 875: Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/)
 - **Category / Sub-Pattern:** Sub-Pattern 7.3 (Binary Search on Answer Space)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Koko Eating Bananas**, compute the target response using LeetCode function signature `minEatingSpeed`.
+Koko can decide her banana-eating speed of `k` per hour. Each hour, she chooses a pile and eats `k` bananas. Return the minimum integer `k` such that she can eat all bananas within `h` hours.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Binary search speed range [1, max_piles]..
+- **Input:** `piles = [3,6,7,11], h = 8` 
+- **Output:** `4`
+
+**Constraints:**
+- `1 <= piles.length <= 10^4` 
+- `piles.length <= h <= 10^9` 
+- `1 <= piles[i] <= 10^9`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 7.3 (Binary Search on Answer Space)
-- **Key Takeaway:** Binary search speed range [1, max_piles].
+- **Key Takeaway:** Use integer division trick `(p + mid - 1) / mid` for exact `ceil(p / mid)`.
 
 ---
 
 ### 41. 🔴 P0 [Q] LC 1011: Capacity To Ship Packages Within D Days [MEDIUM]
-- **LeetCode Link:** [Capacity To Ship Packages Within D Days](https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/)
+- **LeetCode Link:** [LC 1011: Capacity To Ship Packages Within D Days](https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/)
 - **Category / Sub-Pattern:** Sub-Pattern 7.3 (Binary Search on Answer Space)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Capacity To Ship Packages Within D Days**, compute the target response using LeetCode function signature `solve`.
+A conveyor belt has packages that must be shipped within `days` days. Return the least weight capacity of the ship that will result in all packages being shipped within `days` days.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Binary search capacity range [max_weight, sum_weight]..
+- **Input:** `weights = [1,2,3,4,5,6,7,8,9,10], days = 5` 
+- **Output:** `15`
+
+**Constraints:**
+- `1 <= days <= weights.length <= 5 * 10^4` 
+- `1 <= weights[i] <= 500`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 7.3 (Binary Search on Answer Space)
-- **Key Takeaway:** Binary search capacity range [max_weight, sum_weight].
+- **Key Takeaway:** Lower bound of capacity search space MUST be `max(weights)`.
 
 ---
 
 ### 42. 🔴 P0 [Q] LC 74: Search a 2D Matrix [MEDIUM]
-- **LeetCode Link:** [Search a 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/)
+- **LeetCode Link:** [LC 74: Search a 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/)
 - **Category / Sub-Pattern:** Sub-Pattern 7.4 (2D Matrix & Unsorted Condition Search)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Search a 2D Matrix**, compute the target response using LeetCode function signature `solve`.
+Given an `m x n` integer matrix `matrix` where each row is sorted in non-decreasing order and the first integer of each row is greater than the last integer of the previous row, search for `target`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Virtual 1D mapping on M x N grid: matrix[mid / N][mid % N]..
+- **Input:** `matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 3` 
+- **Output:** `true`
+
+**Constraints:**
+- `m == matrix.length`, `n == matrix[i].length` 
+- `1 <= m, n <= 100`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 7.4 (2D Matrix & Unsorted Condition Search)
-- **Key Takeaway:** Virtual 1D mapping on M x N grid: matrix[mid / N][mid % N].
+- **Key Takeaway:** Map 1D index `mid` to 2D matrix coordinates via `r = mid / N, c = mid % N`.
 
 ---
 
 ### 43. 🔴 P0 [Q] LC 162: Find Peak Element [MEDIUM]
-- **LeetCode Link:** [Find Peak Element](https://leetcode.com/problems/find-peak-element/)
+- **LeetCode Link:** [LC 162: Find Peak Element](https://leetcode.com/problems/find-peak-element/)
 - **Category / Sub-Pattern:** Sub-Pattern 7.4 (2D Matrix & Unsorted Condition Search)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Find Peak Element**, compute the target response using LeetCode function signature `solve`.
+A peak element is an element that is strictly greater than its neighbors. Given a 0-indexed integer array `nums`, find a peak element, and return its index.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Compare nums[mid] with nums[mid + 1] on unsorted array..
+- **Input:** `nums = [1,2,3,1]` 
+- **Output:** `2`
+
+**Constraints:**
+- `1 <= nums.length <= 1000` 
+- `nums[i] != nums[i + 1]` for all valid `i`.
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 7.4 (2D Matrix & Unsorted Condition Search)
-- **Key Takeaway:** Compare nums[mid] with nums[mid + 1] on unsorted array.
+- **Key Takeaway:** Binary search works on unsorted arrays if we can eliminate one half based on slope direction.
 
 ---
+
 
 ## 8. OVERLAPPING INTERVALS
 
@@ -1072,861 +1178,1026 @@ Given an array of meeting time intervals `intervals` where `intervals[i] = [star
 ## 9. FAST & SLOW POINTERS (LINKED LIST)
 
 ### 48. 🔴 P0 [Q] LC 141: Linked List Cycle [EASY]
-- **LeetCode Link:** [Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/)
+- **LeetCode Link:** [LC 141: Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/)
 - **Category / Sub-Pattern:** Sub-Pattern 9.1 (Cycle Detection & Midpoint)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Linked List Cycle**, compute the target response using LeetCode function signature `hasCycle`.
+Given `head`, the head of a linked list, determine if the linked list has a cycle in it.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Fast pointer moves 2 steps, slow moves 1 step; collision = cycle..
+- **Input:** `head = [3,2,0,-4], pos = 1` 
+- **Output:** `true` 
+- **Explanation:** There is a cycle in the linked list, where tail connects to the 1st node (0-indexed).
+
+**Constraints:**
+- Number of nodes in list is in range `[0, 10^4]` 
+- `-10^5 <= Node.val <= 10^5`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 9.1 (Cycle Detection & Midpoint)
-- **Key Takeaway:** Fast pointer moves 2 steps, slow moves 1 step; collision = cycle.
+- **Key Takeaway:** Fast pointer moves 2x speed of slow pointer; collision guarantees cycle presence in O(1) space.
 
 ---
 
 ### 49. 🔴 P0 [Q] LC 142: Linked List Cycle II [MEDIUM]
-- **LeetCode Link:** [Linked List Cycle II](https://leetcode.com/problems/linked-list-cycle-ii/)
+- **LeetCode Link:** [LC 142: Linked List Cycle II](https://leetcode.com/problems/linked-list-cycle-ii/)
 - **Category / Sub-Pattern:** Sub-Pattern 9.1 (Cycle Detection & Midpoint)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Linked List Cycle II**, compute the target response using LeetCode function signature `detectCycle`.
+Given the `head` of a linked list, return the node where the cycle begins. If there is no cycle, return `null`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Floyd's cycle detection + entry point recovery..
+- **Input:** `head = [3,2,0,-4], pos = 1` 
+- **Output:** `tail connects to node index 1`
+
+**Constraints:**
+- Number of nodes in list is in range `[0, 10^4]` 
+- `-10^5 <= Node.val <= 10^5`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 9.1 (Cycle Detection & Midpoint)
-- **Key Takeaway:** Floyd's cycle detection + entry point recovery.
+- **Key Takeaway:** Distance from head to cycle entry equals distance from collision point to cycle entry.
 
 ---
 
 ### 50. 🔴 P0 [Q] LC 143: Reorder List [MEDIUM]
-- **LeetCode Link:** [Reorder List](https://leetcode.com/problems/reorder-list/)
+- **LeetCode Link:** [LC 143: Reorder List](https://leetcode.com/problems/reorder-list/)
 - **Category / Sub-Pattern:** Sub-Pattern 9.1 (Cycle Detection & Midpoint)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Reorder List**, compute the target response using LeetCode function signature `reorderList`.
+You are given the head of a singly linked list `L0 -> L1 -> ... -> Ln-1 -> Ln`. Reorder the list to be: `L0 -> Ln -> L1 -> Ln-1 -> L2 -> Ln-2 -> ...` in-place.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Midpoint split + reverse second half + alternate weaving..
+- **Input:** `head = [1,2,3,4]` 
+- **Output:** `[1,4,2,3]` 
+
+**Example 2:**
+- **Input:** `head = [1,2,3,4,5]` 
+- **Output:** `[1,5,2,4,3]`
+
+**Constraints:**
+- Number of nodes in list is in range `[1, 5 * 10^4]` 
+- `1 <= Node.val <= 1000`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 9.1 (Cycle Detection & Midpoint)
-- **Key Takeaway:** Midpoint split + reverse second half + alternate weaving.
+- **Key Takeaway:** Find midpoint -> Reverse second half -> Weave nodes alternately in $O(1)$ space.
 
 ---
+
 
 ## 10. MONOTONIC STACK
 
 ### 51. 🔴 P0 [Q] LC 20: Valid Parentheses [EASY]
-- **LeetCode Link:** [Valid Parentheses](https://leetcode.com/problems/valid-parentheses/)
+- **LeetCode Link:** [LC 20: Valid Parentheses](https://leetcode.com/problems/valid-parentheses/)
 - **Category / Sub-Pattern:** Sub-Pattern 10.1 (Basic Stack Matching)
 
 **📜 Problem Statement & Explanation**
-Determine if string `s` containing brackets `'()[]{}'` is valid.
+Given a string `s` containing just the characters `'('`, `')'`, `'{'`, `'}'`, `'['` and `']'`, determine if the input string is valid.
 
 **Example 1:**
-- **Input:** `s = '()[]{}'`
-- **Output:** `true`
-- **Explanation:** Brackets matched in correct order.
+- **Input:** `s = "()[]{}"` 
+- **Output:** `true` 
+
+**Example 2:**
+- **Input:** `s = "(]"` 
+- **Output:** `false`
+
+**Constraints:**
+- `1 <= s.length <= 10^4` 
+- `s` consists of parentheses only `()[]{}`.
 
 ---
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 10.1 (Basic Stack Matching)
-- **Key Takeaway:** Push opening brackets, pop & match closing brackets.
+- **Key Takeaway:** LIFO stack guarantees inner nested bracket pairs match before outer ones.
 
 ---
 
 ### 52. 🔴 P0 [Q] LC 739: Daily Temperatures [MEDIUM]
-- **LeetCode Link:** [Daily Temperatures](https://leetcode.com/problems/daily-temperatures/)
-- **Category / Sub-Pattern:** Sub-Pattern 10.2 (Next Greater / Smaller Element)
+- **LeetCode Link:** [LC 739: Daily Temperatures](https://leetcode.com/problems/daily-temperatures/)
+- **Category / Sub-Pattern:** Sub-Pattern 10.1 (Basic Stack Matching)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Daily Temperatures**, compute the target response using LeetCode function signature `dailyTemperatures`.
+Given an array of integers `temperatures` represents the daily temperatures, return an array `answer` such that `answer[i]` is the number of days you have to wait after the `i`-th day to get a warmer temperature. If there is no future day for which this is possible, keep `answer[i] == 0`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Monotonic decreasing stack storing indices..
+- **Input:** `temperatures = [73,74,75,71,69,72,76,73]` 
+- **Output:** `[1,1,4,2,1,1,0,0]`
+
+**Constraints:**
+- `1 <= temperatures.length <= 10^5` 
+- `30 <= temperatures[i] <= 100`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 10.2 (Next Greater / Smaller Element)
-- **Key Takeaway:** Monotonic decreasing stack storing indices.
+- **Pattern:** Sub-Pattern 10.1 (Basic Stack Matching)
+- **Key Takeaway:** Stack stores un-matched indices in decreasing order of temperature until warmer day is encountered.
 
 ---
 
 ### 53. 🔴 P0 [Q] LC 84: Largest Rectangle in Histogram [HARD]
-- **LeetCode Link:** [Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/)
-- **Category / Sub-Pattern:** Sub-Pattern 10.2 (Next Greater / Smaller Element)
+- **LeetCode Link:** [LC 84: Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/)
+- **Category / Sub-Pattern:** Sub-Pattern 10.1 (Basic Stack Matching)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Largest Rectangle in Histogram**, compute the target response using LeetCode function signature `largestRectangleArea`.
+Given an array of integers `heights` representing the histogram's bar height where the width of each bar is `1`, return the area of the largest rectangle in the histogram.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Monotonic increasing stack calculating width on pop..
+- **Input:** `heights = [2,1,5,6,2,3]` 
+- **Output:** `10` 
+- **Explanation:** Largest rectangle has height 5 and width 2 (area = 10).
+
+**Constraints:**
+- `1 <= heights.length <= 10^5` 
+- `0 <= heights[i] <= 10^4`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 10.2 (Next Greater / Smaller Element)
-- **Key Takeaway:** Monotonic increasing stack calculating width on pop.
+- **Pattern:** Sub-Pattern 10.1 (Basic Stack Matching)
+- **Key Takeaway:** Stack top is popped when a smaller element is encountered; popped bar's width is bounded by new top and current index.
 
 ---
+
 
 ## 11. HEAP / PRIORITY QUEUE
 
 ### 54. 🔴 P0 [Q] LC 215: Kth Largest Element in an Array [MEDIUM]
-- **LeetCode Link:** [Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/)
-- **Category / Sub-Pattern:** Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern)
+- **LeetCode Link:** [LC 215: Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/)
+- **Category / Sub-Pattern:** Sub-Pattern 11.1 (Kth Element & Min/Max-Heap)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Kth Largest Element in an Array**, compute the target response using LeetCode function signature `findKthLargest`.
+Given an integer array `nums` and an integer `k`, return the `k`-th largest element in the array.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Min-Heap of size K (or Quickselect)..
+- **Input:** `nums = [3,2,1,5,6,4], k = 2` 
+- **Output:** `5`
+
+**Constraints:**
+- `1 <= k <= nums.length <= 10^5` 
+- `-10^4 <= nums[i] <= 10^4`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern)
-- **Key Takeaway:** Min-Heap of size K (or Quickselect).
+- **Pattern:** Sub-Pattern 11.1 (Kth Element & Min/Max-Heap)
+- **Key Takeaway:** Min-Heap of size K retains the K largest elements seen so far; root is the K-th largest.
 
 ---
 
 ### 55. 🔴 P0 [Q] LC 347: Top K Frequent Elements [MEDIUM]
-- **LeetCode Link:** [Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/)
-- **Category / Sub-Pattern:** Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern)
+- **LeetCode Link:** [LC 347: Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/)
+- **Category / Sub-Pattern:** Sub-Pattern 11.1 (Kth Element & Min/Max-Heap)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Top K Frequent Elements**, compute the target response using LeetCode function signature `topKFrequent`.
+Given an integer array `nums` and an integer `k`, return the `k` most frequent elements. You may return the answer in any order.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Frequency map + Min-Heap of size K..
+- **Input:** `nums = [1,1,1,2,2,3], k = 2` 
+- **Output:** `[1,2]`
+
+**Constraints:**
+- `1 <= nums.length <= 10^5` 
+- `k` is in range `[1, number of unique elements]`.
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern)
-- **Key Takeaway:** Frequency map + Min-Heap of size K.
+- **Pattern:** Sub-Pattern 11.1 (Kth Element & Min/Max-Heap)
+- **Key Takeaway:** Max frequency is bounded by N, enabling Bucket Sort in linear $O(N)$ time.
 
 ---
 
 ### 56. 🔴 P0 [Q] LC 295: Find Median from Data Stream [HARD]
-- **LeetCode Link:** [Find Median from Data Stream](https://leetcode.com/problems/find-median-from-data-stream/)
-- **Category / Sub-Pattern:** Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern)
+- **LeetCode Link:** [LC 295: Find Median from Data Stream](https://leetcode.com/problems/find-median-from-data-stream/)
+- **Category / Sub-Pattern:** Sub-Pattern 11.2 (Two Heaps Median Tracking)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Find Median from Data Stream**, compute the target response using LeetCode function signature `findMedian`.
+Design a data structure that supports adding numbers from a data stream and finding the median of the stream.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Dual Heap pattern (Max-Heap lower half, Min-Heap upper half)..
+- **Input:** `addNum(1), addNum(2), findMedian() -> 1.5, addNum(3), findMedian() -> 2.0`
+
+**Constraints:**
+- At most `5 * 10^4` calls to `addNum` and `findMedian`.
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern)
-- **Key Takeaway:** Dual Heap pattern (Max-Heap lower half, Min-Heap upper half).
+- **Pattern:** Sub-Pattern 11.2 (Two Heaps Median Tracking)
+- **Key Takeaway:** Max-Heap (lower half) + Min-Heap (upper half) maintain exact median elements at roots.
 
 ---
 
 ### 57. 🔴 P0 [Q] LC 23: Merge k Sorted Lists [HARD]
-- **LeetCode Link:** [Merge k Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/)
-- **Category / Sub-Pattern:** Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern)
+- **LeetCode Link:** [LC 23: Merge k Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/)
+- **Category / Sub-Pattern:** Sub-Pattern 11.3 (K-Way Merge)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Merge k Sorted Lists**, compute the target response using LeetCode function signature `mergeKLists`.
+You are given an array of `k` linked-lists `lists`, each linked-list is sorted in ascending order. Merge all the linked-lists into one sorted linked-list and return it.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Min-Heap of size K storing current head node of each list..
+- **Input:** `lists = [[1,4,5],[1,3,4],[2,6]]` 
+- **Output:** `[1,1,2,3,4,4,5,6]`
+
+**Constraints:**
+- `k == lists.length` 
+- `0 <= k <= 10^4` 
+- `0 <= total nodes <= 10^4`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 11.1 (Top K Elements / Min-Heap Pattern)
-- **Key Takeaway:** Min-Heap of size K storing current head node of each list.
+- **Pattern:** Sub-Pattern 11.3 (K-Way Merge)
+- **Key Takeaway:** Min-Heap maintains smallest head pointer among K active lists in $O(log K)$ step time.
 
 ---
+
 
 ## 12. TREE DFS / DEPTH FIRST SEARCH
 
 ### 58. 🟠 P1 [Q] LC 104: Maximum Depth of Binary Tree [EASY]
-- **LeetCode Link:** [Maximum Depth of Binary Tree](https://leetcode.com/problems/maximum-depth-of-binary-tree/)
-- **Category / Sub-Pattern:** Sub-Pattern 12.1 (Tree Height & Depth Recursion)
+- **LeetCode Link:** [LC 104: Maximum Depth of Binary Tree](https://leetcode.com/problems/maximum-depth-of-binary-tree/)
+- **Category / Sub-Pattern:** Sub-Pattern 12.1 (Tree Depth & Diameter)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Maximum Depth of Binary Tree**, compute the target response using LeetCode function signature `maxDepth`.
+Given the `root` of a binary tree, return its maximum depth.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using 1 + max(dfs(left), dfs(right))..
+- **Input:** `root = [3,9,20,null,null,15,7]` 
+- **Output:** `3`
+
+**Constraints:**
+- Number of nodes in tree is in range `[0, 10^4]` 
+- `-100 <= Node.val <= 100`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 12.1 (Tree Height & Depth Recursion)
-- **Key Takeaway:** 1 + max(dfs(left), dfs(right)).
+- **Pattern:** Sub-Pattern 12.1 (Tree Depth & Diameter)
+- **Key Takeaway:** Tree height = 1 + max(left_height, right_height).
 
 ---
 
 ### 59. 🟠 P1 [Q] LC 543: Diameter of Binary Tree [EASY]
-- **LeetCode Link:** [Diameter of Binary Tree](https://leetcode.com/problems/diameter-of-binary-tree/)
-- **Category / Sub-Pattern:** Sub-Pattern 12.1 (Tree Height & Depth Recursion)
+- **LeetCode Link:** [LC 543: Diameter of Binary Tree](https://leetcode.com/problems/diameter-of-binary-tree/)
+- **Category / Sub-Pattern:** Sub-Pattern 12.1 (Tree Depth & Diameter)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Diameter of Binary Tree**, compute the target response using LeetCode function signature `diameterOfBinaryTree`.
+Given the `root` of a binary tree, return the length of the diameter of the tree. The diameter is the length of the longest path between any two nodes in a tree.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Post-order height calculation updating global max..
+- **Input:** `root = [1,2,3,4,5]` 
+- **Output:** `3` 
+- **Explanation:** 3 is length of path `[4,2,1,3]` or `[5,2,1,3]`.
+
+**Constraints:**
+- Number of nodes in tree is in range `[1, 10^4]` 
+- `-100 <= Node.val <= 100`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 12.1 (Tree Height & Depth Recursion)
-- **Key Takeaway:** Post-order height calculation updating global max.
+- **Pattern:** Sub-Pattern 12.1 (Tree Depth & Diameter)
+- **Key Takeaway:** Update diameter at every node during bottom-up height computation.
 
 ---
 
 ### 60. 🔴 P0 [Q] LC 236: Lowest Common Ancestor of a Binary Tree [MEDIUM]
-- **LeetCode Link:** [Lowest Common Ancestor of a Binary Tree](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/)
-- **Category / Sub-Pattern:** Sub-Pattern 12.1 (Tree Height & Depth Recursion)
+- **LeetCode Link:** [LC 236: Lowest Common Ancestor of a Binary Tree](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/)
+- **Category / Sub-Pattern:** Sub-Pattern 12.2 (Lowest Common Ancestor - LCA)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Lowest Common Ancestor of a Binary Tree**, compute the target response using LeetCode function signature `lowestCommonAncestor`.
+Given a binary tree, find the lowest common ancestor (LCA) of two given nodes `p` and `q`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Bottom-up DFS node bubbling matching P and Q..
+- **Input:** `root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1` 
+- **Output:** `3`
+
+**Constraints:**
+- Number of nodes is in range `[2, 10^5]` 
+- All `Node.val` are unique 
+- `p != q` and both exist in tree.
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 12.1 (Tree Height & Depth Recursion)
-- **Key Takeaway:** Bottom-up DFS node bubbling matching P and Q.
+- **Pattern:** Sub-Pattern 12.2 (Lowest Common Ancestor - LCA)
+- **Key Takeaway:** If left and right recursive calls return non-null, current node is LCA.
 
 ---
 
 ### 61. 🔴 P0 [Q] LC 124: Binary Tree Maximum Path Sum [HARD]
-- **LeetCode Link:** [Binary Tree Maximum Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/)
-- **Category / Sub-Pattern:** Sub-Pattern 12.1 (Tree Height & Depth Recursion)
+- **LeetCode Link:** [LC 124: Binary Tree Maximum Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/)
+- **Category / Sub-Pattern:** Sub-Pattern 12.3 (Path Sum Problems)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Binary Tree Maximum Path Sum**, compute the target response using LeetCode function signature `maxPathSum`.
+A path in a binary tree is a sequence of nodes where each pair of adjacent nodes has an edge. Return the maximum path sum of any non-empty path.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Post-order DFS returning max branch while tracking global split path sum..
+- **Input:** `root = [-10,9,20,null,null,15,7]` 
+- **Output:** `42` 
+- **Explanation:** Optimal path is `15 -> 20 -> 7` with sum `15 + 20 + 7 = 42`.
+
+**Constraints:**
+- Number of nodes is in range `[1, 3 * 10^4]` 
+- `-1000 <= Node.val <= 1000`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 12.1 (Tree Height & Depth Recursion)
-- **Key Takeaway:** Post-order DFS returning max branch while tracking global split path sum.
+- **Pattern:** Sub-Pattern 12.3 (Path Sum Problems)
+- **Key Takeaway:** Clamped `max(0, gain)` ignores negative subtrees that diminish path sum.
 
 ---
+
 
 ## 13. TREE BFS / LEVEL ORDER TRAVERSAL
 
 ### 62. 🔴 P0 [Q] LC 102: Binary Tree Level Order Traversal [MEDIUM]
-- **LeetCode Link:** [Binary Tree Level Order Traversal](https://leetcode.com/problems/binary-tree-level-order-traversal/)
-- **Category / Sub-Pattern:** Sub-Pattern 13.1 (Standard Level Order Traversal)
+- **LeetCode Link:** [LC 102: Binary Tree Level Order Traversal](https://leetcode.com/problems/binary-tree-level-order-traversal/)
+- **Category / Sub-Pattern:** Sub-Pattern 13.1 (Standard BFS Level Order)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Binary Tree Level Order Traversal**, compute the target response using LeetCode function signature `levelOrder`.
+Given the `root` of a binary tree, return the level order traversal of its nodes' values. (i.e., from left to right, level by level).
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Queue iteration processing level size snapshot..
+- **Input:** `root = [3,9,20,null,null,15,7]` 
+- **Output:** `[[3],[9,20],[15,7]]`
+
+**Constraints:**
+- Number of nodes is in range `[0, 2000]` 
+- `-1000 <= Node.val <= 1000`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 13.1 (Standard Level Order Traversal)
-- **Key Takeaway:** Queue iteration processing level size snapshot.
+- **Pattern:** Sub-Pattern 13.1 (Standard BFS Level Order)
+- **Key Takeaway:** Snapshot `sz = q.size()` at start of loop to process nodes level-by-level.
 
 ---
 
 ### 63. 🔴 P0 [Q] LC 199: Binary Tree Right Side View [MEDIUM]
-- **LeetCode Link:** [Binary Tree Right Side View](https://leetcode.com/problems/binary-tree-right-side-view/)
-- **Category / Sub-Pattern:** Sub-Pattern 13.1 (Standard Level Order Traversal)
+- **LeetCode Link:** [LC 199: Binary Tree Right Side View](https://leetcode.com/problems/binary-tree-right-side-view/)
+- **Category / Sub-Pattern:** Sub-Pattern 13.1 (Standard BFS Level Order)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Binary Tree Right Side View**, compute the target response using LeetCode function signature `rightSideView`.
+Given the `root` of a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Collect last node per queue level snapshot..
+- **Input:** `root = [1,2,3,null,5,null,4]` 
+- **Output:** `[1,3,4]`
+
+**Constraints:**
+- Number of nodes is in range `[0, 100]` 
+- `-100 <= Node.val <= 100`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 13.1 (Standard Level Order Traversal)
-- **Key Takeaway:** Collect last node per queue level snapshot.
+- **Pattern:** Sub-Pattern 13.1 (Standard BFS Level Order)
+- **Key Takeaway:** Reverse Pre-Order DFS visits rightmost node of each level first.
 
 ---
 
 ### 64. 🔴 P0 [Q] LC 103: Binary Tree Zigzag Level Order Traversal [MEDIUM]
-- **LeetCode Link:** [Binary Tree Zigzag Level Order Traversal](https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/)
-- **Category / Sub-Pattern:** Sub-Pattern 13.1 (Standard Level Order Traversal)
+- **LeetCode Link:** [LC 103: Binary Tree Zigzag Level Order Traversal](https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/)
+- **Category / Sub-Pattern:** Sub-Pattern 13.1 (Standard BFS Level Order)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Binary Tree Zigzag Level Order Traversal**, compute the target response using LeetCode function signature `levelOrder`.
+Given the `root` of a binary tree, return the zigzag level order traversal of its nodes' values. (i.e., from left to right, then right to left for the next level and alternate).
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Alternating level insertion direction..
+- **Input:** `root = [3,9,20,null,null,15,7]` 
+- **Output:** `[[3],[20,9],[15,7]]`
+
+**Constraints:**
+- Number of nodes is in range `[0, 2000]` 
+- `-100 <= Node.val <= 100`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 13.1 (Standard Level Order Traversal)
-- **Key Takeaway:** Alternating level insertion direction.
+- **Pattern:** Sub-Pattern 13.1 (Standard BFS Level Order)
+- **Key Takeaway:** Pre-allocate level vector and place values at `i` or `sz - 1 - i` based on direction flag.
 
 ---
+
 
 ## 14. BINARY SEARCH TREE (BST)
 
 ### 65. 🔴 P0 [Q] LC 98: Validate Binary Search Tree [MEDIUM]
-- **LeetCode Link:** [Validate Binary Search Tree](https://leetcode.com/problems/validate-binary-search-tree/)
-- **Category / Sub-Pattern:** Sub-Pattern 14.1 (BST Validation & Inorder Property)
+- **LeetCode Link:** [LC 98: Validate Binary Search Tree](https://leetcode.com/problems/validate-binary-search-tree/)
+- **Category / Sub-Pattern:** Sub-Pattern 14.1 (BST Validation & Inorder Traversal)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Validate Binary Search Tree**, compute the target response using LeetCode function signature `search`.
+Given the `root` of a binary tree, determine if it is a valid binary search tree (BST).
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Pass valid range [minVal, maxVal] downwards recursively..
+- **Input:** `root = [2,1,3]` 
+- **Output:** `true` 
+
+**Example 2:**
+- **Input:** `root = [5,1,4,null,null,3,6]` 
+- **Output:** `false`
+
+**Constraints:**
+- Number of nodes is in range `[1, 10^4]` 
+- `-2^31 <= Node.val <= 2^31 - 1`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 14.1 (BST Validation & Inorder Property)
-- **Key Takeaway:** Pass valid range [minVal, maxVal] downwards recursively.
+- **Pattern:** Sub-Pattern 14.1 (BST Validation & Inorder Traversal)
+- **Key Takeaway:** Inorder traversal of BST MUST be strictly increasing.
 
 ---
 
 ### 66. 🔴 P0 [Q] LC 230: Kth Smallest Element in a BST [MEDIUM]
-- **LeetCode Link:** [Kth Smallest Element in a BST](https://leetcode.com/problems/kth-smallest-element-in-a-bst/)
-- **Category / Sub-Pattern:** Sub-Pattern 14.1 (BST Validation & Inorder Property)
+- **LeetCode Link:** [LC 230: Kth Smallest Element in a BST](https://leetcode.com/problems/kth-smallest-element-in-a-bst/)
+- **Category / Sub-Pattern:** Sub-Pattern 14.1 (BST Validation & Inorder Traversal)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Kth Smallest Element in a BST**, compute the target response using LeetCode function signature `kthSmallest`.
+Given the `root` of a binary search tree, and an integer `k`, return the `k`-th smallest value (1-indexed) of all the values of the nodes in the tree.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using In-order BST traversal yields sorted elements..
+- **Input:** `root = [3,1,4,null,2], k = 1` 
+- **Output:** `1`
+
+**Constraints:**
+- Number of nodes is in range `[1, 10^4]` 
+- `1 <= k <= n <= 10^4`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 14.1 (BST Validation & Inorder Property)
-- **Key Takeaway:** In-order BST traversal yields sorted elements.
+- **Pattern:** Sub-Pattern 14.1 (BST Validation & Inorder Traversal)
+- **Key Takeaway:** Iterative inorder traversal stops at the K-th node without visiting entire tree.
 
 ---
 
 ### 67. 🔴 P0 [Q] LC 450: Delete Node in a BST [MEDIUM]
-- **LeetCode Link:** [Delete Node in a BST](https://leetcode.com/problems/delete-node-in-a-bst/)
-- **Category / Sub-Pattern:** Sub-Pattern 14.1 (BST Validation & Inorder Property)
+- **LeetCode Link:** [LC 450: Delete Node in a BST](https://leetcode.com/problems/delete-node-in-a-bst/)
+- **Category / Sub-Pattern:** Sub-Pattern 14.2 (BST Search & Mutation)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Delete Node in a BST**, compute the target response using LeetCode function signature `deleteNode`.
+Given a root node reference of a BST and a key, delete the node with the given key in the BST. Return the root node reference of the BST.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using BST node deletion with in-order successor swap..
+- **Input:** `root = [5,3,6,2,4,null,7], key = 3` 
+- **Output:** `[5,4,6,2,null,null,7]`
+
+**Constraints:**
+- Number of nodes is in range `[0, 10^4]` 
+- `-10^5 <= Node.val <= 10^5`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 14.1 (BST Validation & Inorder Property)
-- **Key Takeaway:** BST node deletion with in-order successor swap.
+- **Pattern:** Sub-Pattern 14.2 (BST Search & Mutation)
+- **Key Takeaway:** Node with 2 children is replaced by its Inorder Successor.
 
 ---
+
 
 ## 15. BACKTRACKING / SUBSETS & PERMUTATIONS
 
 ### 68. 🔴 P0 [Q] LC 78: Subsets [MEDIUM]
-- **LeetCode Link:** [Subsets](https://leetcode.com/problems/subsets/)
-- **Category / Sub-Pattern:** Sub-Pattern 15.1 (Subsets & Combination Choice)
+- **LeetCode Link:** [LC 78: Subsets](https://leetcode.com/problems/subsets/)
+- **Category / Sub-Pattern:** Sub-Pattern 15.1 (Subsets & Combinations)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Subsets**, compute the target response using LeetCode function signature `subsets`.
+Given an integer array `nums` of unique elements, return all possible subsets (the power set). The solution set must not contain duplicate subsets.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Include / Exclude decision tree recursion..
+- **Input:** `nums = [1,2,3]` 
+- **Output:** `[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]`
+
+**Constraints:**
+- `1 <= nums.length <= 10` 
+- `-10 <= nums[i] <= 10`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 15.1 (Subsets & Combination Choice)
-- **Key Takeaway:** Include / Exclude decision tree recursion.
+- **Pattern:** Sub-Pattern 15.1 (Subsets & Combinations)
+- **Key Takeaway:** Power set size is $2^N$; backtracking builds subsets level-by-level.
 
 ---
 
 ### 69. 🔴 P0 [Q] LC 46: Permutations [MEDIUM]
-- **LeetCode Link:** [Permutations](https://leetcode.com/problems/permutations/)
-- **Category / Sub-Pattern:** Sub-Pattern 15.1 (Subsets & Combination Choice)
+- **LeetCode Link:** [LC 46: Permutations](https://leetcode.com/problems/permutations/)
+- **Category / Sub-Pattern:** Sub-Pattern 15.2 (Permutations)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Permutations**, compute the target response using LeetCode function signature `permute`.
+Given an array `nums` of distinct integers, return all the possible permutations. You can return the answer in any order.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Used boolean array or in-place swap recursion..
+- **Input:** `nums = [1,2,3]` 
+- **Output:** `[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]`
+
+**Constraints:**
+- `1 <= nums.length <= 6` 
+- `-10 <= nums[i] <= 10`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 15.1 (Subsets & Combination Choice)
-- **Key Takeaway:** Used boolean array or in-place swap recursion.
+- **Pattern:** Sub-Pattern 15.2 (Permutations)
+- **Key Takeaway:** In-place swapping generates all $N!$ permutations without additional visited arrays.
 
 ---
 
 ### 70. 🔴 P0 [Q] LC 39: Combination Sum [MEDIUM]
-- **LeetCode Link:** [Combination Sum](https://leetcode.com/problems/combination-sum/)
-- **Category / Sub-Pattern:** Sub-Pattern 15.1 (Subsets & Combination Choice)
+- **LeetCode Link:** [LC 39: Combination Sum](https://leetcode.com/problems/combination-sum/)
+- **Category / Sub-Pattern:** Sub-Pattern 15.1 (Subsets & Combinations)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Combination Sum**, compute the target response using LeetCode function signature `combinationSum`.
+Given an array of distinct integers `candidates` and a target integer `target`, return a list of all unique combinations of `candidates` where the chosen numbers sum to `target`. You may use the same number an unlimited number of times.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Unbounded choice recursion with index control..
+- **Input:** `candidates = [2,3,6,7], target = 7` 
+- **Output:** `[[2,2,3],[7]]`
+
+**Constraints:**
+- `1 <= candidates.length <= 30` 
+- `2 <= candidates[i] <= 40` 
+- `1 <= target <= 40`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 15.1 (Subsets & Combination Choice)
-- **Key Takeaway:** Unbounded choice recursion with index control.
+- **Pattern:** Sub-Pattern 15.1 (Subsets & Combinations)
+- **Key Takeaway:** Pass `i` (not `i + 1`) to recursive call to allow unlimited reuse of current element.
 
 ---
 
 ### 71. 🔴 P0 [Q] LC 51: N-Queens [HARD]
-- **LeetCode Link:** [N-Queens](https://leetcode.com/problems/n-queens/)
-- **Category / Sub-Pattern:** Sub-Pattern 15.1 (Subsets & Combination Choice)
+- **LeetCode Link:** [LC 51: N-Queens](https://leetcode.com/problems/n-queens/)
+- **Category / Sub-Pattern:** Sub-Pattern 15.3 (Grid & Constraint Backtracking)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **N-Queens**, compute the target response using LeetCode function signature `solveNQueens`.
+The n-queens puzzle is the problem of placing `n` queens on an `n x n` chessboard such that no two queens attack each other. Return all distinct solutions to the n-queens puzzle.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Constraint hashing (cols, main diagonals, anti-diagonals)..
+- **Input:** `n = 4` 
+- **Output:** `[[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]`
+
+**Constraints:**
+- `1 <= n <= 9`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 15.1 (Subsets & Combination Choice)
-- **Key Takeaway:** Constraint hashing (cols, main diagonals, anti-diagonals).
+- **Pattern:** Sub-Pattern 15.3 (Grid & Constraint Backtracking)
+- **Key Takeaway:** Use `r - c` for main diagonals and `r + c` for anti-diagonals for $O(1)$ conflict checking.
 
 ---
+
 
 ## 16. GRAPH DFS / BFS
 
 ### 72. 🔴 P0 [Q] LC 200: Number of Islands [MEDIUM]
-- **LeetCode Link:** [Number of Islands](https://leetcode.com/problems/number-of-islands/)
-- **Category / Sub-Pattern:** Sub-Pattern 16.1 (Grid Matrix Flood Fill DFS)
+- **LeetCode Link:** [LC 200: Number of Islands](https://leetcode.com/problems/number-of-islands/)
+- **Category / Sub-Pattern:** Sub-Pattern 16.1 (Grid Traversal (DFS/BFS))
 
 **📜 Problem Statement & Explanation**
-Return the number of connected land islands in binary grid.
+Given an `m x n` 2D binary grid `grid` which represents a map of `'1'`s (land) and `'0'`s (water), return the number of islands.
 
 **Example 1:**
-- **Input:** `grid = [["1","1","0"],["1","1","0"],["0","0","1"]]`
-- **Output:** `2`
-- **Explanation:** 2 connected land components.
+- **Input:** `grid = [["1","1","1","1","0"],["1","1","0","1","0"],["1","1","0","0","0"],["0","0","0","0","0"]]` 
+- **Output:** `1`
+
+**Constraints:**
+- `m == grid.length`, `n == grid[i].length` 
+- `1 <= m, n <= 300`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 16.1 (Grid Matrix Flood Fill DFS)
-- **Key Takeaway:** Matrix traversal + 4-directional flood fill sink.
+- **Pattern:** Sub-Pattern 16.1 (Grid Traversal (DFS/BFS))
+- **Key Takeaway:** Sink visited land cells directly to '0' to avoid auxiliary visited matrix memory.
 
 ---
 
 ### 73. 🔴 P0 [Q] LC 133: Clone Graph [MEDIUM]
-- **LeetCode Link:** [Clone Graph](https://leetcode.com/problems/clone-graph/)
-- **Category / Sub-Pattern:** Sub-Pattern 16.1 (Grid Matrix Flood Fill DFS)
+- **LeetCode Link:** [LC 133: Clone Graph](https://leetcode.com/problems/clone-graph/)
+- **Category / Sub-Pattern:** Sub-Pattern 16.2 (Graph Traversal & Cloning)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Clone Graph**, compute the target response using LeetCode function signature `cloneGraph`.
+Given a reference of a node in a connected undirected graph, return a deep copy (clone) of the graph.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Hash map node mapping (original -> clone) during DFS/BFS..
+- **Input:** `adjList = [[2,4],[1,3],[2,4],[1,3]]` 
+- **Output:** `[[2,4],[1,3],[2,4],[1,3]]`
+
+**Constraints:**
+- Number of nodes is in range `[0, 100]` 
+- `1 <= Node.val <= 100`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 16.1 (Grid Matrix Flood Fill DFS)
-- **Key Takeaway:** Hash map node mapping (original -> clone) during DFS/BFS.
+- **Pattern:** Sub-Pattern 16.2 (Graph Traversal & Cloning)
+- **Key Takeaway:** Hash map maps original node pointers to cloned node pointers to prevent infinite cycles.
 
 ---
 
 ### 74. 🔴 P0 [Q] LC 785: Is Graph Bipartite? [MEDIUM]
-- **LeetCode Link:** [Is Graph Bipartite?](https://leetcode.com/problems/is-graph-bipartite/)
-- **Category / Sub-Pattern:** Sub-Pattern 16.1 (Grid Matrix Flood Fill DFS)
+- **LeetCode Link:** [LC 785: Is Graph Bipartite?](https://leetcode.com/problems/is-graph-bipartite/)
+- **Category / Sub-Pattern:** Sub-Pattern 16.2 (Graph Traversal & Cloning)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Is Graph Bipartite?**, compute the target response using LeetCode function signature `isBipartite`.
+There is an undirected graph with `n` nodes. Return `true` if and only if it is bipartite (can color vertices with 2 colors such that no adjacent vertices have same color).
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using 2-color graph coloring via BFS/DFS..
+- **Input:** `graph = [[1,2,3],[0,2],[0,1,3],[0,2]]` 
+- **Output:** `false`
+
+**Constraints:**
+- `graph.length == n` 
+- `1 <= n <= 100`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 16.1 (Grid Matrix Flood Fill DFS)
-- **Key Takeaway:** 2-color graph coloring via BFS/DFS.
+- **Pattern:** Sub-Pattern 16.2 (Graph Traversal & Cloning)
+- **Key Takeaway:** Graph is bipartite if and only if it contains no odd-length cycles.
 
 ---
 
 ### 75. 🔴 P0 [Q] LC 994: Rotting Oranges [MEDIUM]
-- **LeetCode Link:** [Rotting Oranges](https://leetcode.com/problems/rotting-oranges/)
-- **Category / Sub-Pattern:** Sub-Pattern 16.2 (Multi-Source BFS)
+- **LeetCode Link:** [LC 994: Rotting Oranges](https://leetcode.com/problems/rotting-oranges/)
+- **Category / Sub-Pattern:** Sub-Pattern 16.1 (Grid Traversal (DFS/BFS))
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Rotting Oranges**, compute the target response using LeetCode function signature `orangesRotting`.
+You are given an `m x n` grid where `0` is empty, `1` is fresh orange, `2` is rotten orange. Return the minimum number of minutes until no fresh orange remains. If impossible, return `-1`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Pre-populate queue with all initial rotten sources; level time tick..
+- **Input:** `grid = [[2,1,1],[1,1,0],[0,1,1]]` 
+- **Output:** `4`
+
+**Constraints:**
+- `m == grid.length`, `n == grid[i].length` 
+- `1 <= m, n <= 10`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 16.2 (Multi-Source BFS)
-- **Key Takeaway:** Pre-populate queue with all initial rotten sources; level time tick.
+- **Pattern:** Sub-Pattern 16.1 (Grid Traversal (DFS/BFS))
+- **Key Takeaway:** Push all initial sources to BFS queue to simulate simultaneous propagation.
 
 ---
 
 ### 76. 🔴 P0 [Q] LC 127: Word Ladder [HARD]
-- **LeetCode Link:** [Word Ladder](https://leetcode.com/problems/word-ladder/)
-- **Category / Sub-Pattern:** Sub-Pattern 16.2 (Multi-Source BFS)
+- **LeetCode Link:** [LC 127: Word Ladder](https://leetcode.com/problems/word-ladder/)
+- **Category / Sub-Pattern:** Sub-Pattern 16.1 (Grid Traversal (DFS/BFS))
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Word Ladder**, compute the target response using LeetCode function signature `ladderLength`.
+Given two words `beginWord` and `endWord`, and a dictionary `wordList`, return the number of words in the shortest transformation sequence from `beginWord` to `endWord`, or `0` if no sequence exists.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Unweighted shortest path BFS on mutated character state space..
+- **Input:** `beginWord = "hit", endWord = "cog", wordList = ["hot","dot","dog","lot","log","cog"]` 
+- **Output:** `5`
+
+**Constraints:**
+- `1 <= beginWord.length <= 10` 
+- `1 <= wordList.length <= 5000`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 16.2 (Multi-Source BFS)
-- **Key Takeaway:** Unweighted shortest path BFS on mutated character state space.
+- **Pattern:** Sub-Pattern 16.1 (Grid Traversal (DFS/BFS))
+- **Key Takeaway:** Mutate word characters directly $O(26 	imes L)$ instead of comparing all word pairs $O(N^2)$.
 
 ---
+
 
 ## 17. TOPOLOGICAL SORT (KAHN'S ALGORITHM)
 
 ### 77. 🔴 P0 [Q] LC 207: Course Schedule [MEDIUM]
-- **LeetCode Link:** [Course Schedule](https://leetcode.com/problems/course-schedule/)
-- **Category / Sub-Pattern:** Sub-Pattern 17.1 (Kahn's BFS In-degree Algorithm)
+- **LeetCode Link:** [LC 207: Course Schedule](https://leetcode.com/problems/course-schedule/)
+- **Category / Sub-Pattern:** Sub-Pattern 17.1 (Kahn's Algorithm & Cycle Detection)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Course Schedule**, compute the target response using LeetCode function signature `canFinish`.
+There are a total of `numCourses` courses you have to take, labeled from `0` to `numCourses - 1`. You are given an array `prerequisites` where `prerequisites[i] = [a, b]` indicates that you must take course `b` first if you want to take course `a`. Return `true` if you can finish all courses.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using In-degree array + Queue processing; visited count == N => DAG..
+- **Input:** `numCourses = 2, prerequisites = [[1,0]]` 
+- **Output:** `true`
+
+**Constraints:**
+- `1 <= numCourses <= 2000` 
+- `0 <= prerequisites.length <= 5000`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 17.1 (Kahn's BFS In-degree Algorithm)
-- **Key Takeaway:** In-degree array + Queue processing; visited count == N => DAG.
+- **Pattern:** Sub-Pattern 17.1 (Kahn's Algorithm & Cycle Detection)
+- **Key Takeaway:** Cycle exists if total processed nodes in Kahn's BFS < numCourses.
 
 ---
 
 ### 78. 🔴 P0 [Q] LC 210: Course Schedule II [MEDIUM]
-- **LeetCode Link:** [Course Schedule II](https://leetcode.com/problems/course-schedule-ii/)
-- **Category / Sub-Pattern:** Sub-Pattern 17.1 (Kahn's BFS In-degree Algorithm)
+- **LeetCode Link:** [LC 210: Course Schedule II](https://leetcode.com/problems/course-schedule-ii/)
+- **Category / Sub-Pattern:** Sub-Pattern 17.1 (Kahn's Algorithm & Cycle Detection)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Course Schedule II**, compute the target response using LeetCode function signature `findOrder`.
+Return the ordering of courses you should take to finish all courses. If it is impossible to finish all courses, return an empty array.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Kahn's algorithm collecting top-sort ordering array..
+- **Input:** `numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]` 
+- **Output:** `[0,2,1,3]`
+
+**Constraints:**
+- `1 <= numCourses <= 2000` 
+- `0 <= prerequisites.length <= 5000`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 17.1 (Kahn's BFS In-degree Algorithm)
-- **Key Takeaway:** Kahn's algorithm collecting top-sort ordering array.
+- **Pattern:** Sub-Pattern 17.1 (Kahn's Algorithm & Cycle Detection)
+- **Key Takeaway:** Kahn's BFS order gives valid topological sort.
 
 ---
+
 
 ## 18. DISJOINT SET UNION (DSU / UNION-FIND)
 
 ### 79. 🟠 P1 [Q] LC 684: Redundant Connection [MEDIUM]
-- **LeetCode Link:** [Redundant Connection](https://leetcode.com/problems/redundant-connection/)
-- **Category / Sub-Pattern:** Sub-Pattern 18.1 (DSU Path Compression & Union by Rank)
+- **LeetCode Link:** [LC 684: Redundant Connection](https://leetcode.com/problems/redundant-connection/)
+- **Category / Sub-Pattern:** Sub-Pattern 18.1 (Union-Find & Connected Components)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Redundant Connection**, compute the target response using LeetCode function signature `findRedundantConnection`.
+In this problem, a tree is an undirected graph that is connected and has no cycles. Return an edge that can be removed so that the resulting graph is a tree of `n` nodes.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Find cycle by checking if find(u) == find(v) before union(u, v)..
+- **Input:** `edges = [[1,2],[1,3],[2,3]]` 
+- **Output:** `[2,3]`
+
+**Constraints:**
+- `n == edges.length` 
+- `3 <= n <= 1000`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 18.1 (DSU Path Compression & Union by Rank)
-- **Key Takeaway:** Find cycle by checking if find(u) == find(v) before union(u, v).
+- **Pattern:** Sub-Pattern 18.1 (Union-Find & Connected Components)
+- **Key Takeaway:** First edge whose endpoints share the same DSU root creates a cycle.
 
 ---
 
 ### 80. 🟠 P1 [Q] LC 547: Number of Provinces [MEDIUM]
-- **LeetCode Link:** [Number of Provinces](https://leetcode.com/problems/number-of-provinces/)
-- **Category / Sub-Pattern:** Sub-Pattern 18.1 (DSU Path Compression & Union by Rank)
+- **LeetCode Link:** [LC 547: Number of Provinces](https://leetcode.com/problems/number-of-provinces/)
+- **Category / Sub-Pattern:** Sub-Pattern 18.1 (Union-Find & Connected Components)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Number of Provinces**, compute the target response using LeetCode function signature `findCircleNum`.
+There are `n` cities. If city `a` is connected directly with city `b`, and city `b` is connected directly with city `c`, then city `a` is connected indirectly with city `c`. Return total number of provinces.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Connected component counting via DSU union operations..
+- **Input:** `isConnected = [[1,1,0],[1,1,0],[0,0,1]]` 
+- **Output:** `2`
+
+**Constraints:**
+- `n == isConnected.length` 
+- `1 <= n <= 200`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 18.1 (DSU Path Compression & Union by Rank)
-- **Key Takeaway:** Connected component counting via DSU union operations.
+- **Pattern:** Sub-Pattern 18.1 (Union-Find & Connected Components)
+- **Key Takeaway:** Each successful union of distinct components reduces province count by 1.
 
 ---
+
 
 ## 19. 1D DYNAMIC PROGRAMMING
 
 ### 81. 🔴 P0 [Q] LC 198: House Robber [MEDIUM]
-- **LeetCode Link:** [House Robber](https://leetcode.com/problems/house-robber/)
-- **Category / Sub-Pattern:** Sub-Pattern 19.1 (State Transition & Space Optimization)
+- **LeetCode Link:** [LC 198: House Robber](https://leetcode.com/problems/house-robber/)
+- **Category / Sub-Pattern:** Sub-Pattern 19.1 (Linear DP & State Transitions)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **House Robber**, compute the target response using LeetCode function signature `rob`.
+You are a professional robber planning to rob houses along a street. Adjacent houses have security systems connected. Return the maximum amount of money you can rob tonight without alerting the police.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using dp[i] = max(dp[i-1], dp[i-2] + nums[i]) with 2 variables..
+- **Input:** `nums = [1,2,3,1]` 
+- **Output:** `4` 
+- **Explanation:** Rob house 1 (money = 1) and rob house 3 (money = 3). Total = 4.
+
+**Constraints:**
+- `1 <= nums.length <= 100` 
+- `0 <= nums[i] <= 400`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 19.1 (State Transition & Space Optimization)
-- **Key Takeaway:** dp[i] = max(dp[i-1], dp[i-2] + nums[i]) with 2 variables.
+- **Pattern:** Sub-Pattern 19.1 (Linear DP & State Transitions)
+- **Key Takeaway:** Maintain previous 2 optimal subproblem values for $O(1)$ space DP.
 
 ---
 
 ### 82. 🟠 P1 [Q] LC 70: Climbing Stairs [EASY]
-- **LeetCode Link:** [Climbing Stairs](https://leetcode.com/problems/climbing-stairs/)
-- **Category / Sub-Pattern:** Sub-Pattern 19.1 (State Transition & Space Optimization)
+- **LeetCode Link:** [LC 70: Climbing Stairs](https://leetcode.com/problems/climbing-stairs/)
+- **Category / Sub-Pattern:** Sub-Pattern 19.1 (Linear DP & State Transitions)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Climbing Stairs**, compute the target response using LeetCode function signature `climbStairs`.
+You are climbing a staircase. It takes `n` steps to reach the top. Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Fibonacci base DP transition..
+- **Input:** `n = 2` 
+- **Output:** `2` 
+
+**Example 2:**
+- **Input:** `n = 3` 
+- **Output:** `3`
+
+**Constraints:**
+- `1 <= n <= 45`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 19.1 (State Transition & Space Optimization)
-- **Key Takeaway:** Fibonacci base DP transition.
+- **Pattern:** Sub-Pattern 19.1 (Linear DP & State Transitions)
+- **Key Takeaway:** To reach step N, you must come from step N-1 (1 step) or step N-2 (2 steps).
 
 ---
 
 ### 83. 🔴 P0 [Q] LC 139: Word Break [MEDIUM]
-- **LeetCode Link:** [Word Break](https://leetcode.com/problems/word-break/)
-- **Category / Sub-Pattern:** Sub-Pattern 19.1 (State Transition & Space Optimization)
+- **LeetCode Link:** [LC 139: Word Break](https://leetcode.com/problems/word-break/)
+- **Category / Sub-Pattern:** Sub-Pattern 19.1 (Linear DP & State Transitions)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Word Break**, compute the target response using LeetCode function signature `wordBreak`.
+Given a string `s` and a dictionary of strings `wordDict`, return `true` if `s` can be segmented into a space-separated sequence of one or more dictionary words.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using dp[i] = true if dp[j] && wordDict.count(s[j..i])..
+- **Input:** `s = "leetcode", wordDict = ["leet","code"]` 
+- **Output:** `true`
+
+**Constraints:**
+- `1 <= s.length <= 300` 
+- `1 <= wordDict.length <= 1000`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 19.1 (State Transition & Space Optimization)
-- **Key Takeaway:** dp[i] = true if dp[j] && wordDict.count(s[j..i]).
+- **Pattern:** Sub-Pattern 19.1 (Linear DP & State Transitions)
+- **Key Takeaway:** `dp[i]` depends on valid sub-problem `dp[j]` plus valid dictionary word `s[j...i]`.
 
 ---
 
 ### 84. 🔴 P0 [Q] LC 300: Longest Increasing Subsequence [MEDIUM]
-- **LeetCode Link:** [Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/)
-- **Category / Sub-Pattern:** Sub-Pattern 19.1 (State Transition & Space Optimization)
+- **LeetCode Link:** [LC 300: Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/)
+- **Category / Sub-Pattern:** Sub-Pattern 19.1 (Linear DP & State Transitions)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Longest Increasing Subsequence**, compute the target response using LeetCode function signature `lengthOfLIS`.
+Given an integer array `nums`, return the length of the longest strictly increasing subsequence.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using O(N^2) DP or O(N log N) Patience Sorting with std::lower_bound..
+- **Input:** `nums = [10,9,2,5,3,7,101,18]` 
+- **Output:** `4` 
+- **Explanation:** Longest increasing subsequence is `[2,3,7,101]`.
+
+**Constraints:**
+- `1 <= nums.length <= 2500` 
+- `-10^4 <= nums[i] <= 10^4`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 19.1 (State Transition & Space Optimization)
-- **Key Takeaway:** O(N^2) DP or O(N log N) Patience Sorting with std::lower_bound.
+- **Pattern:** Sub-Pattern 19.1 (Linear DP & State Transitions)
+- **Key Takeaway:** `tails` array stores smallest tail of all increasing subsequences of length `i + 1`.
 
 ---
+
 
 ## 20. KNAPSACK / 2D DYNAMIC PROGRAMMING
 
 ### 85. 🔴 P0 [Q] LC 322: Coin Change [MEDIUM]
-- **LeetCode Link:** [Coin Change](https://leetcode.com/problems/coin-change/)
-- **Category / Sub-Pattern:** Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP)
+- **LeetCode Link:** [LC 322: Coin Change](https://leetcode.com/problems/coin-change/)
+- **Category / Sub-Pattern:** Sub-Pattern 20.1 (Knapsack & 2D State DP)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Coin Change**, compute the target response using LeetCode function signature `coinChange`.
+Given an integer array `coins` representing coins of different denominations and an integer `amount`, return the fewest number of coins that you need to make up that amount. If impossible, return `-1`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using dp[i] = min(dp[i], 1 + dp[i - coin])..
+- **Input:** `coins = [1,2,5], amount = 11` 
+- **Output:** `3` 
+- **Explanation:** 11 = 5 + 5 + 1.
+
+**Constraints:**
+- `1 <= coins.length <= 12` 
+- `0 <= amount <= 10^4`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP)
-- **Key Takeaway:** dp[i] = min(dp[i], 1 + dp[i - coin]).
+- **Pattern:** Sub-Pattern 20.1 (Knapsack & 2D State DP)
+- **Key Takeaway:** Unbounded knapsack allows reusing same coin denomination multiple times.
 
 ---
 
 ### 86. 🔴 P0 [Q] LC 1143: Longest Common Subsequence [MEDIUM]
-- **LeetCode Link:** [Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/)
-- **Category / Sub-Pattern:** Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP)
+- **LeetCode Link:** [LC 1143: Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/)
+- **Category / Sub-Pattern:** Sub-Pattern 20.1 (Knapsack & 2D State DP)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Longest Common Subsequence**, compute the target response using LeetCode function signature `longestCommonSubsequence`.
+Given two strings `text1` and `text2`, return the length of their longest common subsequence.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using 2D matrix matching grid dp[i][j]..
+- **Input:** `text1 = "abcde", text2 = "ace"` 
+- **Output:** `3` 
+- **Explanation:** LCS is `"ace"`.
+
+**Constraints:**
+- `1 <= text1.length, text2.length <= 1000`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP)
-- **Key Takeaway:** 2D matrix matching grid dp[i][j].
+- **Pattern:** Sub-Pattern 20.1 (Knapsack & 2D State DP)
+- **Key Takeaway:** Match adds 1 to diagonal `dp[i-1][j-1]`; mismatch takes max of top `dp[i-1][j]` and left `dp[i][j-1]`.
 
 ---
 
 ### 87. 🔴 P0 [Q] LC 416: Partition Equal Subset Sum [MEDIUM]
-- **LeetCode Link:** [Partition Equal Subset Sum](https://leetcode.com/problems/partition-equal-subset-sum/)
-- **Category / Sub-Pattern:** Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP)
+- **LeetCode Link:** [LC 416: Partition Equal Subset Sum](https://leetcode.com/problems/partition-equal-subset-sum/)
+- **Category / Sub-Pattern:** Sub-Pattern 20.1 (Knapsack & 2D State DP)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Partition Equal Subset Sum**, compute the target response using LeetCode function signature `canPartition`.
+Given an integer array `nums`, return `true` if you can partition the array into two subsets such that the sum of the elements in both subsets is equal.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using 0/1 Knapsack reduction with target sum = total / 2..
+- **Input:** `nums = [1,5,11,5]` 
+- **Output:** `true` 
+- **Explanation:** `[1, 5, 5]` and `[11]`.
+
+**Constraints:**
+- `1 <= nums.length <= 200` 
+- `1 <= nums[i] <= 100`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP)
-- **Key Takeaway:** 0/1 Knapsack reduction with target sum = total / 2.
+- **Pattern:** Sub-Pattern 20.1 (Knapsack & 2D State DP)
+- **Key Takeaway:** Iterate target backwards in 1D array to enforce 0/1 Knapsack item uniqueness.
 
 ---
 
 ### 88. 🔴 P0 [Q] LC 72: Edit Distance [HARD]
-- **LeetCode Link:** [Edit Distance](https://leetcode.com/problems/edit-distance/)
-- **Category / Sub-Pattern:** Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP)
+- **LeetCode Link:** [LC 72: Edit Distance](https://leetcode.com/problems/edit-distance/)
+- **Category / Sub-Pattern:** Sub-Pattern 20.1 (Knapsack & 2D State DP)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Edit Distance**, compute the target response using LeetCode function signature `minDistance`.
+Given two strings `word1` and `word2`, return the minimum number of operations required to convert `word1` to `word2` (insert, delete, or replace a character).
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using 3-operation (Insert, Delete, Replace) matrix grid DP..
+- **Input:** `word1 = "horse", word2 = "ros"` 
+- **Output:** `3` 
+- **Explanation:** horse -> rorse -> rose -> ros.
+
+**Constraints:**
+- `0 <= word1.length, word2.length <= 500`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 20.1 (Unbounded & 0/1 Knapsack Grid DP)
-- **Key Takeaway:** 3-operation (Insert, Delete, Replace) matrix grid DP.
+- **Pattern:** Sub-Pattern 20.1 (Knapsack & 2D State DP)
+- **Key Takeaway:** 3 choices when mismatch: Insert `dp[i][j-1]`, Delete `dp[i-1][j]`, Replace `dp[i-1][j-1]`.
 
 ---
+
 
 ## 21. BIT MANIPULATION & BITMASKING
 
 ### 89. 🔴 P0 [Q] LC 136: Single Number [EASY]
-- **LeetCode Link:** [Single Number](https://leetcode.com/problems/single-number/)
-- **Category / Sub-Pattern:** Sub-Pattern 21.1 (XOR Cancelation & Bit Operations)
+- **LeetCode Link:** [LC 136: Single Number](https://leetcode.com/problems/single-number/)
+- **Category / Sub-Pattern:** Sub-Pattern 21.1 (Bitwise Invariants & Operations)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Single Number**, compute the target response using LeetCode function signature `singleNumber`.
+Given a non-empty array of integers `nums`, every element appears twice except for one. Find that single one in $O(N)$ time and $O(1)$ space.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using XOR cancellation property (A ^ A = 0, A ^ 0 = A)..
+- **Input:** `nums = [2,2,1]` 
+- **Output:** `1`
+
+**Constraints:**
+- `1 <= nums.length <= 3 * 10^4` 
+- Every element appears twice except one.
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 21.1 (XOR Cancelation & Bit Operations)
-- **Key Takeaway:** XOR cancellation property (A ^ A = 0, A ^ 0 = A).
+- **Pattern:** Sub-Pattern 21.1 (Bitwise Invariants & Operations)
+- **Key Takeaway:** XOR operation is commutative and associative: $A \oplus B \oplus A = B$.
 
 ---
 
 ### 90. 🟠 P1 [Q] LC 191: Number of 1 Bits [EASY]
-- **LeetCode Link:** [Number of 1 Bits](https://leetcode.com/problems/number-of-1-bits/)
-- **Category / Sub-Pattern:** Sub-Pattern 21.1 (XOR Cancelation & Bit Operations)
+- **LeetCode Link:** [LC 191: Number of 1 Bits](https://leetcode.com/problems/number-of-1-bits/)
+- **Category / Sub-Pattern:** Sub-Pattern 21.1 (Bitwise Invariants & Operations)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Number of 1 Bits**, compute the target response using LeetCode function signature `hammingWeight`.
+Write a function that takes the binary representation of a positive integer and returns the number of set bits it has (also known as Hamming weight).
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using Brian Kernighan's algorithm (n & (n - 1) clears lowest set bit)..
+- **Input:** `n = 11` (1011 in binary)
+- **Output:** `3`
+
+**Constraints:**
+- `1 <= n <= 2^31 - 1`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 21.1 (XOR Cancelation & Bit Operations)
-- **Key Takeaway:** Brian Kernighan's algorithm (n & (n - 1) clears lowest set bit).
+- **Pattern:** Sub-Pattern 21.1 (Bitwise Invariants & Operations)
+- **Key Takeaway:** `n & (n - 1)` drops the lowest set bit in $O(1)$.
 
 ---
 
 ### 91. 🟠 P1 [Q] LC 338: Counting Bits [EASY]
-- **LeetCode Link:** [Counting Bits](https://leetcode.com/problems/counting-bits/)
-- **Category / Sub-Pattern:** Sub-Pattern 21.1 (XOR Cancelation & Bit Operations)
+- **LeetCode Link:** [LC 338: Counting Bits](https://leetcode.com/problems/counting-bits/)
+- **Category / Sub-Pattern:** Sub-Pattern 21.1 (Bitwise Invariants & Operations)
 
 **📜 Problem Statement & Explanation**
-Given the constraints for **Counting Bits**, compute the target response using LeetCode function signature `countBits`.
+Given an integer `n`, return an array `ans` of length `n + 1` such that for each `i` (`0 <= i <= n`), `ans[i]` is the number of `1`'s in the binary representation of `i`.
 
 **Example 1:**
-- **Input:** `nums = [1, 2, 3, 4]`
-- **Output:** `targetResult`
-- **Explanation:** Calculates result using DP bit shift relationship (dp[i] = dp[i >> 1] + (i & 1))..
+- **Input:** `n = 5` 
+- **Output:** `[0,1,1,2,1,2]`
+
+**Constraints:**
+- `0 <= n <= 10^5`
 
 ---
 **💡 Key Concepts & Core Blueprint:**
-- **Pattern:** Sub-Pattern 21.1 (XOR Cancelation & Bit Operations)
-- **Key Takeaway:** DP bit shift relationship (dp[i] = dp[i >> 1] + (i & 1)).
+- **Pattern:** Sub-Pattern 21.1 (Bitwise Invariants & Operations)
+- **Key Takeaway:** `ans[i] = ans[i >> 1] + (i & 1)` computes set bits in single linear pass $O(N)$.
 
 ---
