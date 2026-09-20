@@ -1705,1122 +1705,2465 @@ export const calc = (x) => x * 2;
 
 ### 52. 🔴 P0 [Q] Predict the output of a var hoisting example and explain why.
 
-> **TL;DR:** Explanation for question 52: Predict the output of a var hoisting example and explain why.
+> **TL;DR:** `var` declarations are hoisted to the top of their enclosing function/global scope and initialized with `undefined`, whereas function declarations are hoisted along with their full implementation. Statements inside unexecuted conditional blocks still hoist `var` variable declarations.
 
 **💡 Core Concept & Explanation**
-Detailed breakdown of underlying mechanism, JS engine processing rules, scope chain, or event loop behavior for 'Predict the output of a var hoisting example and explain why.'.
+During the **Creation Phase** of an Execution Context, the JavaScript engine scans code and allocates memory:
+- **`var` Declarations:** Hoisted to top of function/global scope and initialized to `undefined`.
+- **Function Declarations:** Hoisted with their full definition body attached.
+- **Unexecuted Conditional Blocks (`if (false)`):** Lexical parsing hoists `var` declarations regardless of whether the enclosing runtime conditional branch actually executes. The variable exists in scope with value `undefined`.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Practical Code Example for Question 52
-console.log("Verified execution output for Predict the output of a var hoisting example and explain why.");
+console.log(a); // undefined (var declaration hoisted, value assignment remains below)
+console.log(foo()); // "Hello from foo" (Function declaration hoisted with body)
+
+var a = 10;
+
+function foo() {
+  return "Hello from foo";
+}
+
+if (false) {
+  var b = 20;
+}
+
+console.log(b); // undefined (var b hoisted from inside if-block, but assignment skipped)
+
+var bar = function() {
+  return "Hello from bar";
+};
+console.log(bar()); // "Hello from bar"
 ```
 
+**Execution Step-by-Step Trace:**
+
+| Phase | Variable / Target | Value in Memory | Reason |
+| :--- | :--- | :--- | :--- |
+| **Creation** | `a` | `undefined` | `var a` declaration hoisted |
+| **Creation** | `foo` | `function foo() {...}` | Function declaration fully hoisted |
+| **Creation** | `b` | `undefined` | `var b` inside `if(false)` hoisted to function scope |
+| **Creation** | `bar` | `undefined` | Variable expression `var bar` hoisted as `undefined` |
+| **Execution L1** | `console.log(a)` | `undefined` | Reads hoisted `undefined` value |
+| **Execution L2** | `console.log(foo())` | `"Hello from foo"` | Invokes fully hoisted function |
+| **Execution L12** | `console.log(b)` | `undefined` | Assignment `b=20` skipped, reads `undefined` |
+
 **⚠️ Interview Pitfall / Pro-Tip**
-- Always check scope rules, execution context, and type coercion gotchas.
+- **Function Expression Hoisting Gotcha:** Attempting to call `bar()` before line 14 throws `TypeError: bar is not a function` (NOT `ReferenceError`), because `bar` exists in memory as `undefined`, and invoking `undefined()` throws a `TypeError`.
 
 ---
 
 ### 53. 🔴 P0 [Q] Predict the output of a closure inside a loop and explain why.
 
-> **TL;DR:** Explanation for question 53: Predict the output of a closure inside a loop and explain why.
+> **TL;DR:** Using `var` in a loop creates a single shared function-scoped variable binding. When `setTimeout` callbacks run asynchronously after loop completion, all closures reference the final mutated value (`3, 3, 3`). Using `let` creates a new block-scoped binding per iteration (`0, 1, 2`).
 
 **💡 Core Concept & Explanation**
-Detailed breakdown of underlying mechanism, JS engine processing rules, scope chain, or event loop behavior for 'Predict the output of a closure inside a loop and explain why.'.
+In JavaScript, closures maintain a reference to their outer Lexical Environment, not a snapshot copy of variable values at creation time.
+- **`var` in a `for` loop:** `var i` is function-scoped. The loop runs synchronously from `i = 0` to `i = 3`. All 3 `setTimeout` callbacks form closures over the **exact same reference** `i`. By the time the call stack clears and microtasks/macrotasks run 100ms later, `i` is `3`.
+- **`let` in a `for` loop:** `let j` creates a distinct, new block-scoped variable binding for **every single iteration**. Each callback closes over its own immutable iteration binding (`0`, `1`, `2`).
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Practical Code Example for Question 53
-console.log("Verified execution output for Predict the output of a closure inside a loop and explain why.");
+// ❌ Problematic (var) -> Output: 3, 3, 3
+for (var i = 0; i < 3; i++) {
+  setTimeout(() => console.log('var i:', i), 100);
+}
+
+// ✅ Fix 1: ES6 Block Scope (let) -> Output: 0, 1, 2
+for (let j = 0; j < 3; j++) {
+  setTimeout(() => console.log('let j:', j), 100);
+}
+
+// ✅ Fix 2: ES5 IIFE Closure Capture -> Output: 0, 1, 2
+for (var k = 0; k < 3; k++) {
+  (function(capturedK) {
+    setTimeout(() => console.log('IIFE k:', capturedK), 100);
+  })(k);
+}
+```
+
+```
+[ Call Stack ]                [ Macrotask Queue ]
+for loop finishes (i = 3) --> [ cb1 (captures ref i=3) ]
+                              [ cb2 (captures ref i=3) ]
+                              [ cb3 (captures ref i=3) ]
+                              Outputs: 3, 3, 3
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Always check scope rules, execution context, and type coercion gotchas.
+- Interviewers will ask: *"What happens if delay is `0` (`setTimeout(..., 0)`)?"*
+- **Answer:** Output is STILL `3, 3, 3`! `setTimeout(..., 0)` does NOT run synchronously; it pushes callbacks to the Macrotask Queue, which waits until the Call Stack is completely clear (after the loop finishes and `i` becomes `3`).
 
 ---
 
 ### 54. 🔴 P0 [Q] Predict the output of this with regular vs arrow functions.
 
-> **TL;DR:** Explanation for question 54: Predict the output of this with regular vs arrow functions.
+> **TL;DR:** Regular functions evaluate `this` dynamically at invocation time based on *how* they are called. Arrow functions do NOT have their own `this`; they capture `this` lexically from their enclosing parent scope at definition time.
 
 **💡 Core Concept & Explanation**
-Detailed breakdown of underlying mechanism, JS engine processing rules, scope chain, or event loop behavior for 'Predict the output of this with regular vs arrow functions.'.
+1. **Regular Functions:** Evaluates `this` at call-time using 4 binding rules:
+   - *Default Binding:* `fn()` $
+ightarrow$ `global` (or `undefined` in strict mode).
+   - *Implicit Binding:* `obj.fn()` $
+ightarrow$ `obj`.
+   - *Explicit Binding:* `fn.call(ctx)` $
+ightarrow$ `ctx`.
+   - *New Binding:* `new Fn()` $
+ightarrow$ newly constructed instance object.
+2. **Arrow Functions:** Skip `this` binding completely in the Execution Context. `this` is resolved along the Scope Chain lexically. `call()`, `apply()`, and `bind()` cannot alter an arrow function's `this`.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Practical Code Example for Question 54
-console.log("Verified execution output for Predict the output of this with regular vs arrow functions.");
+const user = {
+  name: 'Alice',
+  regularMethod: function() {
+    console.log('Regular:', this.name);
+  },
+  arrowMethod: () => {
+    console.log('Arrow:', this.name);
+  },
+  nestedMethod: function() {
+    const innerArrow = () => console.log('Nested Arrow:', this.name);
+    innerArrow();
+  }
+};
+
+user.regularMethod(); // "Regular: Alice" (Implicit binding to user)
+user.arrowMethod();   // "Arrow: undefined" (Lexical scope is global/module, where name is undefined)
+user.nestedMethod();  // "Nested Arrow: Alice" (Lexical scope is nestedMethod, where this = user)
+
+const detached = user.regularMethod;
+detached();           // "Regular: undefined" (Default binding lost! In strict mode: TypeError)
 ```
 
+| Function Type | `this` Binding Mechanism | Can `bind()` change `this`? | Can be `new` Constructor? |
+| :--- | :--- | :--- | :--- |
+| **Regular Function** | Dynamic (based on call-site) | Yes | Yes |
+| **Arrow Function** | Lexical (enclosing scope) | No (silently ignored) | No (`TypeError`) |
+
 **⚠️ Interview Pitfall / Pro-Tip**
-- Always check scope rules, execution context, and type coercion gotchas.
+- **Object Literal Trap:** Defining object methods using arrow functions (`const obj = { val: 10, inc: () => this.val++ }`) is a bug! Object literals `{}` do NOT create a new lexical scope block for arrow functions; `this` points to `window`/`globalThis`.
 
 ---
 
 ### 55. 🔴 P0 [Q] Predict the output of Promise + setTimeout() code and explain the event loop.
 
-> **TL;DR:** Explanation for question 55: Predict the output of Promise + setTimeout() code and explain the event loop.
+> **TL;DR:** Synchronous script execution completes first $
+ightarrow$ Microtasks (`Promise.then`, `queueMicrotask`, `process.nextTick`) are drained to completion $
+ightarrow$ Macrotasks (`setTimeout`, `setInterval`, I/O) run one by one per event loop cycle.
 
 **💡 Core Concept & Explanation**
-Detailed breakdown of underlying mechanism, JS engine processing rules, scope chain, or event loop behavior for 'Predict the output of Promise + setTimeout() code and explain the event loop.'.
+The V8 Runtime Event Loop prioritizes execution queues in a strict hierarchy:
+1. **Call Stack (Synchronous Code):** Executes code sequentially until stack is empty.
+2. **Microtask Queue:** Drained completely after every stack execution before browser rendering or macrotasks run. Promises (`.then()`, `.catch()`, `.finally()`) and `queueMicrotask` inhabit this queue.
+3. **Macrotask Queue:** Tasks like `setTimeout`, `setInterval`, and DOM event handlers are dequeued one at a time per loop iteration.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Practical Code Example for Question 55
-console.log("Verified execution output for Predict the output of Promise + setTimeout() code and explain the event loop.");
+console.log('1: Sync Start');
+
+setTimeout(() => {
+  console.log('2: Macrotask (setTimeout)');
+}, 0);
+
+Promise.resolve().then(() => {
+  console.log('3: Microtask 1');
+}).then(() => {
+  console.log('4: Microtask 2');
+});
+
+console.log('5: Sync End');
+
+// Complete Output Sequence:
+// 1: Sync Start
+// 5: Sync End
+// 3: Microtask 1
+// 4: Microtask 2
+// 2: Macrotask (setTimeout)
+```
+
+```
+[ Step 1: Call Stack ]       --> Prints 1: Sync Start, 5: Sync End
+[ Step 2: Microtask Queue ]  --> Drains ALL: Prints 3: Microtask 1, 4: Microtask 2
+[ Step 3: Macrotask Queue ]  --> Executes 1 task: Prints 2: Macrotask (setTimeout)
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Always check scope rules, execution context, and type coercion gotchas.
+- **Microtask Chaining / Starvation:** If a Microtask recursively schedules another Microtask (`function loop() { Promise.resolve().then(loop); }`), the Call Stack / Microtask loop will starve the Macrotask Queue and UI render thread forever, freezing the browser!
 
 ---
 
 ### 56. 🔴 P0 [Q] Predict the output of async/await + Promise code and explain microtask behavior.
 
-> **TL;DR:** Explanation for question 56: Predict the output of async/await + Promise code and explain microtask behavior.
+> **TL;DR:** An `async` function executes synchronously up to the first `await` expression. The expression following `await` is evaluated synchronously, while the code after `await` is wrapped into a Microtask and paused until the awaited Promise resolves.
 
 **💡 Core Concept & Explanation**
-Detailed breakdown of underlying mechanism, JS engine processing rules, scope chain, or event loop behavior for 'Predict the output of async/await + Promise code and explain microtask behavior.'.
+Under the hood, `async/await` is syntactic sugar over Promises and Generators:
+1. When an `async` function is invoked, it runs synchronously until it hits an `await`.
+2. The code on the right-hand side of `await` evaluates **immediately (synchronously)**.
+3. The `async` function pauses and returns an implicit Promise to the caller.
+4. All statements following `await` are scheduled as a **Microtask** continuation when the awaited value resolves.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Practical Code Example for Question 56
-console.log("Verified execution output for Predict the output of async/await + Promise code and explain microtask behavior.");
+async function async1() {
+  console.log('2: async1 start');
+  await async2();
+  console.log('6: async1 end'); // Microtask continuation
+}
+
+async function async2() {
+  console.log('3: async2');
+}
+
+console.log('1: script start');
+
+setTimeout(() => {
+  console.log('8: setTimeout');
+}, 0);
+
+async1();
+
+new Promise((resolve) => {
+  console.log('4: promise executor');
+  resolve();
+}).then(() => {
+  console.log('7: promise then');
+});
+
+console.log('5: script end');
+
+// Output:
+// 1: script start
+// 2: async1 start
+// 3: async2
+// 4: promise executor
+// 5: script end
+// 6: async1 end
+// 7: promise then
+// 8: setTimeout
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Always check scope rules, execution context, and type coercion gotchas.
+- **Promise Executor Synchronicity:** The function passed into `new Promise((resolve, reject) => { ... })` is called **synchronously** immediately upon creation. Only `.then()` callbacks are asynchronous microtasks.
 
 ---
 
 ### 57. 🔴 P0 [Q] Find and fix the bug in async code that uses await inside forEach(), leaves a Promise rejection unhandled, or shows stale results because of a race condition.
 
-> **TL;DR:** Explanation for question 57: Find and fix the bug in async code that uses await inside forEach(), leaves a Promise rejection unhandled, or shows stale results because of a race condition.
+> **TL;DR:** `Array.prototype.forEach` does NOT await Promises returned by its callback; it triggers async operations concurrently without waiting. Use `for...of` for sequential execution, `Promise.all()` for parallel execution, `try/catch` for error handling, and `AbortController` for race conditions.
 
 **💡 Core Concept & Explanation**
-Detailed breakdown of underlying mechanism, JS engine processing rules, scope chain, or event loop behavior for 'Find and fix the bug in async code that uses await inside forEach(), leaves a Promise rejection unhandled, or shows stale results because of a race condition.'.
+1. **`forEach` Async Bug:** `forEach` accepts a synchronous callback. When you mark the callback `async`, `forEach` invokes it, gets back a Promise, discards the Promise, and immediately proceeds to the next iteration.
+2. **Unhandled Rejection Bug:** Marking a function `async` without wrapping `await` calls in `try/catch` or attaching `.catch()` results in unhandled Promise rejections.
+3. **Race Condition Bug:** Rapid firing of async requests (e.g. search input) triggers multiple HTTP requests. If request #1 responds *after* request #2 due to network jitter, the UI displays stale data from request #1.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Practical Code Example for Question 57
-console.log("Verified execution output for Find and fix the bug in async code that uses await inside forEach(), leaves a Promise rejection unhandled, or shows stale results because of a race condition.");
+// ❌ BUG 1: await inside forEach (Returns before work is completed)
+async function processBad(items) {
+  items.forEach(async (item) => {
+    await saveToDb(item); // Not awaited by processBad!
+  });
+  console.log('Finished!'); // Prints BEFORE items are saved
+}
+
+// ✅ FIX 1a: Sequential Execution (for...of)
+async function processSequential(items) {
+  for (const item of items) {
+    await saveToDb(item);
+  }
+  console.log('Finished sequentially!');
+}
+
+// ✅ FIX 1b: Parallel Concurrent Execution (Promise.all)
+async function processParallel(items) {
+  await Promise.all(items.map(item => saveToDb(item)));
+  console.log('Finished all in parallel!');
+}
+
+// ✅ FIX 2: Race Condition Fix using AbortController
+let currentController = null;
+
+async function fetchSearchResults(query) {
+  if (currentController) {
+    currentController.abort(); // Cancel previous inflight request
+  }
+  currentController = new AbortController();
+
+  try {
+    const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`, {
+      signal: currentController.signal
+    });
+    const data = await res.json();
+    renderResults(data);
+  } catch (err) {
+    if (err.name !== 'AbortError') {
+      console.error('Fetch error:', err);
+    }
+  }
+}
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Always check scope rules, execution context, and type coercion gotchas.
+- `items.map(async item => ...)` creates an array of Promises (`[Promise, Promise]`). Passing this array directly to `if (items.map(...))` evaluates as **truthy** immediately! You MUST pass it to `await Promise.all(...)`.
 
 ---
 
 ### 58. 🔴 P0 [Q] Find and fix the bug in code that loses this in a callback or reads a stale closure value.
 
-> **TL;DR:** Explanation for question 58: Find and fix the bug in code that loses this in a callback or reads a stale closure value.
+> **TL;DR:** Detaching an object method and passing it as a callback loses its implicit `this` context binding (`this` defaults to `undefined` or `window`). Closed-over variables inside long-lived callbacks (timers, event handlers) capture initial variable snapshots (stale closures).
 
 **💡 Core Concept & Explanation**
-Detailed breakdown of underlying mechanism, JS engine processing rules, scope chain, or event loop behavior for 'Find and fix the bug in code that loses this in a callback or reads a stale closure value.'.
+1. **Lost `this` Bug:** When passing `obj.method` as a callback parameter (e.g. `setTimeout(obj.method, 100)` or `elem.addEventListener('click', obj.method)`), only a reference to the raw function is passed. At call time, it is invoked as a standalone function `method()`, losing implicit binding to `obj`.
+2. **Stale Closure Bug:** A closure captures variables from its enclosing environment by reference at definition time. If a callback executes repeatedly or at a later point while outer state updates without re-creating the closure, the callback reads obsolete captured values.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Practical Code Example for Question 58
-console.log("Verified execution output for Find and fix the bug in code that loses this in a callback or reads a stale closure value.");
-```
+// ❌ BUG 1: Lost 'this' in callback
+class AutoCounter {
+  constructor() {
+    this.count = 0;
+  }
+  start() {
+    setTimeout(function() {
+      this.count++; // TypeError: Cannot read property 'count' of undefined / window
+      console.log(this.count);
+    }, 100);
+  }
+}
 
-**⚠️ Interview Pitfall / Pro-Tip**
-- Always check scope rules, execution context, and type coercion gotchas.
+// ✅ FIX 1: Arrow Function (Lexical this) or bind()
+class FixedCounter {
+  constructor() {
+    this.count = 0;
+  }
+  start() {
+    setTimeout(() => {
+      this.count++; // Works! Inherits 'this' from FixedCounter instance
+      console.log('Count:', this.count);
+    }, 100);
+  }
+}
 
----
+// ❌ BUG 2: Stale Closure in Event Handler / Timer
+function createStaleTimer() {
+  let count = 0;
+  
+  setInterval(() => {
+    // If count was updated outside, this closure reads the captured count variable
+    console.log('Current count:', count); 
+  }, 1000);
 
-## Coding Challenges
+  return { increment: () => count++ };
+}
 
-### 59. 🔴 P0 [Q] Implement map(), filter(), and reduce() from scratch.
+// ✅ FIX 2: Ref Object Pattern (Mutable Container Object)
+function createFreshTimer() {
+  const state = { count: 0 };
+  
+  setInterval(() => {
+    console.log('Fresh count:', state.count); // Reads updated property on shared object
+  }, 1000);
 
-> **TL;DR:** Coding challenge polyfill/utility for question 59: Implement map(), filter(), and reduce() from scratch.
-
-**💡 Core Concept & Explanation**
-Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// Coding Challenge Implementation for Question 59
-function customUtility(...args) {
-  return args.reduce((acc, curr) => acc + curr, 0);
+  return { increment: () => state.count++ };
 }
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Always test edge cases like empty inputs, nullish values, and unbound context.
+- **React Hook Stale Closure Gotcha:** In React `useEffect(() => { const id = setInterval(() => console.log(count), 1000); return () => clearInterval(id); }, [])`, passing an empty dependency array `[]` causes the interval callback to capture `count = 0` permanently! Fix with `useEffect` dependencies or functional state updates `setCount(prev => prev + 1)`.
+
+---
+### 59. 🔴 P0 [Q] Implement map(), filter(), and reduce() from scratch.
+
+> **TL;DR:** Polyfilling array higher-order functions requires attaching custom methods to `Array.prototype`, managing optional `thisArg` context execution, handling sparse array holes using `in` check or `hasOwnProperty`, and managing initial accumulator values in `reduce`.
+
+**💡 Core Concept & Explanation**
+Native array methods process array elements iteratively while respecting JavaScript's array semantics:
+1. **`myMap`:** Creates a new array populated with results of calling a callback function on every element. Must preserve sparse array holes.
+2. **`myFilter`:** Creates a new array with all elements that pass the test implemented by the callback function.
+3. **`myReduce`:** Executes a user-supplied "reducer" callback on each element, passing the return value from the calculation on the preceding element. If no initial value is provided, element 0 becomes the initial accumulator and iteration starts at index 1.
+
+**🛠️ Code / Visual Diagram / Table**
+
+```javascript
+// 1. Array.prototype.myMap
+Array.prototype.myMap = function(callback, thisArg) {
+  if (typeof callback !== 'function') throw new TypeError(callback + ' is not a function');
+  const result = new Array(this.length);
+  for (let i = 0; i < this.length; i++) {
+    if (i in this) { // Skip sparse array holes
+      result[i] = callback.call(thisArg, this[i], i, this);
+    }
+  }
+  return result;
+};
+
+// 2. Array.prototype.myFilter
+Array.prototype.myFilter = function(callback, thisArg) {
+  if (typeof callback !== 'function') throw new TypeError(callback + ' is not a function');
+  const result = [];
+  for (let i = 0; i < this.length; i++) {
+    if (i in this && callback.call(thisArg, this[i], i, this)) {
+      result.push(this[i]);
+    }
+  }
+  return result;
+};
+
+// 3. Array.prototype.myReduce
+Array.prototype.myReduce = function(callback, initialValue) {
+  if (typeof callback !== 'function') throw new TypeError(callback + ' is not a function');
+  let accum = initialValue;
+  let startIndex = 0;
+
+  // Handle missing initial value
+  if (arguments.length < 2) {
+    while (startIndex < this.length && !(startIndex in this)) {
+      startIndex++; // Skip leading holes
+    }
+    if (startIndex >= this.length) {
+      throw new TypeError('Reduce of empty array with no initial value');
+    }
+    accum = this[startIndex++];
+  }
+
+  for (let i = startIndex; i < this.length; i++) {
+    if (i in this) {
+      accum = callback(accum, this[i], i, this);
+    }
+  }
+  return accum;
+};
+```
+
+**⚠️ Interview Pitfall / Pro-Tip**
+- **Sparse Array Holes Gotcha:** `[1, , 3].map(x => x * 2)` returns `[2, <empty>, 6]`. Using simple `for (let i = 0; i < this.length; i++)` without `i in this` or `hasOwnProperty` will process `<empty>` as `undefined`, producing `[2, NaN, 6]`, which violates spec behavior!
 
 ---
 
 ### 60. 🔴 P0 [Q] Implement debounce() and explain exactly how it works.
 
-> **TL;DR:** Coding challenge polyfill/utility for question 60: Implement debounce() and explain exactly how it works.
+> **TL;DR:** `debounce` delays function execution until a specified quiet delay period has passed since the last invocation. It uses closure-scoped timers to reset the countdown on every call, suppressing rapid event bursts (e.g. search input, resize).
 
 **💡 Core Concept & Explanation**
-Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
+When handling high-frequency events (keypresses, window resizing, scroll), executing heavy logic on every event degrades performance. `debounce` wraps the original function in a closure containing a `timerId`.
+- On every invocation, any existing timer is cleared via `clearTimeout(timerId)`.
+- A new timer is scheduled via `setTimeout`.
+- Execution only triggers after calls cease for the full `delay` duration.
+- Advanced implementations support an `immediate` (leading edge) flag and a `cancel()` method.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Coding Challenge Implementation for Question 60
-function customUtility(...args) {
-  return args.reduce((acc, curr) => acc + curr, 0);
+function debounce(fn, delay, immediate = false) {
+  let timerId = null;
+
+  function debounced(...args) {
+    const context = this;
+    const callNow = immediate && !timerId;
+
+    if (timerId) {
+      clearTimeout(timerId);
+    }
+
+    timerId = setTimeout(() => {
+      timerId = null;
+      if (!immediate) {
+        fn.apply(context, args);
+      }
+    }, delay);
+
+    if (callNow) {
+      fn.apply(context, args);
+    }
+  }
+
+  debounced.cancel = function() {
+    if (timerId) {
+      clearTimeout(timerId);
+      timerId = null;
+    }
+  };
+
+  return debounced;
 }
+
+// Usage Example:
+const handleSearch = debounce((query) => {
+  console.log('Searching API for:', query);
+}, 300);
+
+// Keypresses at 0ms, 100ms, 200ms -> Only 1 API call fires at 500ms!
+```
+
+```
+User Typing:   --[A]--[B]--[C]----------------------------->
+Timer Reset:     x     x    |---------- 300ms ----------|
+Function Call:                                          [FIRE C]
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Always test edge cases like empty inputs, nullish values, and unbound context.
+- **Preserving `this` and Arguments:** Forgetting `const context = this; fn.apply(context, args)` causes event handler callbacks to lose their DOM element `this` binding and event arguments.
 
 ---
 
 ### 61. 🔴 P0 [Q] Implement throttle() and explain the difference from debounce.
 
-> **TL;DR:** Coding challenge polyfill/utility for question 61: Implement throttle() and explain the difference from debounce.
+> **TL;DR:** `throttle` guarantees a function is executed at most once within a specified time window, regardless of trigger frequency. While `debounce` waits for quiet periods, `throttle` delivers steady, periodic execution during continuous events (e.g. scroll handlers, window resize).
 
 **💡 Core Concept & Explanation**
-Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
+1. **Debounce vs Throttle:**
+   - **Debounce:** "Wait until user stops typing for 300ms, then run."
+   - **Throttle:** "Run at most once every 300ms while user is continuously scrolling."
+2. **Implementation Strategies:**
+   - **Timestamp Approach (Leading Edge):** Compares `Date.now() - lastExecTime >= limit`. Fires immediately on first trigger.
+   - **Timer Approach (Trailing Edge):** Uses `setTimeout` block to defer execution.
+   - **Hybrid Production Throttle:** Supports both `leading: true` and `trailing: true` options.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Coding Challenge Implementation for Question 61
-function customUtility(...args) {
-  return args.reduce((acc, curr) => acc + curr, 0);
+function throttle(fn, limit, options = { leading: true, trailing: true }) {
+  let timerId = null;
+  let lastExecTime = 0;
+  let lastArgs = null;
+  let lastContext = null;
+
+  function throttled(...args) {
+    const now = Date.now();
+
+    if (!lastExecTime && options.leading === false) {
+      lastExecTime = now;
+    }
+
+    const remaining = limit - (now - lastExecTime);
+
+    lastArgs = args;
+    lastContext = this;
+
+    if (remaining <= 0 || remaining > limit) {
+      if (timerId) {
+        clearTimeout(timerId);
+        timerId = null;
+      }
+      lastExecTime = now;
+      fn.apply(lastContext, lastArgs);
+      lastArgs = lastContext = null;
+    } else if (!timerId && options.trailing !== false) {
+      timerId = setTimeout(() => {
+        lastExecTime = options.leading === false ? 0 : Date.now();
+        timerId = null;
+        fn.apply(lastContext, lastArgs);
+        lastArgs = lastContext = null;
+      }, remaining);
+    }
+  }
+
+  throttled.cancel = function() {
+    if (timerId) clearTimeout(timerId);
+    lastExecTime = 0;
+    timerId = lastArgs = lastContext = null;
+  };
+
+  return throttled;
 }
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Always test edge cases like empty inputs, nullish values, and unbound context.
+- **Trailing Edge Loss:** A basic timestamp-only throttle ignores the final event trigger if it occurs within the cooldown window. Always use a hybrid timer/timestamp approach when trailing execution is required.
 
 ---
 
 ### 62. 🔴 P0 [Q] Implement Promise.all() from scratch.
 
-> **TL;DR:** Coding challenge polyfill/utility for question 62: Implement Promise.all() from scratch.
+> **TL;DR:** `Promise.all(iterable)` returns a single Promise that resolves to an array of results when all input promises settle, or rejects immediately upon the first rejected promise (fast-fail behavior). Non-promise items are automatically wrapped with `Promise.resolve()`.
 
 **💡 Core Concept & Explanation**
-Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
+1. **Inputs & Edge Cases:** Must handle non-array iterables, empty arrays (`Promise.all([])` resolves immediately to `[]`), and non-Promise values in the array.
+2. **Order Preservation:** Asynchronous promises resolve at different speeds. The output array MUST preserve the original input array element positions, NOT the order of resolution completion.
+3. **Completion Tracking:** Maintains a counter `completedCount`. When `completedCount === total`, the main outer promise resolves.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Coding Challenge Implementation for Question 62
-function customUtility(...args) {
-  return args.reduce((acc, curr) => acc + curr, 0);
+function promiseAll(iterable) {
+  return new Promise((resolve, reject) => {
+    // 1. Validate iterable
+    if (iterable == null || typeof iterable[Symbol.iterator] !== 'function') {
+      return reject(new TypeError('Argument is not iterable'));
+    }
+
+    const promises = Array.from(iterable);
+    const results = new Array(promises.length);
+    let completedCount = 0;
+
+    // 2. Handle empty input array immediately
+    if (promises.length === 0) {
+      return resolve([]);
+    }
+
+    // 3. Iterate and track each item
+    promises.forEach((item, index) => {
+      Promise.resolve(item).then(
+        (value) => {
+          results[index] = value; // Preserve original index position!
+          completedCount++;
+          if (completedCount === promises.length) {
+            resolve(results);
+          }
+        },
+        (error) => {
+          reject(error); // Fast-reject on first error
+        }
+      );
+    });
+  });
 }
+
+// Test Run:
+const p1 = Promise.resolve(42);
+const p2 = new Promise(res => setTimeout(() => res('fast'), 50));
+const p3 = new Promise(res => setTimeout(() => res('slow'), 200));
+
+promiseAll([p1, p2, p3]).then(console.log); // [42, 'fast', 'slow']
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Always test edge cases like empty inputs, nullish values, and unbound context.
+- **Array Push Trap:** Using `results.push(value)` inside `.then()` is a critical bug! Slow promises will resolve later and be pushed out of order. You MUST assign directly to `results[index] = value`.
 
 ---
 
 ### 63. 🟠 P1 [Q] Implement a deep-clone utility and explain the limitations of your approach.
 
-> **TL;DR:** Coding challenge polyfill/utility for question 63: Implement a deep-clone utility and explain the limitations of your approach.
+> **TL;DR:** Deep cloning recursively duplicates nested objects and arrays while handling circular references using a `WeakMap`. Special built-in types (`Date`, `RegExp`, `Map`, `Set`) require explicit constructor instantiations, while primitives are returned directly.
 
 **💡 Core Concept & Explanation**
-Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
+- **Shallow Copy vs Deep Copy:** `Object.assign()` and spread `{...obj}` duplicate only top-level memory pointers. Nested objects remain mutated across copies.
+- **Built-in Limitations:**
+  - `JSON.parse(JSON.stringify(obj))`: Strips functions, `undefined`, `Symbol`; converts `NaN`/`Infinity` to `null`; converts `Date` to string; throws `TypeError` on circular references.
+  - `structuredClone()`: Native modern Web API; cannot clone functions, DOM nodes, or prototypes.
+- **Custom Deep Clone:** Uses a `WeakMap` as a memory registry to detect circular references and break infinite recursive call stacks.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Coding Challenge Implementation for Question 63
-function customUtility(...args) {
-  return args.reduce((acc, curr) => acc + curr, 0);
+function deepClone(obj, hash = new WeakMap()) {
+  // 1. Handle Primitives & null/undefined
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+
+  // 2. Handle Circular References
+  if (hash.has(obj)) {
+    return hash.get(obj);
+  }
+
+  // 3. Handle Special Built-in Objects
+  if (obj instanceof Date) return new Date(obj);
+  if (obj instanceof RegExp) return new RegExp(obj.source, obj.flags);
+  if (obj instanceof Map) {
+    const mapCopy = new Map();
+    hash.set(obj, mapCopy);
+    obj.forEach((val, key) => mapCopy.set(deepClone(key, hash), deepClone(val, hash)));
+    return mapCopy;
+  }
+  if (obj instanceof Set) {
+    const setCopy = new Set();
+    hash.set(obj, setCopy);
+    obj.forEach(val => setCopy.add(deepClone(val, hash)));
+    return setCopy;
+  }
+
+  // 4. Handle Arrays & Plain Objects
+  const clone = Array.isArray(obj) ? [] : Object.create(Object.getPrototypeOf(obj));
+  hash.set(obj, clone);
+
+  // Copy all own enumerable symbols and string keys
+  Reflect.ownKeys(obj).forEach(key => {
+    clone[key] = deepClone(obj[key], hash);
+  });
+
+  return clone;
 }
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Always test edge cases like empty inputs, nullish values, and unbound context.
+- **Prototype Chain & Property Descriptors:** Using simple `{}` discards custom object prototypes and non-enumerable getter/setter properties. `Object.create(Object.getPrototypeOf(obj))` preserves custom class inheritance.
 
 ---
 
 ### 64. 🔴 P0 [Q] Implement a bind() polyfill.
 
-> **TL;DR:** Coding challenge polyfill/utility for question 64: Implement a bind() polyfill.
+> **TL;DR:** `Function.prototype.bind` returns a new target function with permanently bound `this` context and curried initial arguments. When invoked with `new`, the bound `this` context is overridden in favor of the newly constructed instance object.
 
 **💡 Core Concept & Explanation**
-Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
+1. **Argument Currying:** Combines initial arguments passed during `.bind(ctx, arg1, arg2)` with invocation arguments passed during `boundFn(arg3, arg4)`.
+2. **`this` Binding:** Invokes original function using `targetFn.apply(context, combinedArgs)`.
+3. **Constructor Handling (`new` keyword):** If the bound function is used as a constructor (`new BoundFn()`), the operator creates a new object instance. In this case, `this` inside `boundFn` refers to the newly created instance, NOT the `context` passed to `bind`.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Coding Challenge Implementation for Question 64
-function customUtility(...args) {
-  return args.reduce((acc, curr) => acc + curr, 0);
+Function.prototype.myBind = function(context, ...bindArgs) {
+  if (typeof this !== 'function') {
+    throw new TypeError('Function.prototype.bind - item is not callable');
+  }
+
+  const targetFn = this;
+
+  function boundFn(...callArgs) {
+    // Check if called as a constructor via 'new boundFn()'
+    const isNewCall = this instanceof boundFn;
+    const finalContext = isNewCall ? this : context;
+    return targetFn.apply(finalContext, [...bindArgs, ...callArgs]);
+  }
+
+  // Preserve prototypal inheritance for constructor calls
+  if (targetFn.prototype) {
+    boundFn.prototype = Object.create(targetFn.prototype);
+  }
+
+  return boundFn;
+};
+
+// Test Constructor Usage:
+function User(name, role) {
+  this.name = name;
+  this.role = role;
 }
+
+const BoundUser = User.myBind({ dummy: 1 }, 'Alice');
+const u1 = new BoundUser('Admin');
+console.log(u1.name, u1.role); // "Alice Admin" (new call overrides bound dummy context!)
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Always test edge cases like empty inputs, nullish values, and unbound context.
+- **Prototype Corruption:** Setting `boundFn.prototype = targetFn.prototype` directly mutates the original function's prototype when modifying `boundFn.prototype`. Use `Object.create(targetFn.prototype)` to create a clean prototype object.
 
 ---
 
 ### 65. 🔴 P0 [Q] Implement memoize() and explain how closures make it work.
 
-> **TL;DR:** Coding challenge polyfill/utility for question 65: Implement memoize() and explain how closures make it work.
+> **TL;DR:** `memoize` caches the return values of expensive pure functions based on their input parameters using a closure-scoped `Map` or object. Repeated calls with identical arguments skip computation and return cached values instantly in $O(1)$ time.
 
 **💡 Core Concept & Explanation**
-Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
+- **Closure Cache:** `memoize` returns an inner function that maintains persistent access to a private `cache = new Map()` defined in the outer scope.
+- **Key Serialization:** Serializes multi-argument calls into a unique lookup key.
+- **Resolver Option:** A custom `resolver` function enables callers to generate custom cache keys for complex object arguments.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Coding Challenge Implementation for Question 65
-function customUtility(...args) {
-  return args.reduce((acc, curr) => acc + curr, 0);
+function memoize(fn, resolver) {
+  const cache = new Map();
+
+  function memoized(...args) {
+    const key = resolver
+      ? resolver.apply(this, args)
+      : (args.length === 1 ? args[0] : JSON.stringify(args));
+
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+
+    const result = fn.apply(this, args);
+    cache.set(key, result);
+    return result;
+  }
+
+  memoized.cache = cache; // Expose cache for inspection/clearing
+  return memoized;
 }
+
+// Usage: Expensive Fibonacci
+const fib = memoize(function(n) {
+  if (n <= 1) return n;
+  return fib(n - 1) + fib(n - 2);
+});
+
+console.log(fib(40)); // Computes in ~1ms instead of 30 seconds!
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Always test edge cases like empty inputs, nullish values, and unbound context.
+- **Object Key Collisions:** Relying on default `args.join(',')` converts object arguments to `"[object Object]"`. Two different objects `{ a: 1 }` and `{ b: 2 }` collide under the exact same string key! Always use a custom `resolver` or `WeakMap` for object parameter memoization.
 
 ---
 
 ### 66. 🟠 P1 [Q] Implement a retry function with exponential backoff.
 
-> **TL;DR:** Coding challenge polyfill/utility for question 66: Implement a retry function with exponential backoff.
+> **TL;DR:** A retry utility re-executes an asynchronous operation upon failure up to a specified maximum attempt limit, increasing the delay exponentially between attempts ($delay 	imes factor^{attempt}$) with randomized jitter to prevent server thundering herds.
 
 **💡 Core Concept & Explanation**
-Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
+- **Exponential Backoff Formula:** $WaitTime = BaseDelay 	imes (Factor^{attempt}) + Jitter$.
+- **Thundering Herd Problem:** If 10,000 clients fail simultaneously and retry at identical fixed intervals, they will crash the API server in waves. Adding random jitter ($Math.random() 	imes 100$) desynchronizes clients.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Coding Challenge Implementation for Question 66
-function customUtility(...args) {
-  return args.reduce((acc, curr) => acc + curr, 0);
+async function retryWithBackoff(fn, retries = 3, delay = 1000, backoffFactor = 2) {
+  let lastError;
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn(); // If succeeds, return immediately!
+    } catch (err) {
+      lastError = err;
+      console.warn(`Attempt ${attempt + 1} failed: ${err.message}`);
+
+      if (attempt === retries) {
+        break; // Max attempts reached
+      }
+
+      // Calculate exponential wait + random jitter (0-100ms)
+      const waitTime = delay * Math.pow(backoffFactor, attempt) + Math.random() * 100;
+      console.log(`Waiting ${Math.round(waitTime)}ms before next attempt...`);
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+    }
+  }
+
+  throw new Error(`Failed after ${retries + 1} attempts. Last error: ${lastError.message}`);
 }
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Always test edge cases like empty inputs, nullish values, and unbound context.
+- **Non-Retryable Errors:** In real-world production APIs, HTTP 401 (Unauthorized) or HTTP 404 (Not Found) errors should fail fast immediately without retrying. Always provide an optional `shouldRetry(err)` predicate callback.
 
 ---
 
 ### 67. 🟠 P1 [Q] Implement flat(depth) recursively.
 
-> **TL;DR:** Coding challenge polyfill/utility for question 67: Implement flat(depth) recursively.
+> **TL;DR:** `Array.prototype.flat(depth)` recursively flattens nested sub-array elements up to the specified `depth` limit into a new flat array, skipping sparse unassigned array holes.
 
 **💡 Core Concept & Explanation**
-Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
+- **Recursion Base Case:** If `depth <= 0`, return a shallow copy of the array.
+- **Recursive Step:** Iterate over array items. If an item is an array (`Array.isArray(item)`) and `depth > 0`, recursively call `flat(item, depth - 1)` and push individual elements into the result accumulator.
+- **Sparse Array Preservation:** Skips empty array indices.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Coding Challenge Implementation for Question 67
-function customUtility(...args) {
-  return args.reduce((acc, curr) => acc + curr, 0);
+function myFlat(arr, depth = 1) {
+  if (!Array.isArray(arr)) {
+    throw new TypeError('Input must be an array');
+  }
+
+  if (depth <= 0) {
+    return arr.slice();
+  }
+
+  return arr.reduce((acc, item) => {
+    if (Array.isArray(item)) {
+      // Recursively flatten sub-array with decremented depth
+      acc.push(...myFlat(item, depth - 1));
+    } else {
+      acc.push(item);
+    }
+    return acc;
+  }, []);
 }
+
+// Test cases:
+const nested = [1, [2, [3, [4]]], , 5];
+console.log(myFlat(nested, 1)); // [1, 2, [3, [4]], 5] (Hole skipped!)
+console.log(myFlat(nested, Infinity)); // [1, 2, 3, 4, 5]
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Always test edge cases like empty inputs, nullish values, and unbound context.
+- **Iterative Alternative (Stack):** Interviewers may ask for a non-recursive solution to avoid call stack overflow on deeply nested arrays:
+  ```javascript
+  function flatIterative(arr) {
+    const stack = [...arr];
+    const res = [];
+    while (stack.length) {
+      const next = stack.pop();
+      if (Array.isArray(next)) stack.push(...next);
+      else res.push(next);
+    }
+    return res.reverse();
+  }
+  ```
 
 ---
 
 ### 68. 🟠 P1 [Q] Implement a function that runs async tasks with a concurrency limit.
 
-> **TL;DR:** Coding challenge polyfill/utility for question 68: Implement a function that runs async tasks with a concurrency limit.
+> **TL;DR:** An async concurrency pool limits the maximum number of concurrently executing asynchronous operations (e.g., maximum 3 parallel HTTP requests at any time). As an active task completes, the pool dequeues and fires the next pending task.
 
 **💡 Core Concept & Explanation**
-Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
+- **Problem Statement:** Executing `Promise.all(10000Requests)` attempts 10,000 concurrent network sockets, causing browser socket exhaustion or API rate limiting.
+- **Worker Pool Pattern:** Maintains an active set of running task promises `executing = new Set()`. When `executing.size >= limit`, `await Promise.race(executing)` pauses the task launcher loop until at least one inflight task completes.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Coding Challenge Implementation for Question 68
-function customUtility(...args) {
-  return args.reduce((acc, curr) => acc + curr, 0);
+async function asyncPool(concurrencyLimit, tasks) {
+  const results = [];
+  const executing = new Set();
+
+  for (const [index, taskFn] of tasks.entries()) {
+    // Wrap task execution to track completion
+    const promise = Promise.resolve().then(() => taskFn()).then(res => {
+      results[index] = res;
+      executing.delete(promise); // Remove completed task from active pool
+      return res;
+    });
+
+    results[index] = promise;
+    executing.add(promise);
+
+    // Pause launcher loop if concurrency limit is reached
+    if (executing.size >= concurrencyLimit) {
+      await Promise.race(executing);
+    }
+  }
+
+  await Promise.all(results);
+  return Promise.all(results);
 }
+
+// Usage Test: 5 tasks running with max concurrency limit of 2
+const mockTask = (id, delay) => () => new Promise(res => {
+  console.log(`Task ${id} started`);
+  setTimeout(() => {
+    console.log(`Task ${id} finished`);
+    res(id);
+  }, delay);
+});
+
+const tasks = [
+  mockTask(1, 1000), mockTask(2, 500),
+  mockTask(3, 300),  mockTask(4, 800), mockTask(5, 200)
+];
+
+asyncPool(2, tasks).then(res => console.log('All completed:', res));
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Always test edge cases like empty inputs, nullish values, and unbound context.
+- **Eager Execution Bug:** Passing pre-created promises `[fetch(), fetch()]` to `asyncPool` starts network requests immediately before `asyncPool` even runs! Tasks MUST be passed as zero-argument factory functions `[() => fetch(), () => fetch()]`.
 
 ---
 
 ### 69. 🟠 P1 [Q] Implement an EventEmitter with on(), off(), once(), and emit().
 
-> **TL;DR:** Coding challenge polyfill/utility for question 69: Implement an EventEmitter with on(), off(), once(), and emit().
+> **TL;DR:** An `EventEmitter` implements the Publish-Subscribe pattern, maintaining an event dictionary (`Map<string, Function[]>`) to register event handlers (`on`), emit event payloads (`emit`), deregister handlers (`off`), and execute one-time handlers (`once`).
 
 **💡 Core Concept & Explanation**
-Demonstrates deep understanding of JavaScript primitives, prototypes, closures, and asynchronous control flow by implementing core utilities from scratch.
+- **PubSub Architecture:** Decouples event producers from consumers.
+- **Handling `once()`:** Wraps the original callback in a wrapper function that automatically calls `off(event, wrapper)` before executing the underlying callback.
+- **Iteration Protection:** During `emit()`, iterate over a shallow clone `[...listeners]` to prevent index skipping if a listener unsubscribes itself during execution.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Coding Challenge Implementation for Question 69
-function customUtility(...args) {
-  return args.reduce((acc, curr) => acc + curr, 0);
+class EventEmitter {
+  constructor() {
+    this.events = new Map();
+  }
+
+  on(event, listener) {
+    if (typeof listener !== 'function') throw new TypeError('Listener must be a function');
+    if (!this.events.has(event)) {
+      this.events.set(event, []);
+    }
+    this.events.get(event).push(listener);
+    return this; // Chainable API
+  }
+
+  off(event, listener) {
+    if (!this.events.has(event)) return this;
+    const listeners = this.events.get(event).filter(
+      l => l !== listener && l._original !== listener
+    );
+    this.events.set(event, listeners);
+    return this;
+  }
+
+  once(event, listener) {
+    const wrapper = (...args) => {
+      this.off(event, wrapper);
+      listener.apply(this, args);
+    };
+    wrapper._original = listener; // Preserve reference for off() removal
+    return this.on(event, wrapper);
+  }
+
+  emit(event, ...args) {
+    if (!this.events.has(event)) return false;
+    const listeners = [...this.events.get(event)]; // Copy array to prevent mutation issues
+    listeners.forEach(listener => listener.apply(this, args));
+    return true;
+  }
 }
+
+// Test Run:
+const emitter = new EventEmitter();
+const logMsg = (msg) => console.log('Event:', msg);
+
+emitter.on('data', logMsg);
+emitter.once('data', (msg) => console.log('ONCE:', msg));
+
+emitter.emit('data', 'First');  // Logs Event: First, ONCE: First
+emitter.emit('data', 'Second'); // Logs Event: Second (ONCE callback removed!)
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Always test edge cases like empty inputs, nullish values, and unbound context.
+- **Memory Leaks:** Failing to remove event listeners (`off`) in long-lived single-page applications causes retained closures and severe memory leaks. Node.js logs a warning if more than 10 listeners are attached to a single event.
 
 ---
-
-## DSA in JavaScript
-
 ### 70. 🔴 P0 [P] What are the time complexities of common JavaScript built-ins (push/pop vs shift/unshift, includes/indexOf, Map/Set lookups, sort, string concatenation), and why do they matter when solving problems?
 
-> **TL;DR:** DSA solution for question 70: What are the time complexities of common JavaScript built-ins (push/pop vs shift/unshift, includes/indexOf, Map/Set lookups, sort, string concatenation), and why do they matter when solving problems?
+> **TL;DR:** Array `push`/`pop` operate in $O(1)$ amortized time. `shift`/`unshift` operate in $O(N)$ time due to memory element re-indexing. `includes`/`indexOf` are $O(N)$ linear scans. `Map`/`Set` operations are $O(1)$ amortized lookups. `Array.prototype.sort()` is $O(N \log N)$ (V8 Timsort).
 
 **💡 Core Concept & Explanation**
-Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+Understanding JavaScript engine internals (V8) prevents accidental performance traps in problem solving:
+- **`shift()` / `unshift()` Cost:** Operating at index 0 requires the V8 engine to re-index and shift every single remaining element in memory by 1 position ($O(N)$ operation). Calling `shift()` inside a loop creates an unintentional $O(N^2)$ algorithm!
+- **`Map` / `Set` vs `Object` / `Array`:** `Set.prototype.has()` and `Map.prototype.get()` use hash tables for $O(1)$ lookup time, whereas `Array.prototype.includes()` performs an $O(N)$ linear scan.
+- **`Array.prototype.sort()`:** Implements **Timsort** (hybrid insertion sort + merge sort), running in $O(N \log N)$ time. Default sorting coerces elements to strings alphabetically (`[10, 2].sort()` yields `[10, 2]`), requiring an explicit numeric comparator function `(a, b) => a - b`.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Optimal DSA Implementation for Question 70
-function solveProblem(arr) {
-  return arr.filter(Boolean);
+// Benchmark Example: Array shift() vs Index Increment Pointer
+const N = 100000;
+const arr = new Array(N).fill(1);
+
+// ❌ Inefficient: shift() takes O(N^2) total time for N elements
+console.time('shift');
+const arrCopy = [...arr];
+while (arrCopy.length > 0) {
+  arrCopy.shift(); // O(N) operation inside O(N) loop!
 }
+console.timeEnd('shift'); // ~2000ms!
+
+// ✅ Efficient: Pointer increment takes O(N) total time
+console.time('pointer');
+let head = 0;
+while (head < arr.length) {
+  head++; // O(1) operation inside O(N) loop!
+}
+console.timeEnd('pointer'); // ~1ms!
 ```
 
+| Operation | Time Complexity | Auxiliary Space | Engine Internal / Notes |
+| :--- | :--- | :--- | :--- |
+| `Array.push(x)` / `pop()` | $O(1)$ Amortized | $O(1)$ | Appends/removes at array tail. |
+| `Array.unshift(x)` / `shift()` | **$O(N)$** | $O(1)$ | Re-indexes all $N$ elements in memory. |
+| `Array.includes(x)` / `indexOf(x)` | $O(N)$ | $O(1)$ | Linear scan from index 0 to $N-1$. |
+| `Set.has(x)` / `Map.get(key)` | **$O(1)$ Amortized** | $O(N)$ | Hash table bucket lookup. |
+| `Array.sort((a,b) => a-b)` | $O(N \log N)$ | $O(N)$ | V8 Timsort algorithm. |
+| String Concatenation (`a + b`) | $O(N + M)$ | $O(N + M)$ | Creates new immutable string in heap memory. |
+
 **⚠️ Interview Pitfall / Pro-Tip**
-- Beware of inefficient nested loops yielding O(N^2) time complexity.
+- **Default Sort Trap:** `[10, 2, 5, 1, 20].sort()` outputs `[1, 10, 2, 20, 5]`! In JavaScript, `.sort()` converts numbers to UTF-16 strings by default. Always pass `(a, b) => a - b` for ascending numerical sorting.
 
 ---
 
 ### 71. 🟠 P1 [Q] How do you implement a stack and a queue in JavaScript, and why is shift() inefficient for a queue?
 
-> **TL;DR:** DSA solution for question 71: How do you implement a stack and a queue in JavaScript, and why is shift() inefficient for a queue?
+> **TL;DR:** Stacks follow LIFO (Last-In, First-Out) using $O(1)$ `push()` and `pop()`. Queues follow FIFO (First-In, First-Out). Modeling a Queue with `shift()` causes $O(N)$ element re-indexing on every dequeue. Efficient Queues use Object hash maps with pointers or two-stack algorithms for $O(1)$ operations.
 
 **💡 Core Concept & Explanation**
-Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+- **Stack:** Operates at the end of the array. `push()` and `pop()` execute in $O(1)$ constant time.
+- **Queue:** Operates at opposite ends (enqueue at tail, dequeue at head). Using `Array.prototype.shift()` requires re-allocating memory indices for all remaining $N-1$ elements.
+- **$O(1)$ Queue Solution:** Maintain `head` and `tail` index pointers on a JavaScript Object map.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Optimal DSA Implementation for Question 71
-function solveProblem(arr) {
-  return arr.filter(Boolean);
+// 1. Stack Implementation (LIFO) -> O(1) operations
+class Stack {
+  constructor() { this.items = []; }
+  push(element) { this.items.push(element); }
+  pop() { return this.items.pop(); }
+  peek() { return this.items[this.items.length - 1]; }
+  isEmpty() { return this.items.length === 0; }
+  size() { return this.items.length; }
+}
+
+// 2. High-Performance Queue Implementation (FIFO) -> O(1) operations (No shift!)
+class Queue {
+  constructor() {
+    this.items = {};
+    this.head = 0;
+    this.tail = 0;
+  }
+  enqueue(element) {
+    this.items[this.tail] = element;
+    this.tail++;
+  }
+  dequeue() {
+    if (this.isEmpty()) return undefined;
+    const item = this.items[this.head];
+    delete this.items[this.head]; // Clean up memory
+    this.head++;
+    return item;
+  }
+  peek() {
+    return this.items[this.head];
+  }
+  isEmpty() {
+    return this.tail - this.head === 0;
+  }
+  size() {
+    return this.tail - this.head;
+  }
 }
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Beware of inefficient nested loops yielding O(N^2) time complexity.
+- **Memory Leaks in Pointer Queues:** In pointer-based object queues, forgetting `delete this.items[this.head]` retains references to dequeued items, preventing garbage collection and causing memory leaks!
 
 ---
 
 ### 72. 🔴 P0 [Q] Reverse a string and check whether it is a palindrome, with and without built-in methods.
 
-> **TL;DR:** DSA solution for question 72: Reverse a string and check whether it is a palindrome, with and without built-in methods.
+> **TL;DR:** Built-in string reversal (`str.split('').reverse().join('')`) requires $O(N)$ time and $O(N)$ auxiliary space. The Two-Pointer technique compares characters from both ends inward, checking palindromes in $O(N)$ time with $O(1)$ auxiliary space.
 
 **💡 Core Concept & Explanation**
-Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+- **Sanitization:** Palindrome checks must ignore case and non-alphanumeric characters using Regex `/[^a-z0-9]/gi`.
+- **Two-Pointer Efficiency:** Move `left` pointer rightward and `right` pointer leftward simultaneously. Stop if characters mismatch. Avoids allocating intermediate array instances in heap memory.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Optimal DSA Implementation for Question 72
-function solveProblem(arr) {
-  return arr.filter(Boolean);
+// Method 1: Two-Pointer Approach -> O(N) Time, O(1) Auxiliary Space
+function isPalindromeTwoPointer(str) {
+  const clean = str.toLowerCase().replace(/[^a-z0-9]/g, '');
+  let left = 0;
+  let right = clean.length - 1;
+
+  while (left < right) {
+    if (clean[left] !== clean[right]) {
+      return false;
+    }
+    left++;
+    right--;
+  }
+  return true;
 }
+
+// Method 2: Built-in Array Reversal -> O(N) Time, O(N) Space
+function isPalindromeBuiltIn(str) {
+  const clean = str.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const reversed = clean.split('').reverse().join('');
+  return clean === reversed;
+}
+
+console.log(isPalindromeTwoPointer("A man, a plan, a canal: Panama")); // true
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Beware of inefficient nested loops yielding O(N^2) time complexity.
+- **Unicode Surrogate Pair Trap:** `str.split('')` breaks multi-byte Unicode characters (e.g. emojis 😃). Use Array spread `[...str].reverse().join('')` or `String.prototype.codePointAt()` for full Unicode safety.
 
 ---
 
 ### 73. 🔴 P0 [Q] Check whether two strings are anagrams.
 
-> **TL;DR:** DSA solution for question 73: Check whether two strings are anagrams.
+> **TL;DR:** Two strings are anagrams if they contain identical character frequencies. Sorting takes $O(N \log N)$ time. Frequency counter hash maps verify anagrams in $O(N)$ time and $O(1)$ auxiliary space (max 26/128 characters).
 
 **💡 Core Concept & Explanation**
-Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+1. **Length Check:** If `str1.length !== str2.length`, return `false` immediately.
+2. **Frequency Map:** Count character frequencies in string 1, then decrement counts using string 2. If any count drops below 0 or remains non-zero, they are not anagrams.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Optimal DSA Implementation for Question 73
-function solveProblem(arr) {
-  return arr.filter(Boolean);
+function isAnagram(s, t) {
+  if (s.length !== t.length) return false;
+
+  const freqMap = {};
+
+  for (let char of s) {
+    freqMap[char] = (freqMap[char] || 0) + 1;
+  }
+
+  for (let char of t) {
+    if (!freqMap[char]) {
+      return false; // Character missing or frequency exceeded
+    }
+    freqMap[char]--;
+  }
+
+  return true;
 }
+
+console.log(isAnagram("listen", "silent")); // true
+console.log(isAnagram("rat", "car"));       // false
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Beware of inefficient nested loops yielding O(N^2) time complexity.
+- **Sorting Shortcut:** `s.split('').sort().join('') === t.split('').sort().join('')` is simple $O(N \log N)$ code, but interviewers explicitly ask for $O(N)$ linear hash map solutions.
 
 ---
 
 ### 74. 🔴 P0 [Q] Count character frequencies in a string and find the first non-repeating character.
 
-> **TL;DR:** DSA solution for question 74: Count character frequencies in a string and find the first non-repeating character.
+> **TL;DR:** Use a `Map` to count character frequencies in a single pass. JavaScript `Map` preserves key insertion order, allowing the first character with a frequency count of `1` to be identified in a second linear scan in $O(N)$ time and $O(U)$ space.
 
 **💡 Core Concept & Explanation**
-Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+- **Insertion-Order Guarantee:** Unlike plain objects prior to ES6, JavaScript `Map` guarantees iteration over keys in exact insertion order.
+- **Two-Pass Algorithm:**
+  1. Pass 1: Build frequency map `{ char -> count }`.
+  2. Pass 2: Iterate string or map keys to find the first entry with `count === 1`.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Optimal DSA Implementation for Question 74
-function solveProblem(arr) {
-  return arr.filter(Boolean);
+function firstUniqChar(s) {
+  const charCounts = new Map();
+
+  // Pass 1: Build Frequency Map
+  for (let i = 0; i < s.length; i++) {
+    const char = s[i];
+    charCounts.set(char, (charCounts.get(char) || 0) + 1);
+  }
+
+  // Pass 2: Find First Character with Count 1
+  for (let i = 0; i < s.length; i++) {
+    if (charCounts.get(s[i]) === 1) {
+      return i; // Return index (or s[i] for character)
+    }
+  }
+
+  return -1; // No unique character found
 }
+
+console.log(firstUniqChar("leetcode"));     // 0 ('l')
+console.log(firstUniqChar("loveleetcode")); // 2 ('v')
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Beware of inefficient nested loops yielding O(N^2) time complexity.
+- **Nested `indexOf` Trap:** Using `s.indexOf(char) === s.lastIndexOf(char)` inside a loop runs in $O(N^2)$ time! The two-pass `Map` solution achieves linear $O(N)$ performance.
 
 ---
 
 ### 75. 🟠 P1 [Q] Reverse the words in a sentence and capitalize the first letter of each word.
 
-> **TL;DR:** DSA solution for question 75: Reverse the words in a sentence and capitalize the first letter of each word.
+> **TL;DR:** Split the sentence into words using Regex `/\s+/` (handling multiple spaces), transform each word by capitalizing the first letter and reversing or mapping characters, and join back into a single space-separated string in $O(N)$ time.
 
 **💡 Core Concept & Explanation**
-Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+1. **Sanitization:** `str.trim().split(/\s+/)` strips leading/trailing spaces and handles multiple contiguous spaces.
+2. **Transformation:** Capitalize `word[0].toUpperCase()` and append `word.slice(1)`.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Optimal DSA Implementation for Question 75
-function solveProblem(arr) {
-  return arr.filter(Boolean);
+function reverseWordsAndCapitalize(sentence) {
+  if (!sentence || typeof sentence !== 'string') return '';
+
+  return sentence
+    .trim()
+    .split(/\s+/)
+    .reverse() // Reverse order of words in sentence
+    .map(word => {
+      if (word.length === 0) return '';
+      return word[0].toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join(' ');
 }
+
+console.log(reverseWordsAndCapitalize("  hello   world  javascript  "));
+// Output: "Javascript World Hello"
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Beware of inefficient nested loops yielding O(N^2) time complexity.
+- **String Immutability:** Strings in JavaScript are immutable. Concatenating strings in loops allocates new strings. Array `map()` and `join(' ')` is the optimal idiom.
 
 ---
 
 ### 76. 🟠 P1 [Q] Check whether a string of brackets is valid using a stack.
 
-> **TL;DR:** DSA solution for question 76: Check whether a string of brackets is valid using a stack.
+> **TL;DR:** Push opening brackets `(`, `{`, `[` onto an array stack. When encountering a closing bracket `)`, `}`, `]`, pop from the stack and verify matching bracket pairs using a map lookup. Return `true` if the stack is completely empty at the end.
 
 **💡 Core Concept & Explanation**
-Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+- **LIFO Stack Matching:** The most recently opened bracket must be closed first.
+- **Algorithm:**
+  1. Map closing brackets to opening counterparts: `{ ')': '(', '}': '{', ']': '[' }`.
+  2. Iterate string: if opening bracket, `stack.push(char)`.
+  3. If closing bracket, `stack.pop()` and compare. If mismatch or stack was empty, return `false`.
+  4. Final check: `stack.length === 0`.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Optimal DSA Implementation for Question 76
-function solveProblem(arr) {
-  return arr.filter(Boolean);
+function isValidParentheses(s) {
+  if (s.length % 2 !== 0) return false; // Odd length cannot be valid!
+
+  const stack = [];
+  const matchingMap = {
+    ')': '(',
+    '}': '{',
+    ']': '['
+  };
+
+  for (let i = 0; i < s.length; i++) {
+    const char = s[i];
+
+    if (matchingMap[char]) {
+      // Closing bracket encountered
+      const top = stack.pop();
+      if (top !== matchingMap[char]) {
+        return false;
+      }
+    } else {
+      // Opening bracket encountered
+      stack.push(char);
+    }
+  }
+
+  return stack.length === 0;
 }
+
+console.log(isValidParentheses("()[]{}")); // true
+console.log(isValidParentheses("(]"));     // false
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Beware of inefficient nested loops yielding O(N^2) time complexity.
+- **Length Parity Optimization:** An odd-length bracket string can NEVER be balanced. Checking `if (s.length % 2 !== 0) return false;` at line 1 provides an instant $O(1)$ fast-path return.
 
 ---
 
 ### 77. 🔴 P0 [Q] Find the largest and second-largest numbers in an array without sorting.
 
-> **TL;DR:** DSA solution for question 77: Find the largest and second-largest numbers in an array without sorting.
+> **TL;DR:** Maintain two pointers `max1` and `max2` initialized to `-Infinity`. Iterate through the array once in $O(N)$ time and $O(1)$ auxiliary space, updating pointers dynamically without sorting (which takes $O(N \log N)$ time).
 
 **💡 Core Concept & Explanation**
-Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+- **Single Pass Logic:**
+  - If `num > max1`: `max2 = max1; max1 = num;`
+  - Else if `num > max2 && num !== max1`: `max2 = num;`
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Optimal DSA Implementation for Question 77
-function solveProblem(arr) {
-  return arr.filter(Boolean);
+function findTwoLargest(nums) {
+  if (!Array.isArray(nums) || nums.length < 2) {
+    return { max1: null, max2: null };
+  }
+
+  let max1 = -Infinity;
+  let max2 = -Infinity;
+
+  for (let i = 0; i < nums.length; i++) {
+    const num = nums[i];
+
+    if (num > max1) {
+      max2 = max1;
+      max1 = num;
+    } else if (num > max2 && num !== max1) {
+      max2 = num;
+    }
+  }
+
+  return {
+    max1: max1 === -Infinity ? null : max1,
+    max2: max2 === -Infinity ? null : max2
+  };
 }
+
+console.log(findTwoLargest([12, 35, 1, 10, 34, 1])); // { max1: 35, max2: 34 }
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Beware of inefficient nested loops yielding O(N^2) time complexity.
+- **Duplicate Elements Gotcha:** If the array contains duplicates `[10, 10, 9]`, ask the interviewer if "second largest" means distinct value (`9`) or second index position (`10`). The `num !== max1` guard handles distinct values.
 
 ---
 
 ### 78. 🔴 P0 [Q] Solve Two Sum using a hash map, and explain why it beats the nested-loop approach.
 
-> **TL;DR:** DSA solution for question 78: Solve Two Sum using a hash map, and explain why it beats the nested-loop approach.
+> **TL;DR:** Brute-force nested loops check all pairs in $O(N^2)$ time. A Hash Map stores seen numbers and their array indices `map.set(num, index)`, checking if `complement = target - num` exists in a single linear pass in $O(N)$ time and $O(N)$ space.
 
 **💡 Core Concept & Explanation**
-Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+- **Mathematical Identity:** For each number $x$, we need $y$ such that $x + y = target \implies y = target - x$.
+- **Hash Map Lookup:** Checking if $y$ exists in a Hash Map takes $O(1)$ time, reducing time complexity from $O(N^2)$ to $O(N)$.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Optimal DSA Implementation for Question 78
-function solveProblem(arr) {
-  return arr.filter(Boolean);
+function twoSum(nums, target) {
+  const map = new Map(); // Stores { number -> index }
+
+  for (let i = 0; i < nums.length; i++) {
+    const num = nums[i];
+    const complement = target - num;
+
+    if (map.has(complement)) {
+      return [map.get(complement), i]; // Pair found!
+    }
+
+    map.set(num, i); // Store current number and index
+  }
+
+  return [];
 }
+
+console.log(twoSum([2, 7, 11, 15], 9)); // [0, 1]
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Beware of inefficient nested loops yielding O(N^2) time complexity.
+- **Same Element Reuse:** Ensure you check `map.has(complement)` BEFORE adding the current element `map.set(num, i)` into the map, preventing an element from matching with itself when `target = 2 * num`.
 
 ---
 
 ### 79. 🟠 P1 [Q] Find the missing number in an array containing 1 to n.
 
-> **TL;DR:** DSA solution for question 79: Find the missing number in an array containing 1 to n.
+> **TL;DR:** Calculate expected sum using Gauss's formula $S = rac{N(N+1)}{2}$ and subtract the actual array sum in $O(N)$ time and $O(1)$ space. Alternatively, use XOR bitwise properties ($x \oplus x = 0$) to eliminate overflow risks.
 
 **💡 Core Concept & Explanation**
-Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+1. **Gauss Sum Approach:** Sum of integers from $1$ to $N$ is $rac{N(N+1)}{2}$. Expected Sum $-$ Actual Sum $=$ Missing Number.
+2. **Bitwise XOR Approach:** XORing a number by itself yields $0$ ($A \oplus A = 0$). XORing all indices $1..N$ with all array values cancels out all present numbers, leaving only the missing number!
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Optimal DSA Implementation for Question 79
-function solveProblem(arr) {
-  return arr.filter(Boolean);
+// Method 1: Math Sum Formula -> O(N) Time, O(1) Space
+function findMissingNumberMath(nums, n) {
+  const expectedSum = (n * (n + 1)) / 2;
+  const actualSum = nums.reduce((acc, val) => acc + val, 0);
+  return expectedSum - actualSum;
 }
+
+// Method 2: Bitwise XOR -> O(N) Time, O(1) Space (Overflow-Safe)
+function findMissingNumberXOR(nums, n) {
+  let xorSum = 0;
+
+  // XOR all numbers from 1 to n
+  for (let i = 1; i <= n; i++) {
+    xorSum ^= i;
+  }
+
+  // XOR all elements in array
+  for (let num of nums) {
+    xorSum ^= num;
+  }
+
+  return xorSum;
+}
+
+console.log(findMissingNumberXOR([1, 2, 4, 5, 6], 6)); // 3
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Beware of inefficient nested loops yielding O(N^2) time complexity.
+- **Integer Overflow:** In languages with fixed-size 32-bit integers, $N(N+1)/2$ can overflow for large $N$. In JavaScript, `Number.MAX_SAFE_INTEGER` is $2^{53} - 1$, but XOR is the gold standard for zero-overflow safety.
 
 ---
 
 ### 80. 🟠 P1 [Q] Move all zeros to the end of an array in place while preserving order.
 
-> **TL;DR:** DSA solution for question 80: Move all zeros to the end of an array in place while preserving order.
+> **TL;DR:** Use a Two-Pointer technique (`writePointer` and `readPointer`). Iterate through the array; whenever a non-zero element is found, swap it to `writePointer` and increment `writePointer`. Runs in $O(N)$ time and $O(1)$ auxiliary space.
 
 **💡 Core Concept & Explanation**
-Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+- **Two-Pointer Swap:**
+  - `writePointer`: Tracks the target index for the next non-zero element.
+  - `readPointer`: Scans the array sequentially.
+  - Swapping elements preserves relative order of non-zero elements while pushing zeros rightward.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Optimal DSA Implementation for Question 80
-function solveProblem(arr) {
-  return arr.filter(Boolean);
+function moveZeroes(nums) {
+  let writePointer = 0;
+
+  for (let readPointer = 0; readPointer < nums.length; readPointer++) {
+    if (nums[readPointer] !== 0) {
+      // Swap non-zero element to writePointer position
+      const temp = nums[writePointer];
+      nums[writePointer] = nums[readPointer];
+      nums[readPointer] = temp;
+
+      writePointer++;
+    }
+  }
+  return nums;
 }
+
+console.log(moveZeroes([0, 1, 0, 3, 12])); // [1, 3, 12, 0, 0]
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Beware of inefficient nested loops yielding O(N^2) time complexity.
+- **In-Place Constraint:** Creating a new array `[...nonZeros, ...zeros]` takes $O(N)$ extra space, violating the in-place $O(1)$ space requirement. Always mutate `nums` directly.
 
 ---
 
 ### 81. 🟠 P1 [Q] Rotate an array by k positions.
 
-> **TL;DR:** DSA solution for question 81: Rotate an array by k positions.
+> **TL;DR:** Normalize $k = k \% N$. Reverse the entire array, reverse the first $k$ elements, and reverse the remaining $N - k$ elements. Achieves $O(N)$ time complexity and $O(1)$ auxiliary space in-place.
 
 **💡 Core Concept & Explanation**
-Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+- **3-Step Reversal Algorithm:**
+  1. Normalize $k$: $k = k \% N$ (handles $k > N$).
+  2. Reverse entire array: `[1, 2, 3, 4, 5, 6, 7]` $
+ightarrow$ `[7, 6, 5, 4, 3, 2, 1]`
+  3. Reverse first $k$ elements ($k=3$): `[5, 6, 7, 4, 3, 2, 1]`
+  4. Reverse remaining elements: `[5, 6, 7, 1, 2, 3, 4]`
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Optimal DSA Implementation for Question 81
-function solveProblem(arr) {
-  return arr.filter(Boolean);
+function rotateArray(nums, k) {
+  const n = nums.length;
+  k = k % n; // Normalize k
+
+  function reverse(arr, start, end) {
+    while (start < end) {
+      const temp = arr[start];
+      arr[start] = arr[end];
+      arr[end] = temp;
+      start++;
+      end--;
+    }
+  }
+
+  // 1. Reverse whole array
+  reverse(nums, 0, n - 1);
+  // 2. Reverse first k elements
+  reverse(nums, 0, k - 1);
+  // 3. Reverse remaining elements
+  reverse(nums, k, n - 1);
+
+  return nums;
 }
+
+console.log(rotateArray([1, 2, 3, 4, 5, 6, 7], 3)); // [5, 6, 7, 1, 2, 3, 4]
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Beware of inefficient nested loops yielding O(N^2) time complexity.
+- **`splice` / `unshift` Trap:** `nums.unshift(...nums.splice(-k))` looks short, but `unshift` re-indexes the array in $O(N 	imes k)$ time, making it far slower than the $O(N)$ 3-step reversal algorithm.
 
 ---
 
 ### 82. 🟠 P1 [Q] Merge two sorted arrays into one sorted array.
 
-> **TL;DR:** DSA solution for question 82: Merge two sorted arrays into one sorted array.
+> **TL;DR:** Compare elements using two pointers starting at index 0 of both arrays. Append the smaller element to the merged output array until one array is exhausted, then append all remaining items in $O(N + M)$ time.
 
 **💡 Core Concept & Explanation**
-Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+- **Two-Pointer Merge:**
+  - Pointer `i` for `arr1`, Pointer `j` for `arr2`.
+  - Compare `arr1[i]` vs `arr2[j]`. Push smaller item and increment pointer.
+  - Flush remaining items once one pointer reaches array bounds.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Optimal DSA Implementation for Question 82
-function solveProblem(arr) {
-  return arr.filter(Boolean);
+function mergeSortedArrays(arr1, arr2) {
+  const merged = [];
+  let i = 0;
+  let j = 0;
+
+  while (i < arr1.length && j < arr2.length) {
+    if (arr1[i] <= arr2[j]) {
+      merged.push(arr1[i]);
+      i++;
+    } else {
+      merged.push(arr2[j]);
+      j++;
+    }
+  }
+
+  // Flush remaining elements
+  while (i < arr1.length) merged.push(arr1[i++]);
+  while (j < arr2.length) merged.push(arr2[j++]);
+
+  return merged;
 }
+
+console.log(mergeSortedArrays([1, 3, 5, 7], [2, 4, 6, 8])); // [1, 2, 3, 4, 5, 6, 7, 8]
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Beware of inefficient nested loops yielding O(N^2) time complexity.
+- **Naive Concatenation & Sort:** `[...arr1, ...arr2].sort((a,b) => a-b)` takes $O((N+M) \log(N+M))$ time, completely discarding the pre-sorted property of the input arrays!
 
 ---
 
 ### 83. 🟠 P1 [Q] Find the intersection of two arrays.
 
-> **TL;DR:** DSA solution for question 83: Find the intersection of two arrays.
+> **TL;DR:** Convert the first array into a `Set` for $O(1)$ lookups. Filter the second array for elements present in the `Set`, returning distinct common elements in $O(N + M)$ time.
 
 **💡 Core Concept & Explanation**
-Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+- **Set Lookup:** `set.has(item)` is an $O(1)$ amortized hash table lookup.
+- **Duplicates Handling:** To ensure unique intersection values, wrap the final filtered array in `Array.from(new Set(...))`.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Optimal DSA Implementation for Question 83
-function solveProblem(arr) {
-  return arr.filter(Boolean);
+function intersection(nums1, nums2) {
+  const set1 = new Set(nums1);
+  const resultSet = new Set();
+
+  for (let num of nums2) {
+    if (set1.has(num)) {
+      resultSet.add(num);
+    }
+  }
+
+  return Array.from(resultSet);
 }
+
+console.log(intersection([1, 2, 2, 1], [2, 2])); // [2]
+console.log(intersection([4, 9, 5], [9, 4, 9, 8, 4])); // [9, 4]
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Beware of inefficient nested loops yielding O(N^2) time complexity.
+- **Intersection with Multiplicity:** If duplicate frequencies matter (e.g. `[2, 2]` intersecting `[2, 2]` should return `[2, 2]`), use a frequency map counter instead of a `Set`.
 
 ---
 
 ### 84. 🟠 P1 [Q] Split an array into chunks of size n.
 
-> **TL;DR:** DSA solution for question 84: Split an array into chunks of size n.
+> **TL;DR:** Iterate through an array using a `for` loop with step size `n`, slicing sub-arrays `arr.slice(i, i + n)` and appending them into a master chunk array in $O(N)$ time.
 
 **💡 Core Concept & Explanation**
-Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+- `Array.prototype.slice(start, end)` extracts a portion of an array into a new array object without mutating the original array. If `end > arr.length`, `slice` safely stops at the array end.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Optimal DSA Implementation for Question 84
-function solveProblem(arr) {
-  return arr.filter(Boolean);
+function chunkArray(arr, size) {
+  if (!Array.isArray(arr) || size <= 0) return [];
+
+  const chunked = [];
+  for (let i = 0; i < arr.length; i += size) {
+    chunked.push(arr.slice(i, i + size));
+  }
+  return chunked;
 }
+
+console.log(chunkArray([1, 2, 3, 4, 5, 6, 7], 3));
+// Output: [[1, 2, 3], [4, 5, 6], [7]]
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Beware of inefficient nested loops yielding O(N^2) time complexity.
+- **`splice` Mutative Bug:** Using `arr.splice(0, size)` mutates and destroys the original input array! Always use non-mutative `slice()`.
 
 ---
 
 ### 85. 🟠 P1 [Q] Implement binary search on a sorted array.
 
-> **TL;DR:** DSA solution for question 85: Implement binary search on a sorted array.
+> **TL;DR:** Maintain `low` and `high` pointers. Calculate `mid = low + Math.floor((high - low) / 2)`. Adjust pointers based on target comparison. Reduces search space by half each iteration in $O(\log N)$ time and $O(1)$ space.
 
 **💡 Core Concept & Explanation**
-Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+- **Pre-requisite:** Array MUST be sorted.
+- **Integer Overflow Protection:** Instead of `(low + high) / 2`, use `low + Math.floor((high - low) / 2)` to prevent overflow in 32-bit systems.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Optimal DSA Implementation for Question 85
-function solveProblem(arr) {
-  return arr.filter(Boolean);
+function binarySearch(nums, target) {
+  let low = 0;
+  let high = nums.length - 1;
+
+  while (low <= high) {
+    const mid = low + Math.floor((high - low) / 2);
+
+    if (nums[mid] === target) {
+      return mid; // Target found, return index
+    } else if (nums[mid] < target) {
+      low = mid + 1; // Search right half
+    } else {
+      high = mid - 1; // Search left half
+    }
+  }
+
+  return -1; // Target not found
 }
+
+console.log(binarySearch([-1, 0, 3, 5, 9, 12], 9)); // 4
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Beware of inefficient nested loops yielding O(N^2) time complexity.
+- **Off-By-One Errors:** Ensure loop condition is `low <= high` (NOT `low < high`), otherwise single-element arrays or boundaries are skipped!
 
 ---
 
 ### 86. 🟠 P1 [Q] Compute Fibonacci recursively, iteratively, and with memoization, and compare their time complexities.
 
-> **TL;DR:** DSA solution for question 86: Compute Fibonacci recursively, iteratively, and with memoization, and compare their time complexities.
+> **TL;DR:** Naive recursion takes exponential $O(2^N)$ time due to overlapping subproblem recalculations. Memoization reduces time to $O(N)$ with $O(N)$ call stack space. Iterative DP computes in $O(N)$ time and $O(1)$ space.
 
 **💡 Core Concept & Explanation**
-Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+- **Formula:** $F(n) = F(n-1) + F(n-2)$, with $F(0)=0, F(1)=1$.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Optimal DSA Implementation for Question 86
-function solveProblem(arr) {
-  return arr.filter(Boolean);
+// 1. Naive Recursion -> O(2^N) Time, O(N) Call Stack
+function fibRecursive(n) {
+  if (n <= 1) return n;
+  return fibRecursive(n - 1) + fibRecursive(n - 2);
+}
+
+// 2. Memoized (Top-Down DP) -> O(N) Time, O(N) Space
+function fibMemo(n, memo = {}) {
+  if (n in memo) return memo[n];
+  if (n <= 1) return n;
+  memo[n] = fibMemo(n - 1, memo) + fibMemo(n - 2, memo);
+  return memo[n];
+}
+
+// 3. Iterative (Bottom-Up DP) -> O(N) Time, O(1) Space
+function fibIterative(n) {
+  if (n <= 1) return n;
+  let prev2 = 0;
+  let prev1 = 1;
+  let current = 0;
+
+  for (let i = 2; i <= n; i++) {
+    current = prev1 + prev2;
+    prev2 = prev1;
+    prev1 = current;
+  }
+  return current;
 }
 ```
 
+| Approach | Time Complexity | Auxiliary Space | Call Stack Risk |
+| :--- | :--- | :--- | :--- |
+| **Naive Recursion** | $O(2^N)$ | $O(N)$ | High (`RangeError: Maximum call stack size exceeded`) |
+| **Memoized DP** | $O(N)$ | $O(N)$ | Moderate for large $N$ |
+| **Iterative DP** | **$O(N)$** | **$O(1)$** | **None (Optimal)** |
+
 **⚠️ Interview Pitfall / Pro-Tip**
-- Beware of inefficient nested loops yielding O(N^2) time complexity.
+- Calling `fibRecursive(50)` will freeze the JS execution thread for minutes due to $2^{50} pprox 1.12 	imes 10^{15}$ function calls!
 
 ---
 
 ### 87. 🟠 P1 [Q] Implement a singly linked list and reverse it.
 
-> **TL;DR:** DSA solution for question 87: Implement a singly linked list and reverse it.
+> **TL;DR:** Maintain `prev = null`, `current = head`, `next = null`. Iterate through nodes, reversing pointer references `current.next = prev` in $O(N)$ time and $O(1)$ auxiliary space.
 
 **💡 Core Concept & Explanation**
-Analyzes time complexity O(N) and space complexity O(1) for optimal problem solving in JavaScript using built-ins or custom data structures.
+- **Pointer Manipulation:** At each step, preserve `next = current.next`, flip `current.next = prev`, advance `prev = current`, and move `current = next`.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-// Optimal DSA Implementation for Question 87
-function solveProblem(arr) {
-  return arr.filter(Boolean);
+class ListNode {
+  constructor(val = 0, next = null) {
+    this.val = val;
+    this.next = next;
+  }
 }
+
+function reverseLinkedList(head) {
+  let prev = null;
+  let current = head;
+
+  while (current !== null) {
+    const nextTemp = current.next; // 1. Save next node
+    current.next = prev;           // 2. Reverse pointer direction
+    prev = current;                // 3. Advance prev pointer
+    current = nextTemp;            // 4. Advance current pointer
+  }
+
+  return prev; // New head of reversed list
+}
+
+// Helper: Convert Array to LinkedList
+const head = new ListNode(1, new ListNode(2, new ListNode(3)));
+const reversed = reverseLinkedList(head); // 3 -> 2 -> 1
+```
+
+```
+Initial:  (1) -> (2) -> (3) -> null
+Step 1:   null <- (1)    (2) -> (3) -> null
+Step 2:   null <- (1) <- (2)    (3) -> null
+Step 3:   null <- (1) <- (2) <- (3)  (new head = 3)
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Beware of inefficient nested loops yielding O(N^2) time complexity.
+- **Losing Next Reference:** Forgetting to store `const nextTemp = current.next` BEFORE assigning `current.next = prev` breaks pointer links, causing orphaned nodes and infinite loops!
 
 ---
-
-## TypeScript
-
 ### 88. 🔴 P0 [C] What is TypeScript, how does it relate to JavaScript, and why doesn't it check types at runtime (type erasure)?
 
-> **TL;DR:** TypeScript question 88: What is TypeScript, how does it relate to JavaScript, and why doesn't it check types at runtime (type erasure)?
+> **TL;DR:** TypeScript is a statically typed superset of JavaScript that compiles down to plain JavaScript. All type annotations are erased during compilation (Type Erasure), meaning zero type-checking overhead occurs at JavaScript runtime.
 
 **💡 Core Concept & Explanation**
-TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+- **Compile-Time vs Runtime:** The TypeScript Compiler (`tsc`) checks types strictly during build time. Once compiled, all interface, type, and generic syntax is completely stripped out, emitting standard JavaScript (ES6+).
+- **Type Erasure Mechanism:** Because types are erased, TypeScript types do NOT exist at runtime. Calling `typeof user` at runtime returns `"object"`, regardless of whether `user` was defined as `interface User { name: string }`.
+- **Runtime Validation:** For network API calls or user inputs, runtime validation libraries (such as `Zod`, `Valibot`, or custom Type Predicates) are required.
 
 **🛠️ Code / Visual Diagram / Table**
 
-```javascript
-// TypeScript Implementation for Question 88
-type Result<T> = { data: T; error?: string };
-function process<T>(val: T): Result<T> {
-  return { data: val };
+```typescript
+// 1. TypeScript Source Code (Build Time)
+interface User {
+  id: number;
+  name: string;
+}
+
+function greet(user: User): string {
+  return `Hello, ${user.name}`;
+}
+
+// 2. Compiled JavaScript Output (Runtime Emitted Output)
+function greet(user) {
+  return "Hello, " + user.name;
 }
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+- **Runtime Type Inspection Trap:** Writing `if (val instanceof UserInterface)` throws a runtime `ReferenceError: UserInterface is not defined` because interfaces are erased. Only JavaScript classes (`class UserClass`) exist at runtime as constructor functions and can be checked with `instanceof`.
 
 ---
 
 ### 89. 🔴 P0 [C] How does type inference work, and when should you add explicit type annotations?
 
-> **TL;DR:** TypeScript question 89: How does type inference work, and when should you add explicit type annotations?
+> **TL;DR:** TypeScript automatically infers types based on variable initializers, default values, and function return values (Contextual Typing). Explicit type annotations should be added for uninitialized variables, function parameters, exported public API boundaries, or when overriding default inference.
 
 **💡 Core Concept & Explanation**
-TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+- **Type Inference:** When initializing `let count = 10`, TS infers `count: number` automatically.
+- **`noImplicitAny` Compiler Flag:** When parameters are un-annotated (`function log(msg)`), TS defaults `msg` to `any`. Enabling `noImplicitAny: true` in `tsconfig.json` forces explicit annotations.
+- **When to Annotate Explicitly:**
+  1. Function parameters (`(x: number, y: string)`).
+  2. Variables declared without immediate initialization (`let user: User;`).
+  3. Exported functions / library public API contracts (improves build speed and documentation clarity).
 
 **🛠️ Code / Visual Diagram / Table**
 
-```javascript
-// TypeScript Implementation for Question 89
-type Result<T> = { data: T; error?: string };
-function process<T>(val: T): Result<T> {
-  return { data: val };
+```typescript
+// ✅ Good: Automatic Type Inference
+let age = 25; // Inferred as number
+const name = "Alice"; // Inferred as literal type "Alice"
+const numbers = [1, 2, 3]; // Inferred as number[]
+
+// ✅ Good: Explicit Annotations required
+let user: { id: number; role: string }; // Uninitialized variable
+
+function calculateTotal(price: number, taxRate: number): number {
+  return price + price * taxRate; // Parameter types MUST be explicit
 }
+
+// ❌ Avoid: Redundant Annotations (Noise)
+let count: number = 10; // Redundant! 'let count = 10' is cleaner.
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+- **Wider vs Narrower Inference (`let` vs `const`):** `let x = "hello"` is inferred widely as `string` (since `x` can be reassigned). `const x = "hello"` is inferred narrowly as literal type `"hello"`.
 
 ---
 
 ### 90. 🔴 P0 [Q] What is the difference between type and interface, and when would you use each?
 
-> **TL;DR:** TypeScript question 90: What is the difference between type and interface, and when would you use each?
+> **TL;DR:** `interface` is designed for object shapes and supports Declaration Merging (open for extension). `type` aliases can represent objects, primitives, unions (`A | B`), tuples, and mapped types. Use `interface` for object-oriented designs and public library APIs; use `type` for complex union types and utility logic.
 
 **💡 Core Concept & Explanation**
-TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+- **Declaration Merging:** Multiple `interface` declarations with the exact same name in the same scope merge their properties into a single interface. `type` aliases cannot be re-declared.
+- **Union Types:** `type Point = { x: number } | { y: number }` is valid, whereas an `interface` cannot directly alias a union.
 
 **🛠️ Code / Visual Diagram / Table**
 
-```javascript
-// TypeScript Implementation for Question 90
-type Result<T> = { data: T; error?: string };
-function process<T>(val: T): Result<T> {
-  return { data: val };
+| Feature | `interface` | `type` Alias |
+| :--- | :--- | :--- |
+| **Primary Purpose** | Object shapes & Class contracts | Any type definition (Unions, Primitives, Tuples) |
+| **Declaration Merging** | **Supported** (Open for extension) | Not Supported (`Duplicate identifier`) |
+| **Unions & Intersections** | Cannot directly define unions | **Supported** (`type X = A \| B`) |
+| **Extends Syntax** | `interface B extends A` | Intersection `type B = A & { ... }` |
+
+```typescript
+// 1. Declaration Merging (Interface only)
+interface Window {
+  customProp: string;
 }
+interface Window {
+  anotherProp: number;
+}
+// Merged Window interface has BOTH customProp AND anotherProp!
+
+// 2. Unions & Tuples (Type only)
+type Status = "pending" | "success" | "error";
+type Point2D = [number, number];
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+- **Library API Rule:** When building a library or NPM package, use `interface` for public configuration options so consumers can extend them via declaration merging if needed.
 
 ---
 
 ### 91. 🟠 P1 [C] What is structural typing, and how does it differ from nominal typing?
 
-> **TL;DR:** TypeScript question 91: What is structural typing, and how does it differ from nominal typing?
+> **TL;DR:** TypeScript uses a Structural Type System ("duck typing"): two types are compatible if their internal shapes/properties match, regardless of how or where they were named. Languages like Java/C# use Nominal Typing, where type compatibility requires explicit class inheritance or interface implementation.
 
 **💡 Core Concept & Explanation**
-TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+- **Structural Equivalence:** If object `A` has at least all required properties of type `T` with matching types, `A` is assignable to `T`.
+- **Nominal Emulation (Branded Types):** To enforce nominal typing (e.g., preventing a `UserId` string from being accidentally passed to a `OrderId` parameter), TS developers use Branded/Tagged types (`type UserId = string & { readonly __brand: unique symbol }`).
 
 **🛠️ Code / Visual Diagram / Table**
 
-```javascript
-// TypeScript Implementation for Question 91
-type Result<T> = { data: T; error?: string };
-function process<T>(val: T): Result<T> {
-  return { data: val };
+```typescript
+interface Point {
+  x: number;
+  y: number;
 }
+
+class Vector2D {
+  x: number;
+  y: number;
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+  }
+}
+
+function printPoint(p: Point) {
+  console.log(`x: ${p.x}, y: ${p.y}`);
+}
+
+const vec = new Vector2D(10, 20);
+printPoint(vec); // ✅ Valid! Vector2D matches the shape of Point structurally!
+
+// Branded Types Example (Nominal Emulation)
+type USD = number & { readonly __brand: "USD" };
+type EUR = number & { readonly __brand: "EUR" };
+
+let usd = 100 as USD;
+let eur = 100 as EUR;
+// usd = eur; // ❌ Compile Error: Type '"EUR"' is not assignable to type '"USD"'
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+- **Excess Property Checks:** Passing an object literal directly `printPoint({ x: 1, y: 2, z: 3 })` triggers Excess Property Checking and throws a compile error. Assigning to a intermediate variable `const obj = { x: 1, y: 2, z: 3 }; printPoint(obj);` succeeds due to structural subtyping!
 
 ---
 
 ### 92. 🔴 P0 [Q] What is the difference between any, unknown, and never?
 
-> **TL;DR:** TypeScript question 92: What is the difference between any, unknown, and never?
+> **TL;DR:** `any` disables all type-checking (unsafe escape hatch). `unknown` is the type-safe top type that represents any value but requires Type Narrowing before performing operations. `never` is the bottom type representing values that can never occur (unreachable code, functions that throw errors or loop infinitely).
 
 **💡 Core Concept & Explanation**
-TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+- **`any`:** Turns off type checker. `any.foo.bar()` compiles without errors, causing runtime crashes.
+- **`unknown`:** Accepts any value, but TS blocks property access, method calls, or assignments until narrowed via `typeof`, `instanceof`, or type assertions.
+- **`never`:** Subtype of every type, but no type is assignable to `never` (except `never` itself). Used for exhaustiveness checks in switch statements.
 
 **🛠️ Code / Visual Diagram / Table**
 
-```javascript
-// TypeScript Implementation for Question 92
-type Result<T> = { data: T; error?: string };
-function process<T>(val: T): Result<T> {
-  return { data: val };
+```typescript
+// 1. any (Unsafe)
+let valAny: any = "hello";
+valAny.nonExistentMethod(); // ✅ Compiles fine -> Runtime Crash!
+
+// 2. unknown (Safe Top Type)
+let valUnknown: unknown = "hello";
+// valUnknown.toUpperCase(); // ❌ Compile Error: Object is of type 'unknown'.
+
+if (typeof valUnknown === "string") {
+  console.log(valUnknown.toUpperCase()); // ✅ Valid after narrowing!
+}
+
+// 3. never (Bottom Type)
+function throwError(msg: string): never {
+  throw new Error(msg); // Never returns!
 }
 ```
 
+| Type | Assignable to `unknown`? | Assignable from `unknown`? | Allows Arbitrary Property Access? |
+| :--- | :--- | :--- | :--- |
+| **`any`** | Yes | Yes | Yes (Unsafe) |
+| **`unknown`** | Yes | No (Requires Narrowing) | No (Type Safe) |
+| **`never`** | Yes | No | No |
+
 **⚠️ Interview Pitfall / Pro-Tip**
-- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+- Avoid `any` in production code. Prefer `unknown` for third-party API data or dynamic payloads, forcing callers to safely narrow types before access.
 
 ---
 
 ### 93. 🔴 P0 [Q] What are union and intersection types, and how do literal types work?
 
-> **TL;DR:** TypeScript question 93: What are union and intersection types, and how do literal types work?
+> **TL;DR:** Union types (`A | B`) allow a value to be one of several specified types. Intersection types (`A & B`) combine multiple type definitions into a single composite type requiring all properties. Literal types constrain values to exact specific strings, numbers, or booleans.
 
 **💡 Core Concept & Explanation**
-TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+- **Set Theory Math:**
+  - **Union ($A \cup B$):** Property access is limited to common properties shared by both types unless narrowed.
+  - **Intersection ($A \cap B$):** Combines all properties of both types into a single unified type.
+- **Literal Types:** `type Direction = "North" | "South" | "East" | "West";`. Restricts variable assignments exclusively to those exact string values.
 
 **🛠️ Code / Visual Diagram / Table**
 
-```javascript
-// TypeScript Implementation for Question 93
-type Result<T> = { data: T; error?: string };
-function process<T>(val: T): Result<T> {
-  return { data: val };
+```typescript
+// 1. Union Types (|)
+type Id = string | number;
+function printId(id: Id) {
+  if (typeof id === "string") {
+    console.log(id.toUpperCase()); // Narrowed to string
+  } else {
+    console.log(id.toFixed(2)); // Narrowed to number
+  }
 }
+
+// 2. Intersection Types (&)
+interface Person {
+  name: string;
+}
+interface Loggable {
+  log(): void;
+}
+
+type Employee = Person & Loggable;
+
+const emp: Employee = {
+  name: "Alice",
+  log() { console.log(this.name); }
+};
+
+// 3. String Literal Types
+type Theme = "light" | "dark" | "system";
+let currentTheme: Theme = "dark"; // ✅ Valid
+// currentTheme = "blue"; // ❌ Compile Error!
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+- **Conflicting Intersection Trap:** Intersecting primitive types `type Impossible = string & number` evaluates to `never`, because a value can never be both a string and a number simultaneously.
 
 ---
 
 ### 94. 🟠 P1 [Q] How do optional properties, null/undefined, and strictNullChecks work, what does strict mode enable, and what does readonly do?
 
-> **TL;DR:** TypeScript question 94: How do optional properties, null/undefined, and strictNullChecks work, what does strict mode enable, and what does readonly do?
+> **TL;DR:** Optional properties (`prop?: T`) permit properties to be `T | undefined`. `strictNullChecks` prevents implicit assignment of `null`/`undefined` to other types. `strict: true` enables full type-checking rigor. `readonly` prevents property reassignment at compile-time.
 
 **💡 Core Concept & Explanation**
-TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+- **`strictNullChecks: true`:** Without this flag, `null` and `undefined` are assignable to any type (`let s: string = null;` compiles!). Enabling `strictNullChecks` forces explicit handling of `null` and `undefined`.
+- **`readonly` Modifier:** Marks properties or arrays immutable for compiler operations.
 
 **🛠️ Code / Visual Diagram / Table**
 
-```javascript
-// TypeScript Implementation for Question 94
-type Result<T> = { data: T; error?: string };
-function process<T>(val: T): Result<T> {
-  return { data: val };
+```typescript
+// 1. Optional Properties & strictNullChecks
+interface UserProfile {
+  id: number;
+  nickname?: string; // Type is: string | undefined
 }
+
+function getUpperNickname(user: UserProfile): string {
+  // return user.nickname.toUpperCase(); // ❌ Error under strictNullChecks!
+  return user.nickname ? user.nickname.toUpperCase() : "ANONYMOUS";
+}
+
+// 2. Readonly Properties
+interface Point3D {
+  readonly x: number;
+  readonly y: number;
+  readonly z: number;
+}
+
+const p: Point3D = { x: 10, y: 20, z: 30 };
+// p.x = 50; // ❌ Compile Error: Cannot assign to 'x' because it is a read-only property.
+
+// Readonly Array
+const readonlyNums: ReadonlyArray<number> = [1, 2, 3];
+// readonlyNums.push(4); // ❌ Compile Error: Property 'push' does not exist on type 'ReadonlyArray'.
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+- **`readonly` Shallow Immutability:** `readonly` prevents reassigning the property reference itself (`p.x = 50`), but does NOT deeply freeze nested object properties at runtime. Use `Object.freeze()` for runtime immutability.
 
 ---
 
 ### 95. 🔴 P0 [Q] What is type narrowing, and how do typeof, instanceof, in, and custom type predicates (x is T) narrow types?
 
-> **TL;DR:** TypeScript question 95: What is type narrowing, and how do typeof, instanceof, in, and custom type predicates (x is T) narrow types?
+> **TL;DR:** Type Narrowing refines a broad type (like `string | number` or `unknown`) into a specific concrete type using JavaScript control flow guards (`typeof`, `instanceof`, `in`) or user-defined Type Predicates (`fn(x): x is TargetType`).
 
 **💡 Core Concept & Explanation**
-TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+1. **Control Flow Analysis:** TypeScript analyzes conditional code paths (`if`, `switch`, `return`) to narrow variable types automatically within each branch.
+2. **Type Guards:**
+   - `typeof x === "string"`: Narrows primitive types.
+   - `x instanceof ClassName`: Narrows class instances along prototype chain.
+   - `'prop' in obj`: Narrows object union types based on key existence.
+   - **Custom Type Predicate:** A function returning `param is Type` boolean signature.
 
 **🛠️ Code / Visual Diagram / Table**
 
-```javascript
-// TypeScript Implementation for Question 95
-type Result<T> = { data: T; error?: string };
-function process<T>(val: T): Result<T> {
-  return { data: val };
+```typescript
+interface Dog { walk(): void; }
+interface Fish { swim(): void; }
+
+// Custom Type Predicate (x is Fish)
+function isFish(pet: Dog | Fish): pet is Fish {
+  return (pet as Fish).swim !== undefined;
+}
+
+function move(pet: Dog | Fish) {
+  if (isFish(pet)) {
+    pet.swim(); // ✅ TS knows pet is Fish here!
+  } else {
+    pet.walk(); // ✅ TS knows pet is Dog here!
+  }
+}
+
+// typeof & instanceof narrowing
+function processInput(val: string | Date) {
+  if (val instanceof Date) {
+    console.log(val.toISOString()); // Narrowed to Date
+  } else {
+    console.log(val.toUpperCase());  // Narrowed to string
+  }
 }
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+- **`typeof null` Trap:** `typeof null` evaluates to `"object"` in JavaScript! Writing `if (typeof val === "object")` does NOT narrow out `null`. You MUST write `if (val !== null && typeof val === "object")`.
 
 ---
 
 ### 96. 🟠 P1 [Q] What is a discriminated union, and how do you use never for exhaustive checks?
 
-> **TL;DR:** TypeScript question 96: What is a discriminated union, and how do you use never for exhaustive checks?
+> **TL;DR:** A Discriminated Union combines object types sharing a common literal property (the "discriminant", e.g. `kind: 'circle' | 'square'`). Matching on the discriminant in a `switch` statement with a `default` case returning a `never` assignment enforces compile-time exhaustiveness checking.
 
 **💡 Core Concept & Explanation**
-TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+- **Discriminant Property:** A single shared literal property (e.g. `type`, `kind`, `status`) present on all members of a union.
+- **Exhaustiveness Checking with `never`:** If a new variant is added to the union but missing from a `switch` statement, assigning the unhandled variant to a variable of type `never` triggers a compile-time error.
 
 **🛠️ Code / Visual Diagram / Table**
 
-```javascript
-// TypeScript Implementation for Question 96
-type Result<T> = { data: T; error?: string };
-function process<T>(val: T): Result<T> {
-  return { data: val };
+```typescript
+interface Circle {
+  kind: "circle";
+  radius: number;
+}
+interface Square {
+  kind: "square";
+  size: number;
+}
+interface Triangle {
+  kind: "triangle";
+  base: number;
+  height: number;
+}
+
+type Shape = Circle | Square | Triangle;
+
+function assertUnreachable(x: never): never {
+  throw new Error(`Unhandled discriminated union member: ${JSON.stringify(x)}`);
+}
+
+function calculateArea(shape: Shape): number {
+  switch (shape.kind) {
+    case "circle":
+      return Math.PI * shape.radius ** 2;
+    case "square":
+      return shape.size * shape.size;
+    case "triangle":
+      return 0.5 * shape.base * shape.height;
+    default:
+      return assertUnreachable(shape); // ✅ Ensures all shapes are handled at compile time!
+  }
 }
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+- If a developer adds a new `Rectangle` shape to the `Shape` union without updating `calculateArea`, the `default: assertUnreachable(shape)` line immediately fails compilation: `Type 'Rectangle' is not assignable to type 'never'`.
 
 ---
 
 ### 97. 🟠 P1 [Q] How do you type function parameters, return values, optional/default parameters, and callbacks, and what are function overloads?
 
-> **TL;DR:** TypeScript question 97: How do you type function parameters, return values, optional/default parameters, and callbacks, and what are function overloads?
+> **TL;DR:** Function signatures specify parameter types, return types, optional/default args (`(x: number, y = 10) => number`), and callbacks. Function Overloads declare multiple public type signatures backed by a single flexible implementation signature.
 
 **💡 Core Concept & Explanation**
-TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+- **Function Overloads:** Useful when a function's return type varies depending on the input parameter types (e.g., passing a `string` returns a `string`, passing a `number` returns a `number`).
+- **Implementation Signature:** Must be broad enough to encompass all overload signatures, but is NOT directly visible to consumers.
 
 **🛠️ Code / Visual Diagram / Table**
 
-```javascript
-// TypeScript Implementation for Question 97
-type Result<T> = { data: T; error?: string };
-function process<T>(val: T): Result<T> {
-  return { data: val };
+```typescript
+// 1. Function Overload Signatures (Public API)
+function format(val: string): string;
+function format(val: number): string;
+function format(val: boolean): string;
+
+// 2. Single Implementation Signature (Internal)
+function format(val: string | number | boolean): string {
+  if (typeof val === "string") return val.trim();
+  if (typeof val === "number") return `$${val.toFixed(2)}`;
+  return val ? "TRUE" : "FALSE";
 }
+
+const res1 = format(" hello "); // res1 typed as string
+const res2 = format(49.99);     // res2 typed as string
+
+// Callback Function Signature
+type EventListenerCallback = (event: string, timestamp: number) => void;
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+- **Overload Implementation Visibility:** The implementation signature `function format(val: any)` is hidden from callers. Callers can ONLY invoke signatures explicitly listed in the top overload declarations.
 
 ---
 
 ### 98. 🔴 P0 [Q] What are generics, how do you write generic functions, interfaces, and types, and how do generic constraints (extends) work?
 
-> **TL;DR:** TypeScript question 98: What are generics, how do you write generic functions, interfaces, and types, and how do generic constraints (extends) work?
+> **TL;DR:** Generics enable creating reusable, type-safe code components using Type Variables (`<T>`). Generic Constraints (`<T extends Constraint>`) restrict the set of valid types allowed for a generic parameter.
 
 **💡 Core Concept & Explanation**
-TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+- **Type Variables (`<T>`):** Act as placeholders for types passed in by callers or inferred by the compiler.
+- **Constraints (`extends`):** Ensures a generic type parameter possesses specific properties (`<T extends { length: number }>`).
 
 **🛠️ Code / Visual Diagram / Table**
 
-```javascript
-// TypeScript Implementation for Question 98
-type Result<T> = { data: T; error?: string };
-function process<T>(val: T): Result<T> {
-  return { data: val };
+```typescript
+// 1. Generic Function
+function identity<T>(arg: T): T {
+  return arg;
 }
+
+// 2. Generic Interface
+interface ApiResponse<TData> {
+  status: number;
+  success: boolean;
+  data: TData;
+}
+
+interface User { name: string; }
+type UserResponse = ApiResponse<User>;
+
+// 3. Generic Constraints (extends)
+function logLength<T extends { length: number }>(arg: T): number {
+  console.log(arg.length);
+  return arg.length;
+}
+
+logLength("hello");       // ✅ String has .length property
+logLength([1, 2, 3]);     // ✅ Array has .length property
+// logLength(123);        // ❌ Compile Error: Argument of type 'number' is not assignable to parameter of type '{ length: number }'.
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+- **Over-Using Generics:** Do NOT add generic parameters if the type parameter appears only once in the signature without relating to return types or other arguments. Use simple types instead.
 
 ---
 
 ### 99. 🟠 P1 [Q] How do keyof and indexed access types (T[K]) work, and how do they combine with generics (e.g., a type-safe getProperty function)?
 
-> **TL;DR:** TypeScript question 99: How do keyof and indexed access types (T[K]) work, and how do they combine with generics (e.g., a type-safe getProperty function)?
+> **TL;DR:** `keyof T` produces a string/symbol union of an object type's keys. Indexed Access `T[K]` extracts the type of property `K` from type `T`. Combining them with generics `<T, K extends keyof T>(obj: T, key: K): T[K]` produces 100% type-safe object property accessors.
 
 **💡 Core Concept & Explanation**
-TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+- `keyof User`: If `User` is `{ id: number; name: string }`, `keyof User` is `"id" | "name"`.
+- `User["name"]`: Resolves to type `string`.
+- `getProperty(user, "name")`: Prevents accessing invalid keys and infers exact return type.
 
 **🛠️ Code / Visual Diagram / Table**
 
-```javascript
-// TypeScript Implementation for Question 99
-type Result<T> = { data: T; error?: string };
-function process<T>(val: T): Result<T> {
-  return { data: val };
+```typescript
+interface Car {
+  make: string;
+  model: string;
+  year: number;
 }
+
+// Type-Safe Property Accessor Function
+function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
+  return obj[key];
+}
+
+const myCar: Car = { make: "Toyota", model: "Corolla", year: 2022 };
+
+const carMake = getProperty(myCar, "make"); // Inferred as string
+const carYear = getProperty(myCar, "year"); // Inferred as number
+
+// getProperty(myCar, "color"); 
+// ❌ Compile Error: Argument of type '"color"' is not assignable to parameter of type '"make" | "model" | "year"'.
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+- Combining `keyof T` with dynamic lookup string indexes requires type assertions or mapped constraints when iterating object keys in loops (`(Object.keys(obj) as (keyof T)[]).forEach(...)`).
 
 ---
 
 ### 100. 🔴 P0 [Q] What do Partial, Required, Pick, Omit, and Record do, and when would you use each?
 
-> **TL;DR:** TypeScript question 100: What do Partial, Required, Pick, Omit, and Record do, and when would you use each?
+> **TL;DR:** Built-in Mapped Utility Types transform existing object types: `Partial<T>` makes all fields optional; `Required<T>` makes all fields required; `Pick<T, K>` selects subset keys; `Omit<T, K>` removes specified keys; `Record<K, T>` constructs an object type with key type `K` and value type `T`.
 
 **💡 Core Concept & Explanation**
-TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+Under the hood, utility types use Mapped Type syntax:
+- `Partial<T>` $
+ightarrow$ `{ [P in keyof T]?: T[P] }`
+- `Required<T>` $
+ightarrow$ `{ [P in keyof T]-?: T[P] }`
+- `Pick<T, K extends keyof T>` $
+ightarrow$ `{ [P in K]: T[P] }`
+- `Omit<T, K>` $
+ightarrow$ `Pick<T, Exclude<keyof T, K>>`
+- `Record<K extends keyof any, T>` $
+ightarrow$ `{ [P in K]: T }`
 
 **🛠️ Code / Visual Diagram / Table**
 
-```javascript
-// TypeScript Implementation for Question 100
-type Result<T> = { data: T; error?: string };
-function process<T>(val: T): Result<T> {
-  return { data: val };
+```typescript
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  age?: number;
 }
+
+// 1. Partial<T> -> Useful for UPDATE payloads
+type UserUpdatePayload = Partial<User>; // { id?: number; name?: string; email?: string; age?: number; }
+
+// 2. Required<T> -> Forces all optional fields
+type StrictUser = Required<User>; // { id: number; name: string; email: string; age: number; }
+
+// 3. Pick<T, K> -> Extracts specific fields
+type UserPreview = Pick<User, "id" | "name">; // { id: number; name: string; }
+
+// 4. Omit<T, K> -> Strips specific fields (e.g. create payload without id)
+type CreateUserDTO = Omit<User, "id">; // { name: string; email: string; age?: number; }
+
+// 5. Record<K, T> -> Key-Value Dictionary
+type RolePermissions = Record<"admin" | "user" | "guest", string[]>;
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+- `Omit` does not enforce that the key being omitted actually exists on `T` (`Omit<User, "invalidKey">` compiles silently). Prefer `Pick` when strict key checking is needed.
 
 ---
 
 ### 101. 🟠 P1 [Q] What do ReturnType and Parameters do, and when are they useful?
 
-> **TL;DR:** TypeScript question 101: What do ReturnType and Parameters do, and when are they useful?
+> **TL;DR:** `ReturnType<T>` extracts the return type of a function type `T`. `Parameters<T>` extracts a tuple type of a function type's parameter types. Both use Conditional Types and the `infer` keyword internally.
 
 **💡 Core Concept & Explanation**
-TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+- **Third-Party Types:** Essential when working with external libraries that export functions but forget to export internal response payload types.
+- **Internal Mechanisms:**
+  - `type ReturnType<T> = T extends (...args: any[]) => infer R ? R : any;`
+  - `type Parameters<T> = T extends (...args: infer P) => any ? P : never;`
 
 **🛠️ Code / Visual Diagram / Table**
 
-```javascript
-// TypeScript Implementation for Question 101
-type Result<T> = { data: T; error?: string };
-function process<T>(val: T): Result<T> {
-  return { data: val };
+```typescript
+// Third-party API function without exported payload types
+function fetchSDKConfig(endpoint: string, retries: number) {
+  return {
+    endpoint,
+    retries,
+    timeout: 5000,
+    headers: { Authorization: "Bearer token" }
+  };
 }
+
+// Extract Return Type dynamically!
+type SDKConfig = ReturnType<typeof fetchSDKConfig>;
+// Result: { endpoint: string; retries: number; timeout: number; headers: { Authorization: string }; }
+
+// Extract Parameters Tuple dynamically!
+type FetchParams = Parameters<typeof fetchSDKConfig>;
+// Result: [endpoint: string, retries: number]
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+- Passing a direct function instance `ReturnType<fetchSDKConfig>` throws a compile error. You MUST pass the function's type signature using the `typeof` operator: `ReturnType<typeof fetchSDKConfig>`.
 
 ---
 
 ### 102. 🟠 P1 [Q] What is the difference between an enum and a union of string literals, and what does as const do?
 
-> **TL;DR:** TypeScript question 102: What is the difference between an enum and a union of string literals, and what does as const do?
+> **TL;DR:** Enums emit runtime JavaScript objects with IIFEs. String literal unions (`'admin' | 'user'`) are zero-cost compile-time types. `as const` creates deeply `readonly` literal type assertions on objects and arrays without runtime code generation.
 
 **💡 Core Concept & Explanation**
-TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+- **Enum Drawbacks:** Enums break TypeScript's rule of emitting zero runtime JS code. Numeric enums allow unsafe reverse mapping and invalid assignment numbers (`enum Status { Active }; let s: Status = 999;` compiles!).
+- **`as const` Assertions:** Converts mutable types into deeply `readonly` literal types.
 
 **🛠️ Code / Visual Diagram / Table**
 
-```javascript
-// TypeScript Implementation for Question 102
-type Result<T> = { data: T; error?: string };
-function process<T>(val: T): Result<T> {
-  return { data: val };
+```typescript
+// 1. String Union (Preferred - Zero Runtime Overhead)
+type UserRole = "admin" | "editor" | "viewer";
+
+// 2. as const Object Pattern (Best Practice)
+const ROLES = {
+  ADMIN: "admin",
+  EDITOR: "editor",
+  VIEWER: "viewer"
+} as const;
+
+type Role = typeof ROLES[keyof typeof ROLES]; // "admin" | "editor" | "viewer"
+
+// 3. Enum (Emits IIFE Object Code into JS output)
+enum EnumRole {
+  Admin = "ADMIN",
+  Editor = "EDITOR"
 }
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+- Prefer `const` object maps with `as const` or string unions over Enums in modern TypeScript codebases to keep emitted JS bundles minimal and prevent enum scoping gotchas.
 
 ---
 
 ### 103. 🟠 P1 [Q] How do you type an async function that fetches API data, and why should you still validate the response at runtime?
 
-> **TL;DR:** TypeScript question 103: How do you type an async function that fetches API data, and why should you still validate the response at runtime?
+> **TL;DR:** Typing `fetch` responses using generics (`fetch<User>()` or `as User`) only asserts types at compile-time. Because network payloads can change, fail, or return unexpected data, runtime schema validation using libraries like `Zod` or custom Type Predicates is mandatory for production safety.
 
 **💡 Core Concept & Explanation**
-TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+- **The API Trust Fallacy:** TypeScript cannot verify network data coming across the HTTP boundary. Type assertions (`const data = await res.json() as UserData`) lie to the compiler, hiding potential runtime `TypeError: Cannot read property of undefined` crashes.
 
 **🛠️ Code / Visual Diagram / Table**
 
-```javascript
-// TypeScript Implementation for Question 103
-type Result<T> = { data: T; error?: string };
-function process<T>(val: T): Result<T> {
-  return { data: val };
+```typescript
+import { z } from "zod"; // Schema validation library
+
+// 1. Define Zod Runtime Validation Schema
+const UserSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  email: z.string().email()
+});
+
+// Infer TypeScript type automatically from Schema!
+type User = z.infer<typeof UserSchema>;
+
+async function fetchUserSafe(userId: number): Promise<User> {
+  const response = await fetch(`/api/users/${userId}`);
+  const rawData = await response.json();
+
+  // 2. Validate at RUNTIME! Throws detailed error if schema mismatches payload.
+  const validatedUser = UserSchema.parse(rawData);
+  return validatedUser;
 }
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+- Writing `const res: User = await fetch(url).then(r => r.json())` does NOT perform runtime checking. If the server returns `{ error: "500 Internal Error" }`, TS still treats `res` as a valid `User` object, crashing downstream code!
 
 ---
 
 ### 104. 🟠 P1 [Q] What are type assertions (as), what are their risks, and how do you safely handle unknown errors in catch blocks?
 
-> **TL;DR:** TypeScript question 104: What are type assertions (as), what are their risks, and how do you safely handle unknown errors in catch blocks?
+> **TL;DR:** Type assertions (`val as TargetType`) override TypeScript's inferred type without performing runtime data conversion. In `catch (err: unknown)` blocks, `err` defaults to `unknown` in modern TS (`useUnknownInCatchVariables`), requiring `instanceof Error` checks for safe error handling.
 
 **💡 Core Concept & Explanation**
-TypeScript provides static type-checking at compile-time to detect errors early. All types are erased during compilation, leaving plain JavaScript at runtime.
+- **Type Assertion Risks:** `const num = "123" as unknown as number;` tricks the compiler, but `num.toFixed(2)` crashes at runtime (`TypeError: num.toFixed is not a function`).
+- **Safe `catch` Error Handling:** In TypeScript 4+, catch block variables default to `unknown` instead of `any`.
 
 **🛠️ Code / Visual Diagram / Table**
 
-```javascript
-// TypeScript Implementation for Question 104
-type Result<T> = { data: T; error?: string };
-function process<T>(val: T): Result<T> {
-  return { data: val };
+```typescript
+// 1. Type Assertion (Use sparingly when caller knows shape better than TS)
+const canvas = document.getElementById("main-canvas") as HTMLCanvasElement;
+
+// 2. Safe Error Handling in Catch Blocks
+async function executeTask() {
+  try {
+    await performRiskyOperation();
+  } catch (err: unknown) { // In strict TS, err is unknown
+    // err.message; // ❌ Compile Error: Object is of type 'unknown'.
+
+    if (err instanceof Error) {
+      console.error("Task failed cleanly:", err.message, err.stack);
+    } else if (typeof err === "string") {
+      console.error("String error thrown:", err);
+    } else {
+      console.error("Unknown error payload:", err);
+    }
+  }
 }
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- Confusing compile-time TypeScript type checking with runtime JavaScript execution.
+- **Non-Null Assertion Operator (`!`):** Writing `user!.name` tells TS "trust me, user is not null". If `user` is actually `null` at runtime, it causes a `TypeError`. Prefer optional chaining `user?.name` instead.
 
 ---
