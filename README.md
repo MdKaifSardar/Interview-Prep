@@ -13,6 +13,7 @@ Curated, high-yield interview preparation modules for Software Engineering, Full
 | **🍃 MongoDB** | [Questions](file:///e:/CSE/interview%20prep/mongodb/mongodb-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/mongodb/mongodb-interview-answers.md) | ✅ Complete (100 Qs) |
 | **🗄️ Relational DBMS & SQL** | [Questions](file:///e:/CSE/interview%20prep/dbms/dbms-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/dbms/dbms-interview-answers.md) | ✅ Complete (70 Qs) |
 | **⚛️ React & Next.js (Full-Stack)** | [Questions](file:///e:/CSE/interview%20prep/react/react-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/react/react-interview-answers.md) | ✅ Complete (75 Qs) |
+| **⚡ Data Structures & Algorithms** | [Questions](file:///e:/CSE/interview%20prep/dsa/dsa-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/dsa/dsa-interview-answers.md) | ✅ Complete (91 Core + 21 Bonus Qs) |
 
 ---
 
@@ -21,6 +22,10 @@ Curated, high-yield interview preparation modules for Software Engineering, Full
 ```
 Interview-Prep/
 ├── README.md                              <-- Root sitemap & overview
+├── dsa/                                   <-- Data Structures & Algorithms Module
+│   ├── dsa-interview-questions.md         <-- 112-Question Master List (91 Core + 21 Bonus)
+│   ├── dsa-interview-answers.md           <-- Comprehensive 5-Part Answer Key
+│   └── revision_roadmap.txt               <-- Curated High-Yield Revision Roadmap
 ├── javascript/                            <-- JavaScript Language Module
 │   ├── javascript-interview-questions.md  <-- 180-Question Master List
 │   └── javascript-interview-answers.md    <-- Comprehensive 4-Part Answer Key

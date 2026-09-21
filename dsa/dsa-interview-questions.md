@@ -1,6 +1,6 @@
-# Data Structures & Algorithms Master Question Bank (91 Core Blueprints)
+# Data Structures & Algorithms Master Question Bank (91 Core + 21 Bonus Blueprints)
 
-Master repository of 91 high-yield, curated interview questions. Designed for rapid pattern recognition and deep algorithmic preparation.
+Master repository of 112 high-yield, curated interview questions (91 Core Blueprints + 21 Advanced Bonus Blueprints). Designed for rapid pattern recognition and deep algorithmic preparation.
 
 ---
 
@@ -197,6 +197,41 @@ A permutation of an array of integers is an arrangement of its members into a se
 ---
 
 
+### [BONUS 1] 🟢 P2 [BONUS] LC 289: Game of Life [MEDIUM]
+- **LeetCode Link:** [LC 289: Game of Life](https://leetcode.com/problems/game-of-life/)
+- **Category / Sub-Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
+
+**📜 Problem Statement & Explanation**
+According to Conway's Game of Life, the board is made up of an `m x n` grid of cells, where each cell has an initial state: live (`1`) or dead (`0`). Each cell interacts with its eight neighbors (horizontal, vertical, diagonal) using the following four rules:
+1. Any live cell with fewer than two live neighbors dies (under-population).
+2. Any live cell with two or three live neighbors lives on to the next generation.
+3. Any live cell with more than three live neighbors dies (over-population).
+4. Any dead cell with exactly three live neighbors becomes a live cell (reproduction).
+
+The next state is created by applying the above rules simultaneously to every cell in the current state of the grid. Given the current state of the `m x n` grid `board`, update the board to its next state **in-place**.
+
+**Example 1:**
+- **Input:** `board = [[0,1,0],[0,0,1],[1,1,1],[0,0,0]]`
+- **Output:** `[[0,0,0],[1,0,1],[0,1,1],[0,1,0]]`
+
+**Example 2:**
+- **Input:** `board = [[1,1],[1,0]]`
+- **Output:** `[[1,1],[1,1]]`
+
+**Constraints:**
+- `m == board.length`
+- `n == board[i].length`
+- `1 <= m, n <= 25`
+- `board[i][j]` is either `0` or `1`.
+
+---
+**💡 Key Concepts & Core Blueprint:**
+- **Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
+- **Key Takeaway:** 2-bit intermediate encoding: 0->0: 0, 1->1: 1, 1->0: 2, 0->1: 3. Modulo 2 at the end.
+
+---
+
+
 ## 2. COMPLETE SORTING ALGORITHMS SUITE
 
 ### 8. 🟠 P1 [Q] ALG 1: Selection Sort Algorithm Blueprint [EASY]
@@ -353,6 +388,33 @@ Given a list of non-negative integers `nums`, arrange them such that they form t
 ---
 
 
+### [BONUS 2] 🟢 P2 [BONUS] LC 148: Sort List [MEDIUM]
+- **LeetCode Link:** [LC 148: Sort List](https://leetcode.com/problems/sort-list/)
+- **Category / Sub-Pattern:** Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts)
+
+**📜 Problem Statement & Explanation**
+Given the `head` of a linked list, return the list after sorting it in ascending order. You must achieve $O(N \log N)$ time complexity and $O(\log N)$ or $O(1)$ space complexity.
+
+**Example 1:**
+- **Input:** `head = [4,2,1,3]`
+- **Output:** `[1,2,3,4]`
+
+**Example 2:**
+- **Input:** `head = [-1,5,3,4,0]`
+- **Output:** `[-1,0,3,4,5]`
+
+**Constraints:**
+- The number of nodes in the list is in the range $[0, 5 \times 10^4]$.
+- $-10^5 \le \text{Node.val} \le 10^5$.
+
+---
+**💡 Key Concepts & Core Blueprint:**
+- **Pattern:** Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts)
+- **Key Takeaway:** Fast/slow pointer with prev unlinking to bisect list -> Recursive Merge Sort -> Dummy head merge.
+
+---
+
+
 ## 3. HASHING / FREQUENCY COUNTING
 
 ### 15. 🟠 P1 [Q] LC 217: Contains Duplicate [EASY]
@@ -477,6 +539,38 @@ Given an array of integers `A` and an integer `B`, find the total number of suba
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 3.3 (Prefix XOR & Bitwise Hashing)
 - **Key Takeaway:** Prefix XOR property: `xr[i..j] = xr[0..j] ^ xr[0..i-1]`. Look up `xr ^ B` in map.
+
+---
+
+
+### [BONUS 3] 🟢 P2 [BONUS] LC 380: Insert Delete GetRandom O(1) [MEDIUM]
+- **LeetCode Link:** [LC 380: Insert Delete GetRandom O(1)](https://leetcode.com/problems/insert-delete-getrandom-o1/)
+- **Category / Sub-Pattern:** Sub-Pattern 3.1 (Hash Map State Design)
+
+**📜 Problem Statement & Explanation**
+Implement the `RandomizedSet` class:
+- `RandomizedSet()` Initializes the `RandomizedSet` object.
+- `bool insert(int val)` Inserts an item `val` into the set if not present. Returns `true` if the item was not present, `false` otherwise.
+- `bool remove(int val)` Removes an item `val` from the set if present. Returns `true` if the item was present, `false` otherwise.
+- `int getRandom()` Returns a random element from the current set of elements (it's guaranteed that at least one element exists when this method is called). Each element must have the same probability of being returned.
+
+You must implement the functions of the class such that each function works in **average $O(1)$** time complexity.
+
+**Example 1:**
+- **Input:**
+  `["RandomizedSet", "insert", "remove", "insert", "getRandom", "remove", "insert", "getRandom"]`
+  `[[], [1], [2], [2], [], [1], [2], []]`
+- **Output:** `[null, true, false, true, 2, true, false, 2]`
+
+**Constraints:**
+- $-2^{31} \le val \le 2^{31} - 1$
+- At most $2 \times 10^5$ calls will be made to `insert`, `remove`, and `getRandom`.
+- There will be at least one element in the data structure when `getRandom` is called.
+
+---
+**💡 Key Concepts & Core Blueprint:**
+- **Pattern:** Sub-Pattern 3.1 (Hash Map State Design)
+- **Key Takeaway:** Vector for random index + Hash map for value-to-index. Swap with last element on remove.
 
 ---
 
@@ -606,6 +700,39 @@ Given an integer array `nums` and an integer `k`, return `true` if `nums` has a 
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 4.4 (Prefix Sum with Modulo Arithmetic)
 - **Key Takeaway:** Store EARLIEST index of remainder `running_sum % k` to satisfy length >= 2 constraint.
+
+---
+
+
+### [BONUS 4] 🟢 P2 [BONUS] LC 304: Range Sum Query 2D - Immutable [MEDIUM]
+- **LeetCode Link:** [LC 304: Range Sum Query 2D - Immutable](https://leetcode.com/problems/range-sum-query-2d-immutable/)
+- **Category / Sub-Pattern:** Sub-Pattern 4.1 (2D Prefix Sums)
+
+**📜 Problem Statement & Explanation**
+Given a 2D matrix `matrix`, handle multiple queries of the following type:
+- Calculate the sum of the elements of `matrix` inside the rectangle defined by its upper left corner `(row1, col1)` and lower right corner `(row2, col2)`.
+
+Implement the `NumMatrix` class:
+- `NumMatrix(int[][] matrix)` Initializes the object with the integer matrix `matrix`.
+- `int sumRegion(int row1, int col1, int row2, int col2)` Returns the sum of the elements inside the rectangle in $O(1)$ time.
+
+**Example 1:**
+- **Input:**
+  `["NumMatrix","sumRegion","sumRegion","sumRegion"]`
+  `[[[[3,0,1,4,2],[5,6,3,2,1],[1,2,0,1,5],[4,1,0,1,7],[1,0,3,0,5]]],[2,1,4,3],[1,1,2,2],[1,2,2,4]]`
+- **Output:** `[null, 8, 11, 12]`
+
+**Constraints:**
+- `m == matrix.length`, `n == matrix[i].length`
+- `1 <= m, n <= 200`
+- $-10^4 \le matrix[i][j] \le 10^4$
+- `0 <= row1 <= row2 < m`, `0 <= col1 <= col2 < n`
+- At most $10^4$ calls will be made to `sumRegion`.
+
+---
+**💡 Key Concepts & Core Blueprint:**
+- **Pattern:** Sub-Pattern 4.1 (2D Prefix Sums)
+- **Key Takeaway:** Inclusion-Exclusion Principle: Precompute sum from (0,0) to (r,c). Query = BottomRight - Top - Left + TopLeft.
 
 ---
 
@@ -749,6 +876,38 @@ You are given two integer arrays `nums1` and `nums2`, sorted in non-decreasing o
 ---
 
 
+### [BONUS 5] 🟢 P2 [BONUS] LC 18: 4Sum [MEDIUM]
+- **LeetCode Link:** [LC 18: 4Sum](https://leetcode.com/problems/4sum/)
+- **Category / Sub-Pattern:** Sub-Pattern 5.1 (Multi-Pointer Sorting & Convergence)
+
+**📜 Problem Statement & Explanation**
+Given an array `nums` of $n$ integers, return an array of all the unique quadruplets `[nums[a], nums[b], nums[c], nums[d]]` such that:
+- $0 \le a, b, c, d < n$
+- $a, b, c,$ and $d$ are distinct.
+- `nums[a] + nums[b] + nums[c] + nums[d] == target`
+You may return the answer in any order. The solution set must not contain duplicate quadruplets.
+
+**Example 1:**
+- **Input:** `nums = [1,0,-1,0,-2,2], target = 0`
+- **Output:** `[[-2,-1,1,2],[-2,0,0,2],[-1,0,0,1]]`
+
+**Example 2:**
+- **Input:** `nums = [2,2,2,2,2], target = 8`
+- **Output:** `[[2,2,2,2]]`
+
+**Constraints:**
+- $1 \le nums.length \le 200$
+- $-10^9 \le nums[i] \le 10^9$
+- $-10^9 \le target \le 10^9$
+
+---
+**💡 Key Concepts & Core Blueprint:**
+- **Pattern:** Sub-Pattern 5.1 (Multi-Pointer Sorting & Convergence)
+- **Key Takeaway:** Sort -> Two outer loops + Two-pointer convergence inner loop. Skip duplicates at all 4 levels + use long long for sum.
+
+---
+
+
 ## 6. SLIDING WINDOW
 
 ### 31. 🔴 P0 [Q] LC 3: Longest Substring Without Repeating Characters [MEDIUM]
@@ -887,6 +1046,34 @@ You are given a string `s` and an integer `k`. You can choose any character of t
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 6.3 (Variable Window with K Operations / Replacement)
 - **Key Takeaway:** Window is valid if `(window_len - max_freq) <= k`.
+
+---
+
+
+### [BONUS 6] 🟢 P2 [BONUS] LC 992: Subarrays with K Different Integers [HARD]
+- **LeetCode Link:** [LC 992: Subarrays with K Different Integers](https://leetcode.com/problems/subarrays-with-k-different-integers/)
+- **Category / Sub-Pattern:** Sub-Pattern 6.2 (Variable-Size / Reduction Windows)
+
+**📜 Problem Statement & Explanation**
+Given an integer array `nums` and an integer `k`, return the number of good subarrays of `nums`. A good array is an array where the number of different integers in that array is exactly `k`.
+
+**Example 1:**
+- **Input:** `nums = [1,2,1,2,3], k = 2`
+- **Output:** `7`
+- **Explanation:** Subarrays formed with exactly 2 different integers: `[1,2]`, `[2,1]`, `[1,2]`, `[2,3]`, `[1,2,1]`, `[2,1,2]`, `[1,2,1,2]`.
+
+**Example 2:**
+- **Input:** `nums = [1,2,1,3,4], k = 3`
+- **Output:** `3`
+
+**Constraints:**
+- $1 \le nums.length \le 2 \times 10^4$
+- $1 \le nums[i], k \le nums.length$
+
+---
+**💡 Key Concepts & Core Blueprint:**
+- **Pattern:** Sub-Pattern 6.2 (Variable-Size / Reduction Windows)
+- **Key Takeaway:** exact(k) = atMost(k) - atMost(k - 1). Window of size (r - l + 1) contributes all subarrays ending at r.
 
 ---
 
@@ -1051,6 +1238,37 @@ A peak element is an element that is strictly greater than its neighbors. Given 
 ---
 
 
+### [BONUS 7] 🟢 P2 [BONUS] LC 4: Median of Two Sorted Arrays [HARD]
+- **LeetCode Link:** [LC 4: Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/)
+- **Category / Sub-Pattern:** Sub-Pattern 7.2 (Binary Search on Answer Space / Partitions)
+
+**📜 Problem Statement & Explanation**
+Given two sorted arrays `nums1` and `nums2` of size `m` and `n` respectively, return the median of the two sorted arrays. The overall run time complexity should be $O(\log (m+n))$.
+
+**Example 1:**
+- **Input:** `nums1 = [1,3], nums2 = [2]`
+- **Output:** `2.00000`
+- **Explanation:** merged array = `[1,2,3]` and median is `2`.
+
+**Example 2:**
+- **Input:** `nums1 = [1,2], nums2 = [3,4]`
+- **Output:** `2.50000`
+- **Explanation:** merged array = `[1,2,3,4]` and median is `(2 + 3) / 2 = 2.5`.
+
+**Constraints:**
+- `nums1.length == m`, `nums2.length == n`
+- $0 \le m \le 1000$, $0 \le n \le 1000$
+- $1 \le m + n \le 2000$
+- $-10^6 \le nums1[i], nums2[i] \le 10^6$
+
+---
+**💡 Key Concepts & Core Blueprint:**
+- **Pattern:** Sub-Pattern 7.2 (Binary Search on Answer Space / Partitions)
+- **Key Takeaway:** Binary search partition on smaller array. LeftMaxA <= RightMinB and LeftMaxB <= RightMinA.
+
+---
+
+
 ## 8. OVERLAPPING INTERVALS
 
 ### 44. 🔴 P0 [Q] LC 56: Merge Intervals [MEDIUM]
@@ -1175,6 +1393,36 @@ Given an array of meeting time intervals `intervals` where `intervals[i] = [star
 
 ---
 
+### [BONUS 8] 🟢 P2 [BONUS] LC 986: Interval List Intersections [MEDIUM]
+- **LeetCode Link:** [LC 986: Interval List Intersections](https://leetcode.com/problems/interval-list-intersections/)
+- **Category / Sub-Pattern:** Sub-Pattern 8.1 (Interval Sweeps & Intersections)
+
+**📜 Problem Statement & Explanation**
+You are given two lists of closed intervals, `firstList` and `secondList`, where `firstList[i] = [start_i, end_i]` and `secondList[j] = [start_j, end_j]`. Each list of intervals is pairwise disjoint and in sorted order.
+Return the intersection of these two interval lists.
+
+**Example 1:**
+- **Input:** `firstList = [[0,2],[5,10],[13,23],[24,25]], secondList = [[1,5],[8,12],[15,24],[25,26]]`
+- **Output:** `[[1,2],[5,5],[8,10],[15,23],[24,24],[25,25]]`
+
+**Example 2:**
+- **Input:** `firstList = [[1,3],[5,9]], secondList = []`
+- **Output:** `[]`
+
+**Constraints:**
+- $0 \le firstList.length, secondList.length \le 1000$
+- `firstList[i].length == 2`, `secondList[j].length == 2`
+- $0 \le start_i < end_i \le 10^9$
+- $0 \le start_j < end_j \le 10^9$
+
+---
+**💡 Key Concepts & Core Blueprint:**
+- **Pattern:** Sub-Pattern 8.1 (Interval Sweeps & Intersections)
+- **Key Takeaway:** Overlap start = max(A.start, B.start), Overlap end = min(A.end, B.end). Advance the one that ends first.
+
+---
+
+
 ## 9. FAST & SLOW POINTERS (LINKED LIST)
 
 ### 48. 🔴 P0 [Q] LC 141: Linked List Cycle [EASY]
@@ -1249,6 +1497,36 @@ You are given the head of a singly linked list `L0 -> L1 -> ... -> Ln-1 -> Ln`. 
 ---
 
 
+### [BONUS 9] 🟢 P2 [BONUS] LC 287: Find the Duplicate Number [MEDIUM]
+- **LeetCode Link:** [LC 287: Find the Duplicate Number](https://leetcode.com/problems/find-the-duplicate-number/)
+- **Category / Sub-Pattern:** Sub-Pattern 9.1 (Cycle Detection on Functional Graphs)
+
+**📜 Problem Statement & Explanation**
+Given an array of integers `nums` containing `n + 1` integers where each integer is in the range `[1, n]` inclusive. There is only one repeated number in `nums`, return this repeated number.
+You must solve the problem **without modifying** the array `nums` and using only **$O(1)$ constant extra space**.
+
+**Example 1:**
+- **Input:** `nums = [1,3,4,2,2]`
+- **Output:** `2`
+
+**Example 2:**
+- **Input:** `nums = [3,1,3,4,2]`
+- **Output:** `3`
+
+**Constraints:**
+- $1 \le n \le 10^5$
+- `nums.length == n + 1`
+- $1 \le nums[i] \le n$
+- All integers in `nums` appear only once except for precisely one integer which appears two or more times.
+
+---
+**💡 Key Concepts & Core Blueprint:**
+- **Pattern:** Sub-Pattern 9.1 (Cycle Detection on Functional Graphs)
+- **Key Takeaway:** Floyd's Tortoise & Hare on Array: index -> nums[index]. Intersection -> Reset slow to 0 -> Meet at cycle start.
+
+---
+
+
 ## 10. MONOTONIC STACK
 
 ### 51. 🔴 P0 [Q] LC 20: Valid Parentheses [EASY]
@@ -1319,6 +1597,36 @@ Given an array of integers `heights` representing the histogram's bar height whe
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 10.1 (Basic Stack Matching)
 - **Key Takeaway:** Stack top is popped when a smaller element is encountered; popped bar's width is bounded by new top and current index.
+
+---
+
+
+### [BONUS 10] 🟢 P2 [BONUS] LC 85: Maximal Rectangle [HARD]
+- **LeetCode Link:** [LC 85: Maximal Rectangle](https://leetcode.com/problems/maximal-rectangle/)
+- **Category / Sub-Pattern:** Sub-Pattern 10.1 (Histogram Expansion via Monotonic Stack)
+
+**📜 Problem Statement & Explanation**
+Given a `rows x cols` binary `matrix` filled with `'0'`s and `'1'`s, find the largest rectangle containing only `'1'`s and return its area.
+
+**Example 1:**
+- **Input:** `matrix = [["1","0","1","0","0"],["1","0","1","1","1"],["1","1","1","1","1"],["1","0","0","1","0"]]`
+- **Output:** `6`
+- **Explanation:** The maximal rectangle is shown in the middle with 6 ones.
+
+**Example 2:**
+- **Input:** `matrix = [["0"]]`
+- **Output:** `0`
+
+**Constraints:**
+- `rows == matrix.length`
+- `cols == matrix[i].length`
+- $1 \le rows, cols \le 200$
+- `matrix[i][j]` is `'0'` or `'1'`.
+
+---
+**💡 Key Concepts & Core Blueprint:**
+- **Pattern:** Sub-Pattern 10.1 (Histogram Expansion via Monotonic Stack)
+- **Key Takeaway:** Row-by-row cumulative histogram: If '1' h++, else h=0. Run LC 84 Largest Rectangle in Histogram on each row.
 
 ---
 
@@ -1409,6 +1717,36 @@ You are given an array of `k` linked-lists `lists`, each linked-list is sorted i
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 11.3 (K-Way Merge)
 - **Key Takeaway:** Min-Heap maintains smallest head pointer among K active lists in $O(log K)$ step time.
+
+---
+
+
+### [BONUS 11] 🟢 P2 [BONUS] LC 621: Task Scheduler [MEDIUM]
+- **LeetCode Link:** [LC 621: Task Scheduler](https://leetcode.com/problems/task-scheduler/)
+- **Category / Sub-Pattern:** Sub-Pattern 11.1 (Priority Queue Simulation & Greedy Math)
+
+**📜 Problem Statement & Explanation**
+You are given an array of CPU `tasks`, each represented by letters A to Z, and a cooldown period `n`. Each cycle or interval allows the completion of one task. Tasks can be completed in any order, but there's a constraint: identical tasks must be separated by at least `n` intervals with other tasks or idling.
+Return the minimum number of intervals the CPU will take to finish all the given tasks.
+
+**Example 1:**
+- **Input:** `tasks = ["A","A","A","B","B","B"], n = 2`
+- **Output:** `8`
+- **Explanation:** `A -> B -> idle -> A -> B -> idle -> A -> B`. Total = 8 intervals.
+
+**Example 2:**
+- **Input:** `tasks = ["A","C","A","B","D","B"], n = 1`
+- **Output:** `6`
+
+**Constraints:**
+- $1 \le tasks.length \le 10^4$
+- `tasks[i]` is an uppercase English letter.
+- $0 \le n \le 100$
+
+---
+**💡 Key Concepts & Core Blueprint:**
+- **Pattern:** Sub-Pattern 11.1 (Priority Queue Simulation & Greedy Math)
+- **Key Takeaway:** Max frequency determines frame: (maxFreq - 1) * (n + 1) + countOfMaxFreq. Result = max(tasks.size(), frameSize).
 
 ---
 
@@ -1507,6 +1845,34 @@ A path in a binary tree is a sequence of nodes where each pair of adjacent nodes
 ---
 
 
+### [BONUS 12] 🟢 P2 [BONUS] LC 297: Serialize and Deserialize Binary Tree [HARD]
+- **LeetCode Link:** [LC 297: Serialize and Deserialize Binary Tree](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/)
+- **Category / Sub-Pattern:** Sub-Pattern 12.1 (Tree Preorder Traversal & String Stream State)
+
+**📜 Problem Statement & Explanation**
+Serialization is the process of converting a data structure or object into a sequence of bits so that it can be stored in a file or memory buffer, or transmitted across a network.
+Design an algorithm to serialize and deserialize a binary tree. There is no restriction on how your serialization/deserialization algorithm should work.
+
+**Example 1:**
+- **Input:** `root = [1,2,3,null,null,4,5]`
+- **Output:** `[1,2,3,null,null,4,5]`
+
+**Example 2:**
+- **Input:** `root = []`
+- **Output:** `[]`
+
+**Constraints:**
+- The number of nodes in the tree is in the range $[0, 10^4]$.
+- $-1000 \le Node.val \le 1000$.
+
+---
+**💡 Key Concepts & Core Blueprint:**
+- **Pattern:** Sub-Pattern 12.1 (Tree Preorder Traversal & String Stream State)
+- **Key Takeaway:** Preorder DFS with '#' for null and comma delimiter. Stringstream in deserialize recursively builds root->left->right.
+
+---
+
+
 ## 13. TREE BFS / LEVEL ORDER TRAVERSAL
 
 ### 62. 🔴 P0 [Q] LC 102: Binary Tree Level Order Traversal [MEDIUM]
@@ -1572,6 +1938,34 @@ Given the `root` of a binary tree, return the zigzag level order traversal of it
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 13.1 (Standard BFS Level Order)
 - **Key Takeaway:** Pre-allocate level vector and place values at `i` or `sz - 1 - i` based on direction flag.
+
+---
+
+
+### [BONUS 13] 🟢 P2 [BONUS] LC 314: Binary Tree Vertical Order Traversal [MEDIUM]
+- **LeetCode Link:** [LC 314: Binary Tree Vertical Order Traversal](https://leetcode.com/problems/binary-tree-vertical-order-traversal/)
+- **Category / Sub-Pattern:** Sub-Pattern 13.1 (Coordinate-Based BFS Traversal)
+
+**📜 Problem Statement & Explanation**
+Given the `root` of a binary tree, return the vertical order traversal of its nodes' values (i.e., from top to bottom, column by column).
+If two nodes are in the same row and column, the order should be from **left to right**.
+
+**Example 1:**
+- **Input:** `root = [3,9,20,null,null,15,7]`
+- **Output:** `[[9],[3,15],[20],[7]]`
+
+**Example 2:**
+- **Input:** `root = [3,9,8,4,0,1,7]`
+- **Output:** `[[4],[9],[3,0,1],[8],[7]]`
+
+**Constraints:**
+- The number of nodes in the tree is in the range $[0, 100]$.
+- $-100 \le Node.val \le 100$.
+
+---
+**💡 Key Concepts & Core Blueprint:**
+- **Pattern:** Sub-Pattern 13.1 (Coordinate-Based BFS Traversal)
+- **Key Takeaway:** BFS with pair<Node*, col>. col-1 for left, col+1 for right. Hash map collects values, BFS preserves top-to-bottom automatically.
 
 ---
 
@@ -1645,6 +2039,34 @@ Given a root node reference of a BST and a key, delete the node with the given k
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 14.2 (BST Search & Mutation)
 - **Key Takeaway:** Node with 2 children is replaced by its Inorder Successor.
+
+---
+
+
+### [BONUS 14] 🟢 P2 [BONUS] LC 99: Recover Binary Search Tree [MEDIUM]
+- **LeetCode Link:** [LC 99: Recover Binary Search Tree](https://leetcode.com/problems/recover-binary-search-tree/)
+- **Category / Sub-Pattern:** Sub-Pattern 14.1 (Inorder Inversion Detection)
+
+**📜 Problem Statement & Explanation**
+You are given the `root` of a binary search tree (BST), where the values of **exactly two nodes** of the tree were swapped by mistake. Recover the tree without changing its structure.
+
+**Example 1:**
+- **Input:** `root = [1,3,null,null,2]`
+- **Output:** `[3,1,null,null,2]`
+- **Explanation:** 3 cannot be a left child of 1 because $3 > 1$. Swapping 1 and 3 recovers the BST.
+
+**Example 2:**
+- **Input:** `root = [3,1,4,null,null,2]`
+- **Output:** `[2,1,4,null,null,1]`
+
+**Constraints:**
+- The number of nodes in the tree is in the range $[2, 1000]$.
+- $-2^{31} \le Node.val \le 2^{31} - 1$.
+
+---
+**💡 Key Concepts & Core Blueprint:**
+- **Pattern:** Sub-Pattern 14.1 (Inorder Inversion Detection)
+- **Key Takeaway:** Inorder traversal must be sorted. First violation: first = prev. Second violation: second = curr. Swap(first->val, second->val).
 
 ---
 
@@ -1736,6 +2158,36 @@ The n-queens puzzle is the problem of placing `n` queens on an `n x n` chessboar
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 15.3 (Grid & Constraint Backtracking)
 - **Key Takeaway:** Use `r - c` for main diagonals and `r + c` for anti-diagonals for $O(1)$ conflict checking.
+
+---
+
+
+### [BONUS 15] 🟢 P2 [BONUS] LC 79: Word Search [MEDIUM]
+- **LeetCode Link:** [LC 79: Word Search](https://leetcode.com/problems/word-search/)
+- **Category / Sub-Pattern:** Sub-Pattern 15.1 (Grid DFS Backtracking)
+
+**📜 Problem Statement & Explanation**
+Given an `m x n` grid of characters `board` and a string `word`, return `true` if `word` exists in the grid.
+The word can be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell may not be used more than once.
+
+**Example 1:**
+- **Input:** `board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCCED"`
+- **Output:** `true`
+
+**Example 2:**
+- **Input:** `board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "SEE"`
+- **Output:** `true`
+
+**Constraints:**
+- `m == board.length`, `n = board[i].length`
+- $1 \le m, n \le 6$
+- $1 \le word.length \le 15$
+- `board` and `word` consist of only lowercase and uppercase English letters.
+
+---
+**💡 Key Concepts & Core Blueprint:**
+- **Pattern:** Sub-Pattern 15.1 (Grid DFS Backtracking)
+- **Key Takeaway:** Mask cell board[r][c] = '#' -> explore 4 directions -> unmask board[r][c] = temp (backtrack).
 
 ---
 
@@ -1853,6 +2305,42 @@ Given two words `beginWord` and `endWord`, and a dictionary `wordList`, return t
 ---
 
 
+### [BONUS 16] 🟢 P2 [BONUS] LC 743: Network Delay Time [MEDIUM]
+- **LeetCode Link:** [LC 743: Network Delay Time](https://leetcode.com/problems/network-delay-time/)
+- **Category / Sub-Pattern:** Sub-Pattern 16.2 (Weighted Shortest Path / Dijkstra's Algorithm)
+
+**📜 Problem Statement & Explanation**
+You are given a network of `n` nodes, labeled from `1` to `n`. You are also given `times`, a list of travel times as directed edges `times[i] = (u_i, v_i, w_i)`, where $u_i$ is the source node, $v_i$ is the target node, and $w_i$ is the time it takes for a signal to travel from source to target.
+We will send a signal from a given node `k`. Return the minimum time it takes for all the `n` nodes to receive the signal. If it is impossible for all the `n` nodes to receive the signal, return `-1`.
+
+**Example 1:**
+- **Input:** `times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2`
+- **Output:** `2`
+
+**Example 2:**
+- **Input:** `times = [[1,2,1]], n = 2, k = 1`
+- **Output:** `1`
+
+**Example 3:**
+- **Input:** `times = [[1,2,1]], n = 2, k = 2`
+- **Output:** `-1`
+
+**Constraints:**
+- $1 \le k \le n \le 100$
+- $1 \le times.length \le 6000$
+- $times[i].length == 3$
+- $1 \le u_i, v_i \le n$, $u_i \ne v_i$
+- $0 \le w_i \le 100$
+- All pairs $(u_i, v_i)$ are unique.
+
+---
+**💡 Key Concepts & Core Blueprint:**
+- **Pattern:** Sub-Pattern 16.2 (Weighted Shortest Path / Dijkstra's Algorithm)
+- **Key Takeaway:** Dijkstra's Algorithm: Min-heap of {dist, node}. Relax edges if dist[u] + w < dist[v]. Answer is max(dist).
+
+---
+
+
 ## 17. TOPOLOGICAL SORT (KAHN'S ALGORITHM)
 
 ### 77. 🔴 P0 [Q] LC 207: Course Schedule [MEDIUM]
@@ -1900,6 +2388,39 @@ Return the ordering of courses you should take to finish all courses. If it is i
 ---
 
 
+### [BONUS 17] 🟢 P2 [BONUS] LC 269: Alien Dictionary [HARD]
+- **LeetCode Link:** [LC 269: Alien Dictionary](https://leetcode.com/problems/alien-dictionary/)
+- **Category / Sub-Pattern:** Sub-Pattern 17.1 (Graph Construction & Topological Kahn's Algorithm)
+
+**📜 Problem Statement & Explanation**
+There is a new alien language that uses the English alphabet. The characters in the dictionary are sorted lexicographically by the rules of this new language.
+Given a list of strings `words` from the alien language's dictionary, return a string of the unique letters in the new alien language sorted in lexicographically increasing order. If there is no valid ordering, return `""`. If there are multiple valid solutions, return any of them.
+
+**Example 1:**
+- **Input:** `words = ["wrt","wrf","er","ett","rftt"]`
+- **Output:** `"wertf"`
+
+**Example 2:**
+- **Input:** `words = ["z","x"]`
+- **Output:** `"zx"`
+
+**Example 3:**
+- **Input:** `words = ["z","x","z"]`
+- **Output:** `""` (Explanation: The order is invalid because 'z' cannot appear both before and after 'x').
+
+**Constraints:**
+- $1 \le words.length \le 100$
+- $1 \le words[i].length \le 100$
+- `words[i]` consists of only lowercase English letters.
+
+---
+**💡 Key Concepts & Core Blueprint:**
+- **Pattern:** Sub-Pattern 17.1 (Graph Construction & Topological Kahn's Algorithm)
+- **Key Takeaway:** Compare adjacent words for first mismatch -> directed edge. Prefix edge case check. Kahn's BFS for cycle detection.
+
+---
+
+
 ## 18. DISJOINT SET UNION (DSU / UNION-FIND)
 
 ### 79. 🟠 P1 [Q] LC 684: Redundant Connection [MEDIUM]
@@ -1943,6 +2464,34 @@ There are `n` cities. If city `a` is connected directly with city `b`, and city 
 **💡 Key Concepts & Core Blueprint:**
 - **Pattern:** Sub-Pattern 18.1 (Union-Find & Connected Components)
 - **Key Takeaway:** Each successful union of distinct components reduces province count by 1.
+
+---
+
+
+### [BONUS 18] 🟢 P2 [BONUS] LC 721: Accounts Merge [MEDIUM]
+- **LeetCode Link:** [LC 721: Accounts Merge](https://leetcode.com/problems/accounts-merge/)
+- **Category / Sub-Pattern:** Sub-Pattern 18.1 (Union-Find Component Grouping)
+
+**📜 Problem Statement & Explanation**
+Given a list of `accounts` where each element `accounts[i]` is a list of strings, where the first element `accounts[i][0]` is a name, and the rest of the elements are emails representing emails of the account.
+Now, we would like to merge these accounts. Two accounts definitely belong to the same person if there is some common email to both accounts. Note that two accounts with the same name might belong to different people, as people might have the same name. A person can have any number of accounts, but all of their accounts definitely have the same name.
+After merging the accounts, return the accounts in the following format: the first element of each account is the name, and the rest of the elements are emails in sorted order.
+
+**Example 1:**
+- **Input:** `accounts = [["John","johnsmith@mail.com","john_newyork@mail.com"],["John","johnsmith@mail.com","john00@mail.com"],["Mary","mary@mail.com"],["John","johnnybravo@mail.com"]]`
+- **Output:** `[["John","john00@mail.com","john_newyork@mail.com","johnsmith@mail.com"],["Mary","mary@mail.com"],["John","johnnybravo@mail.com"]]`
+
+**Constraints:**
+- $1 \le accounts.length \le 1000$
+- $2 \le accounts[i].length \le 10$
+- $1 \le accounts[i][j].length \le 30$
+- `accounts[i][0]` consists of English letters.
+- `accounts[i][j]` (for $j \ge 1$) is a valid email.
+
+---
+**💡 Key Concepts & Core Blueprint:**
+- **Pattern:** Sub-Pattern 18.1 (Union-Find Component Grouping)
+- **Key Takeaway:** Map email -> first occurrence account index. Union current account with previous account index for all shared emails.
 
 ---
 
@@ -2043,6 +2592,36 @@ Given an integer array `nums`, return the length of the longest strictly increas
 ---
 
 
+### [BONUS 19] 🟢 P2 [BONUS] LC 152: Maximum Product Subarray [MEDIUM]
+- **LeetCode Link:** [LC 152: Maximum Product Subarray](https://leetcode.com/problems/maximum-product-subarray/)
+- **Category / Sub-Pattern:** Sub-Pattern 19.1 (State-Tracking Kadane Variation)
+
+**📜 Problem Statement & Explanation**
+Given an integer array `nums`, find a subarray that has the largest product, and return the product.
+The test cases are generated so that the answer will fit in a 32-bit integer.
+
+**Example 1:**
+- **Input:** `nums = [2,3,-2,4]`
+- **Output:** `6`
+- **Explanation:** `[2,3]` has the largest product 6.
+
+**Example 2:**
+- **Input:** `nums = [-2,0,-1]`
+- **Output:** `0`
+
+**Constraints:**
+- $1 \le nums.length \le 2 \times 10^4$
+- $-10 \le nums[i] \le 10$
+- The product of any prefix or suffix of `nums` is guaranteed to fit in a 32-bit integer.
+
+---
+**💡 Key Concepts & Core Blueprint:**
+- **Pattern:** Sub-Pattern 19.1 (State-Tracking Kadane Variation)
+- **Key Takeaway:** Track currMax AND currMin. If nums[i] < 0, swap(currMax, currMin). Kadane with multiplication.
+
+---
+
+
 ## 20. KNAPSACK / 2D DYNAMIC PROGRAMMING
 
 ### 85. 🔴 P0 [Q] LC 322: Coin Change [MEDIUM]
@@ -2136,6 +2715,42 @@ Given two strings `word1` and `word2`, return the minimum number of operations r
 ---
 
 
+### [BONUS 20] 🟢 P2 [BONUS] LC 518: Coin Change II [MEDIUM]
+- **LeetCode Link:** [LC 518: Coin Change II](https://leetcode.com/problems/coin-change-ii/)
+- **Category / Sub-Pattern:** Sub-Pattern 20.1 (Unbounded Knapsack Combinations)
+
+**📜 Problem Statement & Explanation**
+You are given an integer array `coins` representing coins of different denominations and an integer `amount` representing a total amount of money.
+Return the number of combinations that make up that amount. If that amount of money cannot be made up by any combination of the coins, return `0`.
+You may assume that you have an infinite number of each kind of coin. The answer is guaranteed to fit into a signed 32-bit integer.
+
+**Example 1:**
+- **Input:** `amount = 5, coins = [1,2,5]`
+- **Output:** `4`
+- **Explanation:** There are four ways to make up the amount:
+  $5=5$
+  $5=2+2+1$
+  $5=2+1+1+1$
+  $5=1+1+1+1+1$
+
+**Example 2:**
+- **Input:** `amount = 3, coins = [2]`
+- **Output:** `0`
+
+**Constraints:**
+- $1 \le coins.length \le 300$
+- $1 \le coins[i] \le 5000$
+- All the values of `coins` are unique.
+- $0 \le amount \le 5000$
+
+---
+**💡 Key Concepts & Core Blueprint:**
+- **Pattern:** Sub-Pattern 20.1 (Unbounded Knapsack Combinations)
+- **Key Takeaway:** Combinations vs Permutations: Coins in OUTER loop, amount in INNER loop. dp[a] += dp[a - coin].
+
+---
+
+
 ## 21. BIT MANIPULATION & BITMASKING
 
 ### 89. 🔴 P0 [Q] LC 136: Single Number [EASY]
@@ -2201,3 +2816,33 @@ Given an integer `n`, return an array `ans` of length `n + 1` such that for each
 - **Key Takeaway:** `ans[i] = ans[i >> 1] + (i & 1)` computes set bits in single linear pass $O(N)$.
 
 ---
+
+### [BONUS 21] 🟢 P2 [BONUS] LC 260: Single Number III [MEDIUM]
+- **LeetCode Link:** [LC 260: Single Number III](https://leetcode.com/problems/single-number-iii/)
+- **Category / Sub-Pattern:** Sub-Pattern 21.1 (XOR Partitioning & Rightmost Set Bit Masking)
+
+**📜 Problem Statement & Explanation**
+Given an integer array `nums`, in which exactly two elements appear only once and all the other elements appear exactly twice. Find the two elements that appear only once. You can return the answer in any order.
+You must write an algorithm that runs in **linear runtime complexity** and uses only **constant extra space**.
+
+**Example 1:**
+- **Input:** `nums = [1,2,1,3,2,5]`
+- **Output:** `[3,5]`
+- **Explanation:** `[5, 3]` is also valid.
+
+**Example 2:**
+- **Input:** `nums = [-1,0]`
+- **Output:** `[-1,0]`
+
+**Constraints:**
+- $2 \le nums.length \le 3 \times 10^4$
+- $-2^{31} \le nums[i] \le 2^{31} - 1$
+- Each integer in `nums` will appear twice, only two integers will appear once.
+
+---
+**💡 Key Concepts & Core Blueprint:**
+- **Pattern:** Sub-Pattern 21.1 (XOR Partitioning & Rightmost Set Bit Masking)
+- **Key Takeaway:** Total XOR = a ^ b. diff = (unsigned)XOR & (-(unsigned)XOR) isolates differentiating bit. Partition into 2 buckets.
+
+---
+

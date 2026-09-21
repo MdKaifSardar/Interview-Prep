@@ -6,6 +6,8 @@
 Total Patterns: 21
 Total Sub-Patterns: 39
 Total Core Blueprint Problems: 91 (100% Unique - Zero Duplicates)
+Total Bonus Blueprint Problems: 21 (P2 - Extension & Deep Mastery)
+Total Blueprint Problems: 112
 
 --------------------------------------------------------------------------------
 1. MATRIX SIMULATION & ARRAY TRANSFORMATIONS (p_matrix_simulation_transformations)
@@ -30,6 +32,11 @@ Sub-Pattern 1.3: Matrix State Marking & Pattern Generation (sp_matrix_state_patt
   - LC 31: Next Permutation [MEDIUM]
     Key Concept: Find decrease pivot -> swap with next larger -> reverse suffix.
 
+
+
+Sub-Pattern 1.Bonus: Bonus Blueprint (P2 - Extension)
+  - [BONUS 1] LC 289: Game of Life [MEDIUM]
+    Key Concept: 2-bit intermediate encoding: 0->0: 0, 1->1: 1, 1->0: 2, 0->1: 3. Modulo 2 at the end.
 
 --------------------------------------------------------------------------------
 2. COMPLETE SORTING ALGORITHMS SUITE (p_sorting_algorithms_comparators)
@@ -57,6 +64,11 @@ Sub-Pattern 2.4: Custom Comparators & String Sorting (sp_sort_specialized)
     Key Concept: Custom string concatenation comparator (a + b > b + a).
 
 
+
+Sub-Pattern 2.Bonus: Bonus Blueprint (P2 - Extension)
+  - [BONUS 2] LC 148: Sort List [MEDIUM]
+    Key Concept: Fast/slow pointer with prev unlinking to bisect list -> Recursive Merge Sort -> Dummy head merge.
+
 --------------------------------------------------------------------------------
 3. HASHING / FREQUENCY COUNTING (p_hashing_frequency_counting)
 --------------------------------------------------------------------------------
@@ -76,6 +88,11 @@ Sub-Pattern 3.3: Prefix XOR & Bitwise Hashing (sp_hash_xor)
   - IB 1: Subarray with Given XOR [MEDIUM]
     Key Concept: Maintain running XOR sum (xr). Lookup (xr ^ target) in map.
 
+
+
+Sub-Pattern 3.Bonus: Bonus Blueprint (P2 - Extension)
+  - [BONUS 3] LC 380: Insert Delete GetRandom O(1) [MEDIUM]
+    Key Concept: Vector for random index + Hash map for value-to-index. Swap with last element on remove.
 
 --------------------------------------------------------------------------------
 4. PREFIX SUM & DIFFERENCE ARRAYS (p_prefix_sum_difference_arrays)
@@ -99,6 +116,11 @@ Sub-Pattern 4.4: Prefix Sum with Modulo Arithmetic (sp_prefix_modulo)
     Key Concept: Store earliest index of (running_sum % k) in map (len >= 2).
 
 
+
+Sub-Pattern 4.Bonus: Bonus Blueprint (P2 - Extension)
+  - [BONUS 4] LC 304: Range Sum Query 2D - Immutable [MEDIUM]
+    Key Concept: Inclusion-Exclusion Principle: Precompute sum from (0,0) to (r,c). Query = BottomRight - Top - Left + TopLeft.
+
 --------------------------------------------------------------------------------
 5. TWO POINTERS (p_two_pointers)
 --------------------------------------------------------------------------------
@@ -118,6 +140,11 @@ Sub-Pattern 5.2: Partitioning & Backward Pointers (sp_tp_partitioning)
   - LC 88: Merge Sorted Array [EASY]
     Key Concept: Fill destination array backwards from (m + n - 1).
 
+
+
+Sub-Pattern 5.Bonus: Bonus Blueprint (P2 - Extension)
+  - [BONUS 5] LC 18: 4Sum [MEDIUM]
+    Key Concept: Sort -> Two outer loops + Two-pointer convergence inner loop. Skip duplicates at all 4 levels + use long long for sum.
 
 --------------------------------------------------------------------------------
 6. SLIDING WINDOW (p_sliding_window)
@@ -140,6 +167,11 @@ Sub-Pattern 6.3: Variable Window with K Operations / Replacement (sp_sw_k_ops)
   - LC 424: Longest Repeating Character Replacement [MEDIUM]
     Key Concept: Track max_freq in window; shrink left when (window_len - max_freq) > K.
 
+
+
+Sub-Pattern 6.Bonus: Bonus Blueprint (P2 - Extension)
+  - [BONUS 6] LC 992: Subarrays with K Different Integers [HARD]
+    Key Concept: exact(k) = atMost(k) - atMost(k - 1). Window of size (r - l + 1) contributes all subarrays ending at r.
 
 --------------------------------------------------------------------------------
 7. BINARY SEARCH (p_binary_search)
@@ -167,6 +199,11 @@ Sub-Pattern 7.4: 2D Matrix & Unsorted Condition Search (sp_bs_matrix_peak)
     Key Concept: Compare nums[mid] with nums[mid + 1] on unsorted array.
 
 
+
+Sub-Pattern 7.Bonus: Bonus Blueprint (P2 - Extension)
+  - [BONUS 7] LC 4: Median of Two Sorted Arrays [HARD]
+    Key Concept: Binary search partition on smaller array. LeftMaxA <= RightMinB and LeftMaxB <= RightMinA.
+
 --------------------------------------------------------------------------------
 8. OVERLAPPING INTERVALS (p_overlapping_intervals)
 --------------------------------------------------------------------------------
@@ -181,6 +218,11 @@ Sub-Pattern 8.1: Interval Merging & Insertion (sp_int_merge)
     Key Concept: Sort by start time + Min-Heap of active room end-times.
 
 
+
+Sub-Pattern 8.Bonus: Bonus Blueprint (P2 - Extension)
+  - [BONUS 8] LC 986: Interval List Intersections [MEDIUM]
+    Key Concept: Overlap start = max(A.start, B.start), Overlap end = min(A.end, B.end). Advance the one that ends first.
+
 --------------------------------------------------------------------------------
 9. FAST & SLOW POINTERS (LINKED LIST) (p_fast_slow_pointers_linked_list)
 --------------------------------------------------------------------------------
@@ -192,6 +234,11 @@ Sub-Pattern 9.1: Cycle Detection & Midpoint (sp_ll_cycle)
   - LC 143: Reorder List [MEDIUM]
     Key Concept: Midpoint split + reverse second half + alternate weaving.
 
+
+
+Sub-Pattern 9.Bonus: Bonus Blueprint (P2 - Extension)
+  - [BONUS 9] LC 287: Find the Duplicate Number [MEDIUM]
+    Key Concept: Floyd's Tortoise & Hare on Array: index -> nums[index]. Intersection -> Reset slow to 0 -> Meet at cycle start.
 
 --------------------------------------------------------------------------------
 10. MONOTONIC STACK (p_monotonic_stack)
@@ -207,6 +254,11 @@ Sub-Pattern 10.2: Next Greater / Smaller Element (sp_ms_next_greater)
     Key Concept: Monotonic increasing stack calculating width on pop.
 
 
+
+Sub-Pattern 10.Bonus: Bonus Blueprint (P2 - Extension)
+  - [BONUS 10] LC 85: Maximal Rectangle [HARD]
+    Key Concept: Row-by-row cumulative histogram: If '1' h++, else h=0. Run LC 84 Largest Rectangle in Histogram on each row.
+
 --------------------------------------------------------------------------------
 11. HEAP / PRIORITY QUEUE (p_heap_priority_queue)
 --------------------------------------------------------------------------------
@@ -220,6 +272,11 @@ Sub-Pattern 11.1: Top K Elements / Min-Heap Pattern (sp_heap_topk)
   - LC 23: Merge k Sorted Lists [HARD]
     Key Concept: Min-Heap of size K storing current head node of each list.
 
+
+
+Sub-Pattern 11.Bonus: Bonus Blueprint (P2 - Extension)
+  - [BONUS 11] LC 621: Task Scheduler [MEDIUM]
+    Key Concept: Max frequency determines frame: (maxFreq - 1) * (n + 1) + countOfMaxFreq. Result = max(tasks.size(), frameSize).
 
 --------------------------------------------------------------------------------
 12. TREE DFS / DEPTH FIRST SEARCH (p_tree_dfs_depth_first_search)
@@ -235,6 +292,11 @@ Sub-Pattern 12.1: Tree Height & Depth Recursion (sp_tree_dfs_height)
     Key Concept: Post-order DFS returning max branch while tracking global split path sum.
 
 
+
+Sub-Pattern 12.Bonus: Bonus Blueprint (P2 - Extension)
+  - [BONUS 12] LC 297: Serialize and Deserialize Binary Tree [HARD]
+    Key Concept: Preorder DFS with '#' for null and comma delimiter. Stringstream in deserialize recursively builds root->left->right.
+
 --------------------------------------------------------------------------------
 13. TREE BFS / LEVEL ORDER TRAVERSAL (p_tree_bfs_level_order_traversal)
 --------------------------------------------------------------------------------
@@ -247,6 +309,11 @@ Sub-Pattern 13.1: Standard Level Order Traversal (sp_tree_bfs_level)
     Key Concept: Alternating level insertion direction.
 
 
+
+Sub-Pattern 13.Bonus: Bonus Blueprint (P2 - Extension)
+  - [BONUS 13] LC 314: Binary Tree Vertical Order Traversal [MEDIUM]
+    Key Concept: BFS with pair<Node*, col>. col-1 for left, col+1 for right. Hash map collects values, BFS preserves top-to-bottom automatically.
+
 --------------------------------------------------------------------------------
 14. BINARY SEARCH TREE (BST) (p_binary_search_tree_bst)
 --------------------------------------------------------------------------------
@@ -258,6 +325,11 @@ Sub-Pattern 14.1: BST Validation & Inorder Property (sp_bst_validate)
   - LC 450: Delete Node in a BST [MEDIUM]
     Key Concept: BST node deletion with in-order successor swap.
 
+
+
+Sub-Pattern 14.Bonus: Bonus Blueprint (P2 - Extension)
+  - [BONUS 14] LC 99: Recover Binary Search Tree [MEDIUM]
+    Key Concept: Inorder traversal must be sorted. First violation: first = prev. Second violation: second = curr. Swap(first->val, second->val).
 
 --------------------------------------------------------------------------------
 15. BACKTRACKING / SUBSETS & PERMUTATIONS (p_backtracking_subsets_permutations)
@@ -272,6 +344,11 @@ Sub-Pattern 15.1: Subsets & Combination Choice (sp_bt_subsets)
   - LC 51: N-Queens [HARD]
     Key Concept: Constraint hashing (cols, main diagonals, anti-diagonals).
 
+
+
+Sub-Pattern 15.Bonus: Bonus Blueprint (P2 - Extension)
+  - [BONUS 15] LC 79: Word Search [MEDIUM]
+    Key Concept: Mask cell board[r][c] = '#' -> explore 4 directions -> unmask board[r][c] = temp (backtrack).
 
 --------------------------------------------------------------------------------
 16. GRAPH DFS / BFS (p_graph_dfs_bfs)
@@ -291,6 +368,11 @@ Sub-Pattern 16.2: Multi-Source BFS (sp_graph_multisource_bfs)
     Key Concept: Unweighted shortest path BFS on mutated character state space.
 
 
+
+Sub-Pattern 16.Bonus: Bonus Blueprint (P2 - Extension)
+  - [BONUS 16] LC 743: Network Delay Time [MEDIUM]
+    Key Concept: Dijkstra's Algorithm: Min-heap of {dist, node}. Relax edges if dist[u] + w < dist[v]. Answer is max(dist).
+
 --------------------------------------------------------------------------------
 17. TOPOLOGICAL SORT (KAHN'S ALGORITHM) (p_topological_sort_kahn_s_algorithm)
 --------------------------------------------------------------------------------
@@ -301,6 +383,11 @@ Sub-Pattern 17.1: Kahn's BFS In-degree Algorithm (sp_topo_kahns)
     Key Concept: Kahn's algorithm collecting top-sort ordering array.
 
 
+
+Sub-Pattern 17.Bonus: Bonus Blueprint (P2 - Extension)
+  - [BONUS 17] LC 269: Alien Dictionary [HARD]
+    Key Concept: Compare adjacent words for first mismatch -> directed edge. Prefix edge case check. Kahn's BFS for cycle detection.
+
 --------------------------------------------------------------------------------
 18. DISJOINT SET UNION (DSU / UNION-FIND) (p_disjoint_set_union_dsu_union_find)
 --------------------------------------------------------------------------------
@@ -310,6 +397,11 @@ Sub-Pattern 18.1: DSU Path Compression & Union by Rank (sp_dsu_basic)
   - LC 547: Number of Provinces [MEDIUM]
     Key Concept: Connected component counting via DSU union operations.
 
+
+
+Sub-Pattern 18.Bonus: Bonus Blueprint (P2 - Extension)
+  - [BONUS 18] LC 721: Accounts Merge [MEDIUM]
+    Key Concept: Map email -> first occurrence account index. Union current account with previous account index for all shared emails.
 
 --------------------------------------------------------------------------------
 19. 1D DYNAMIC PROGRAMMING (p_1d_dynamic_programming)
@@ -325,6 +417,11 @@ Sub-Pattern 19.1: State Transition & Space Optimization (sp_dp_1d_basic)
     Key Concept: O(N^2) DP or O(N log N) Patience Sorting with std::lower_bound.
 
 
+
+Sub-Pattern 19.Bonus: Bonus Blueprint (P2 - Extension)
+  - [BONUS 19] LC 152: Maximum Product Subarray [MEDIUM]
+    Key Concept: Track currMax AND currMin. If nums[i] < 0, swap(currMax, currMin). Kadane with multiplication.
+
 --------------------------------------------------------------------------------
 20. KNAPSACK / 2D DYNAMIC PROGRAMMING (p_knapsack_2d_dynamic_programming)
 --------------------------------------------------------------------------------
@@ -338,6 +435,11 @@ Sub-Pattern 20.1: Unbounded & 0/1 Knapsack Grid DP (sp_dp_knapsack)
   - LC 72: Edit Distance [HARD]
     Key Concept: 3-operation (Insert, Delete, Replace) matrix grid DP.
 
+
+
+Sub-Pattern 20.Bonus: Bonus Blueprint (P2 - Extension)
+  - [BONUS 20] LC 518: Coin Change II [MEDIUM]
+    Key Concept: Combinations vs Permutations: Coins in OUTER loop, amount in INNER loop. dp[a] += dp[a - coin].
 
 --------------------------------------------------------------------------------
 21. BIT MANIPULATION & BITMASKING (p_bit_manipulation_bitmasking)
@@ -353,3 +455,9 @@ Sub-Pattern 21.1: XOR Cancelation & Bit Operations (sp_bit_xor)
 ================================================================================
                    END OF PREPFORGE SDE REVISION ROADMAP
 ================================================================================
+
+
+Sub-Pattern 21.Bonus: Bonus Blueprint (P2 - Extension)
+  - [BONUS 21] LC 260: Single Number III [MEDIUM]
+    Key Concept: Total XOR = a ^ b. diff = (unsigned)XOR & (-(unsigned)XOR) isolates differentiating bit. Partition into 2 buckets.
+

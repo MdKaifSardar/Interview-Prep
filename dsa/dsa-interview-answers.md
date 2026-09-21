@@ -1,6 +1,6 @@
-# Data Structures & Algorithms Master Answer Key (91 Core Blueprints)
+# Data Structures & Algorithms Master Answer Key (91 Core + 21 Bonus Blueprints)
 
-Companion answer key to `dsa-interview-questions.md`. Every single answer strictly follows our standardized 5-part framework designed for rapid revision AND deep algorithmic mastery:
+Companion answer key to `dsa-interview-questions.md` covering all 112 questions (91 Core + 21 Bonus Blueprints). Every single answer strictly follows our standardized 5-part framework designed for rapid revision AND deep algorithmic mastery:
 1. **📜 Problem Statement & Explanation:** Full problem text, input/output examples, and key constraints.
 2. **🧠 Short Solution Summary & Revision Notes:** Main pattern classification and mental mnemonic hook.
 3. **🐢 Brute Force Approach:** Complexity analysis, naive logic explanation, and complete C++ code block.
@@ -663,6 +663,124 @@ public:
 ---
 
 
+### [BONUS 1] 🟢 P2 [BONUS] LC 289: Game of Life [MEDIUM]
+- **LeetCode Link:** [LC 289: Game of Life](https://leetcode.com/problems/game-of-life/)
+- **Category / Sub-Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
+
+**📜 Problem Statement & Explanation**
+According to Conway's Game of Life, the board is made up of an `m x n` grid of cells, where each cell has an initial state: live (`1`) or dead (`0`). Each cell interacts with its eight neighbors (horizontal, vertical, diagonal) using the following four rules:
+1. Any live cell with fewer than two live neighbors dies (under-population).
+2. Any live cell with two or three live neighbors lives on to the next generation.
+3. Any live cell with more than three live neighbors dies (over-population).
+4. Any dead cell with exactly three live neighbors becomes a live cell (reproduction).
+
+The next state is created by applying the above rules simultaneously to every cell in the current state of the grid. Given the current state of the `m x n` grid `board`, update the board to its next state **in-place**.
+
+**Example 1:**
+- **Input:** `board = [[0,1,0],[0,0,1],[1,1,1],[0,0,0]]`
+- **Output:** `[[0,0,0],[1,0,1],[0,1,1],[0,1,0]]`
+
+**Example 2:**
+- **Input:** `board = [[1,1],[1,0]]`
+- **Output:** `[[1,1],[1,1]]`
+
+**Constraints:**
+- `m == board.length`
+- `n == board[i].length`
+- `1 <= m, n <= 25`
+- `board[i][j]` is either `0` or `1`.
+
+---
+**🧠 Short Solution Summary & Revision Notes**
+- **Main Pattern:** Sub-Pattern 1.3 (Matrix State Marking & Pattern Generation)
+- **Memory Mnemonic:** *"2-bit intermediate encoding: 0->0: 0, 1->1: 1, 1->0: 2, 0->1: 3. Modulo 2 at the end."*
+
+---
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(M \times N)$ | **Space:** $O(M \times N)$
+- **Explanation:** Create a deep copy of the original board. Count the 8 live neighbors for each cell using the cloned board, and update the values in the original board according to Conway's rules.
+
+```cpp
+class Solution {
+public:
+    void gameOfLife(vector<vector<int>>& board) {
+        int m = board.size(), n = board[0].size();
+        vector<vector<int>> copyBoard = board;
+        int dr[] = {-1, -1, -1, 0, 0, 1, 1, 1};
+        int dc[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+        
+        for (int r = 0; r < m; r++) {
+            for (int c = 0; c < n; c++) {
+                int liveNeighbors = 0;
+                for (int i = 0; i < 8; i++) {
+                    int nr = r + dr[i], nc = c + dc[i];
+                    if (nr >= 0 && nr < m && nc >= 0 && nc < n && copyBoard[nr][nc] == 1) {
+                        liveNeighbors++;
+                    }
+                }
+                if (copyBoard[r][c] == 1) {
+                    if (liveNeighbors < 2 || liveNeighbors > 3) board[r][c] = 0;
+                } else {
+                    if (liveNeighbors == 3) board[r][c] = 1;
+                }
+            }
+        }
+    }
+};
+```
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(M \times N)$ | **Space:** $O(1)$ auxiliary memory
+- **Explanation:** Encode state transitions in-place using integers:
+  - `0`: was dead, remains dead
+  - `1`: was live, remains live
+  - `2`: was live, now dies (`1 -> 0`)
+  - `3`: was dead, now becomes live (`0 -> 1`)
+  During neighbor counting, any cell with value `1` or `2` was originally alive. In a second pass, map `board[r][c] % 2` (or check for `1` and `3`) to recover the final binary state.
+
+```cpp
+class Solution {
+public:
+    void gameOfLife(vector<vector<int>>& board) {
+        int m = board.size(), n = board[0].size();
+        int dr[] = {-1, -1, -1, 0, 0, 1, 1, 1};
+        int dc[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+
+        for (int r = 0; r < m; r++) {
+            for (int c = 0; c < n; c++) {
+                int liveNeighbors = 0;
+                for (int i = 0; i < 8; i++) {
+                    int nr = r + dr[i], nc = c + dc[i];
+                    if (nr >= 0 && nr < m && nc >= 0 && nc < n) {
+                        if (board[nr][nc] == 1 || board[nr][nc] == 2) liveNeighbors++;
+                    }
+                }
+                if (board[r][c] == 1) {
+                    if (liveNeighbors < 2 || liveNeighbors > 3) board[r][c] = 2; // was 1, now 0
+                } else {
+                    if (liveNeighbors == 3) board[r][c] = 3; // was 0, now 1
+                }
+            }
+        }
+
+        for (int r = 0; r < m; r++) {
+            for (int c = 0; c < n; c++) {
+                board[r][c] %= 2;
+            }
+        }
+    }
+};
+```
+
+---
+**⚠️ Edge Cases & Interview Gotchas**
+- $1 \times 1$ or $1 \times 2$ matrices where neighbors are strictly limited.
+- Infinite board follow-up: If the board is unbounded, store only live cell coordinates `(r, c)` in a hash set.
+
+---
+
+
 ## 2. COMPLETE SORTING ALGORITHMS SUITE
 
 ### 8. 🟠 P1 [Q] ALG 1: Selection Sort Algorithm Blueprint [EASY]
@@ -1220,6 +1338,115 @@ public:
 ---
 
 
+### [BONUS 2] 🟢 P2 [BONUS] LC 148: Sort List [MEDIUM]
+- **LeetCode Link:** [LC 148: Sort List](https://leetcode.com/problems/sort-list/)
+- **Category / Sub-Pattern:** Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts)
+
+**📜 Problem Statement & Explanation**
+Given the `head` of a linked list, return the list after sorting it in ascending order. You must achieve $O(N \log N)$ time complexity and $O(\log N)$ or $O(1)$ space complexity.
+
+**Example 1:**
+- **Input:** `head = [4,2,1,3]`
+- **Output:** `[1,2,3,4]`
+
+**Example 2:**
+- **Input:** `head = [-1,5,3,4,0]`
+- **Output:** `[-1,0,3,4,5]`
+
+**Constraints:**
+- The number of nodes in the list is in the range $[0, 5 \times 10^4]$.
+- $-10^5 \le \text{Node.val} \le 10^5$.
+
+---
+**🧠 Short Solution Summary & Revision Notes**
+- **Main Pattern:** Sub-Pattern 2.2 (Divide & Conquer & Advanced Sorts)
+- **Memory Mnemonic:** *"Fast/slow pointer with prev unlinking to bisect list -> Recursive Merge Sort -> Dummy head merge."*
+
+---
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(N \log N)$ | **Space:** $O(N)$
+- **Explanation:** Traverse the linked list, extract all node values into a `vector<int>`, sort using `std::sort`, and write the sorted values back into the nodes.
+
+```cpp
+class Solution {
+public:
+    ListNode* sortList(ListNode* head) {
+        if (!head) return nullptr;
+        vector<int> vals;
+        ListNode* curr = head;
+        while (curr) {
+            vals.push_back(curr->val);
+            curr = curr->next;
+        }
+        sort(vals.begin(), vals.end());
+        curr = head;
+        for (int v : vals) {
+            curr->val = v;
+            curr = curr->next;
+        }
+        return head;
+    }
+};
+```
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(N \log N)$ | **Space:** $O(\log N)$ recursion call stack
+- **Explanation:** Implement top-down Merge Sort:
+  1. Base case: If `head == nullptr || head->next == nullptr`, return `head`.
+  2. Use fast and slow pointers with a `prev` pointer to locate the midpoint. Unlink the left half by setting `prev->next = nullptr`.
+  3. Recursively call `sortList` on left and right halves.
+  4. Merge the two sorted linked lists using a dummy node.
+
+```cpp
+class Solution {
+private:
+    ListNode* merge(ListNode* l1, ListNode* l2) {
+        ListNode dummy(0);
+        ListNode* tail = &dummy;
+        while (l1 && l2) {
+            if (l1->val <= l2->val) {
+                tail->next = l1;
+                l1 = l1->next;
+            } else {
+                tail->next = l2;
+                l2 = l2->next;
+            }
+            tail = tail->next;
+        }
+        tail->next = l1 ? l1 : l2;
+        return dummy.next;
+    }
+public:
+    ListNode* sortList(ListNode* head) {
+        if (!head || !head->next) return head;
+
+        ListNode* prev = nullptr;
+        ListNode* slow = head;
+        ListNode* fast = head;
+        while (fast && fast->next) {
+            prev = slow;
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        prev->next = nullptr; // Disconnect left half from right half
+
+        ListNode* left = sortList(head);
+        ListNode* right = sortList(slow);
+        return merge(left, right);
+    }
+};
+```
+
+---
+**⚠️ Edge Cases & Interview Gotchas**
+- Failing to set `prev->next = nullptr` results in infinite recursion / stack overflow.
+- Empty list (`nullptr`) and single-node list.
+- Bottom-up iterative Merge Sort achieves true $O(1)$ space, but top-down is preferred in interviews unless strictly pressed for $O(1)$.
+
+---
+
+
 ## 3. HASHING / FREQUENCY COUNTING
 
 ### 15. 🟠 P1 [Q] LC 217: Contains Duplicate [EASY]
@@ -1620,6 +1847,110 @@ public:
 ---
 
 
+### [BONUS 3] 🟢 P2 [BONUS] LC 380: Insert Delete GetRandom O(1) [MEDIUM]
+- **LeetCode Link:** [LC 380: Insert Delete GetRandom O(1)](https://leetcode.com/problems/insert-delete-getrandom-o1/)
+- **Category / Sub-Pattern:** Sub-Pattern 3.1 (Hash Map State Design)
+
+**📜 Problem Statement & Explanation**
+Implement the `RandomizedSet` class:
+- `RandomizedSet()` Initializes the `RandomizedSet` object.
+- `bool insert(int val)` Inserts an item `val` into the set if not present. Returns `true` if the item was not present, `false` otherwise.
+- `bool remove(int val)` Removes an item `val` from the set if present. Returns `true` if the item was present, `false` otherwise.
+- `int getRandom()` Returns a random element from the current set of elements (it's guaranteed that at least one element exists when this method is called). Each element must have the same probability of being returned.
+
+You must implement the functions of the class such that each function works in **average $O(1)$** time complexity.
+
+**Example 1:**
+- **Input:**
+  `["RandomizedSet", "insert", "remove", "insert", "getRandom", "remove", "insert", "getRandom"]`
+  `[[], [1], [2], [2], [], [1], [2], []]`
+- **Output:** `[null, true, false, true, 2, true, false, 2]`
+
+**Constraints:**
+- $-2^{31} \le val \le 2^{31} - 1$
+- At most $2 \times 10^5$ calls will be made to `insert`, `remove`, and `getRandom`.
+- There will be at least one element in the data structure when `getRandom` is called.
+
+---
+**🧠 Short Solution Summary & Revision Notes**
+- **Main Pattern:** Sub-Pattern 3.1 (Hash Map State Design)
+- **Memory Mnemonic:** *"Vector for random index + Hash map for value-to-index. Swap with last element on remove."*
+
+---
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** `insert`: $O(1)$, `remove`: $O(N)$, `getRandom`: $O(1)$ | **Space:** $O(N)$
+- **Explanation:** Store values in a `vector<int>`. `insert` checks for existence using linear scan ($O(N)$) or uses `unordered_set`. On `remove`, locating and erasing an element shifts elements, causing $O(N)$ time.
+
+```cpp
+class RandomizedSetBrute {
+    vector<int> nums;
+public:
+    bool insert(int val) {
+        if (find(nums.begin(), nums.end(), val) != nums.end()) return false;
+        nums.push_back(val);
+        return true;
+    }
+    bool remove(int val) {
+        auto it = find(nums.begin(), nums.end(), val);
+        if (it == nums.end()) return false;
+        nums.erase(it); // O(N) shift
+        return true;
+    }
+    int getRandom() {
+        return nums[rand() % nums.size()];
+    }
+};
+```
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(1)$ average for all three methods | **Space:** $O(N)$
+- **Explanation:** Maintain a `vector<int> nums` and `unordered_map<int, int> valToIdx`.
+  - `insert(val)`: Check map. If absent, append `val` to `nums`, store `valToIdx[val] = nums.size() - 1`.
+  - `remove(val)`: Check map. Swap `val` with `nums.back()`, update the index of `nums.back()` in the map, call `nums.pop_back()`, and erase `val` from the map.
+  - `getRandom()`: Pick `rand() % nums.size()` directly from `nums` in $O(1)$.
+
+```cpp
+class RandomizedSet {
+private:
+    vector<int> nums;
+    unordered_map<int, int> valToIdx;
+public:
+    RandomizedSet() {}
+    
+    bool insert(int val) {
+        if (valToIdx.count(val)) return false;
+        nums.push_back(val);
+        valToIdx[val] = nums.size() - 1;
+        return true;
+    }
+    
+    bool remove(int val) {
+        if (!valToIdx.count(val)) return false;
+        int idx = valToIdx[val];
+        int lastVal = nums.back();
+
+        nums[idx] = lastVal;
+        valToIdx[lastVal] = idx;
+
+        nums.pop_back();
+        valToIdx.erase(val);
+        return true;
+    }
+    
+    int getRandom() {
+        return nums[rand() % nums.size()];
+    }
+};
+```
+
+---
+**⚠️ Edge Cases & Interview Gotchas**
+- Removing the element that is already the last element in `nums`: Updating `valToIdx[lastVal]` before or simultaneously with erasing `valToIdx.erase(val)` avoids incorrect map resurrection.
+
+---
+
+
 ## 4. PREFIX SUM & DIFFERENCE ARRAYS
 
 ### 20. 🔴 P0 [Q] LC 560: Subarray Sum Equals K [MEDIUM]
@@ -2016,6 +2347,100 @@ public:
 **⚠️ Edge Cases & Interview Gotchas**
 - Subarray starting from index 0 (`earliestIndex[0] = -1` handles this).
 - Subarrays of length 1 (must enforce `i - earliestIndex[rem] >= 2`).
+
+---
+
+
+### [BONUS 4] 🟢 P2 [BONUS] LC 304: Range Sum Query 2D - Immutable [MEDIUM]
+- **LeetCode Link:** [LC 304: Range Sum Query 2D - Immutable](https://leetcode.com/problems/range-sum-query-2d-immutable/)
+- **Category / Sub-Pattern:** Sub-Pattern 4.1 (2D Prefix Sums)
+
+**📜 Problem Statement & Explanation**
+Given a 2D matrix `matrix`, handle multiple queries of the following type:
+- Calculate the sum of the elements of `matrix` inside the rectangle defined by its upper left corner `(row1, col1)` and lower right corner `(row2, col2)`.
+
+Implement the `NumMatrix` class:
+- `NumMatrix(int[][] matrix)` Initializes the object with the integer matrix `matrix`.
+- `int sumRegion(int row1, int col1, int row2, int col2)` Returns the sum of the elements inside the rectangle in $O(1)$ time.
+
+**Example 1:**
+- **Input:**
+  `["NumMatrix","sumRegion","sumRegion","sumRegion"]`
+  `[[[[3,0,1,4,2],[5,6,3,2,1],[1,2,0,1,5],[4,1,0,1,7],[1,0,3,0,5]]],[2,1,4,3],[1,1,2,2],[1,2,2,4]]`
+- **Output:** `[null, 8, 11, 12]`
+
+**Constraints:**
+- `m == matrix.length`, `n == matrix[i].length`
+- `1 <= m, n <= 200`
+- $-10^4 \le matrix[i][j] \le 10^4$
+- `0 <= row1 <= row2 < m`, `0 <= col1 <= col2 < n`
+- At most $10^4$ calls will be made to `sumRegion`.
+
+---
+**🧠 Short Solution Summary & Revision Notes**
+- **Main Pattern:** Sub-Pattern 4.1 (2D Prefix Sums)
+- **Memory Mnemonic:** *"Inclusion-Exclusion Principle: Precompute sum from (0,0) to (r,c). Query = BottomRight - Top - Left + TopLeft."*
+
+---
+**🐢 Brute Force Approach**
+- **Complexity:** **Precomputation:** $O(1)$ | **Query:** $O(M \times N)$ | **Space:** $O(1)$
+- **Explanation:** Store the matrix directly. For each query, iterate through rows `row1` to `row2` and columns `col1` to `col2`, accumulating the sum.
+
+```cpp
+class NumMatrixBrute {
+    vector<vector<int>> mat;
+public:
+    NumMatrixBrute(vector<vector<int>>& matrix) : mat(matrix) {}
+    int sumRegion(int r1, int c1, int r2, int c2) {
+        int total = 0;
+        for (int r = r1; r <= r2; r++) {
+            for (int c = c1; c <= c2; c++) {
+                total += mat[r][c];
+            }
+        }
+        return total;
+    }
+};
+```
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Precomputation:** $O(M \times N)$ | **Query:** $O(1)$ | **Space:** $O(M \times N)$
+- **Explanation:** Build a 2D prefix sum array of dimensions `(m + 1) x (n + 1)` with 1-based indexing:
+  `P[r][c] = matrix[r-1][c-1] + P[r-1][c] + P[r][c-1] - P[r-1][c-1]`.
+  To compute `sumRegion(r1, c1, r2, c2)`:
+  `sum = P[r2+1][c2+1] - P[r1][c2+1] - P[r2+1][c1] + P[r1][c1]`.
+
+```cpp
+class NumMatrix {
+private:
+    vector<vector<int>> prefix;
+public:
+    NumMatrix(vector<vector<int>>& matrix) {
+        int m = matrix.size(), n = matrix[0].size();
+        prefix.assign(m + 1, vector<int>(n + 1, 0));
+        for (int r = 1; r <= m; r++) {
+            for (int c = 1; c <= n; c++) {
+                prefix[r][c] = matrix[r - 1][c - 1] 
+                             + prefix[r - 1][c] 
+                             + prefix[r][c - 1] 
+                             - prefix[r - 1][c - 1];
+            }
+        }
+    }
+    
+    int sumRegion(int row1, int col1, int row2, int col2) {
+        return prefix[row2 + 1][col2 + 1] 
+             - prefix[row1][col2 + 1] 
+             - prefix[row2 + 1][col1] 
+             + prefix[row1][col1];
+    }
+};
+```
+
+---
+**⚠️ Edge Cases & Interview Gotchas**
+- Using 1-based indexing with size `(m+1) x (n+1)` prevents out-of-bound edge checks when `row1 == 0` or `col1 == 0`.
 
 ---
 
@@ -2495,6 +2920,120 @@ public:
 **⚠️ Edge Cases & Interview Gotchas**
 - `m = 0` (simply copy `nums2` into `nums1`).
 - `n = 0` (no-op).
+
+---
+
+
+### [BONUS 5] 🟢 P2 [BONUS] LC 18: 4Sum [MEDIUM]
+- **LeetCode Link:** [LC 18: 4Sum](https://leetcode.com/problems/4sum/)
+- **Category / Sub-Pattern:** Sub-Pattern 5.1 (Multi-Pointer Sorting & Convergence)
+
+**📜 Problem Statement & Explanation**
+Given an array `nums` of $n$ integers, return an array of all the unique quadruplets `[nums[a], nums[b], nums[c], nums[d]]` such that:
+- $0 \le a, b, c, d < n$
+- $a, b, c,$ and $d$ are distinct.
+- `nums[a] + nums[b] + nums[c] + nums[d] == target`
+You may return the answer in any order. The solution set must not contain duplicate quadruplets.
+
+**Example 1:**
+- **Input:** `nums = [1,0,-1,0,-2,2], target = 0`
+- **Output:** `[[-2,-1,1,2],[-2,0,0,2],[-1,0,0,1]]`
+
+**Example 2:**
+- **Input:** `nums = [2,2,2,2,2], target = 8`
+- **Output:** `[[2,2,2,2]]`
+
+**Constraints:**
+- $1 \le nums.length \le 200$
+- $-10^9 \le nums[i] \le 10^9$
+- $-10^9 \le target \le 10^9$
+
+---
+**🧠 Short Solution Summary & Revision Notes**
+- **Main Pattern:** Sub-Pattern 5.1 (Multi-Pointer Sorting & Convergence)
+- **Memory Mnemonic:** *"Sort -> Two outer loops + Two-pointer convergence inner loop. Skip duplicates at all 4 levels + use long long for sum."*
+
+---
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(N^4 \log K)$ | **Space:** $O(K)$
+- **Explanation:** Run 4 nested loops over indices $i, j, k, l$. Check if the sum equals `target`. To ensure uniqueness, sort each quadruplet and insert into `std::set`.
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> fourSum(vector<int>& nums, int target) {
+        int n = nums.size();
+        set<vector<int>> s;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                for (int k = j + 1; k < n; k++) {
+                    for (int l = k + 1; l < n; l++) {
+                        long long sum = (long long)nums[i] + nums[j] + nums[k] + nums[l];
+                        if (sum == target) {
+                            vector<int> quad = {nums[i], nums[j], nums[k], nums[l]};
+                            sort(quad.begin(), quad.end());
+                            s.insert(quad);
+                        }
+                    }
+                }
+            }
+        }
+        return vector<vector<int>>(s.begin(), s.end());
+    }
+};
+```
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(N^3)$ | **Space:** $O(1)$ auxiliary memory
+- **Explanation:**
+  1. Sort `nums`.
+  2. Fix outer index $i$ from `0` to `n-4`. If $i > 0$ and `nums[i] == nums[i-1]`, skip.
+  3. Fix second index $j$ from `i+1` to `n-3`. If $j > i+1$ and `nums[j] == nums[j-1]`, skip.
+  4. Use two pointers `left = j + 1` and `right = n - 1`. Calculate `long long sum = (long long)nums[i] + nums[j] + nums[left] + nums[right]`.
+  5. If `sum == target`, record the quadruplet, and increment `left` (skipping duplicates) and decrement `right` (skipping duplicates).
+  6. If `sum < target`, increment `left`; if `sum > target`, decrement `right`.
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> fourSum(vector<int>& nums, int target) {
+        int n = nums.size();
+        vector<vector<int>> res;
+        if (n < 4) return res;
+        sort(nums.begin(), nums.end());
+
+        for (int i = 0; i < n - 3; i++) {
+            if (i > 0 && nums[i] == nums[i - 1]) continue;
+            for (int j = i + 1; j < n - 2; j++) {
+                if (j > i + 1 && nums[j] == nums[j - 1]) continue;
+
+                int left = j + 1, right = n - 1;
+                while (left < right) {
+                    long long sum = (long long)nums[i] + nums[j] + nums[left] + nums[right];
+                    if (sum == target) {
+                        res.push_back({nums[i], nums[j], nums[left], nums[right]});
+                        while (left < right && nums[left] == nums[left + 1]) left++;
+                        while (left < right && nums[right] == nums[right - 1]) right--;
+                        left++;
+                        right--;
+                    } else if (sum < target) {
+                        left++;
+                    } else {
+                        right--;
+                    }
+                }
+            }
+        }
+        return res;
+    }
+};
+```
+
+---
+**⚠️ Edge Cases & Interview Gotchas**
+- 32-bit signed integer overflow when summing 4 numbers near $10^9$. Casting to `long long` is mandatory.
+- Arrays with fewer than 4 elements.
 
 ---
 
@@ -3000,6 +3539,99 @@ public:
 **⚠️ Edge Cases & Interview Gotchas**
 - `k = 0`.
 - String with all identical characters.
+
+---
+
+
+### [BONUS 6] 🟢 P2 [BONUS] LC 992: Subarrays with K Different Integers [HARD]
+- **LeetCode Link:** [LC 992: Subarrays with K Different Integers](https://leetcode.com/problems/subarrays-with-k-different-integers/)
+- **Category / Sub-Pattern:** Sub-Pattern 6.2 (Variable-Size / Reduction Windows)
+
+**📜 Problem Statement & Explanation**
+Given an integer array `nums` and an integer `k`, return the number of good subarrays of `nums`. A good array is an array where the number of different integers in that array is exactly `k`.
+
+**Example 1:**
+- **Input:** `nums = [1,2,1,2,3], k = 2`
+- **Output:** `7`
+- **Explanation:** Subarrays formed with exactly 2 different integers: `[1,2]`, `[2,1]`, `[1,2]`, `[2,3]`, `[1,2,1]`, `[2,1,2]`, `[1,2,1,2]`.
+
+**Example 2:**
+- **Input:** `nums = [1,2,1,3,4], k = 3`
+- **Output:** `3`
+
+**Constraints:**
+- $1 \le nums.length \le 2 \times 10^4$
+- $1 \le nums[i], k \le nums.length$
+
+---
+**🧠 Short Solution Summary & Revision Notes**
+- **Main Pattern:** Sub-Pattern 6.2 (Variable-Size / Reduction Windows)
+- **Memory Mnemonic:** *"exact(k) = atMost(k) - atMost(k - 1). Window of size (r - l + 1) contributes all subarrays ending at r."*
+
+---
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(N^2)$ | **Space:** $O(K)$
+- **Explanation:** Generate all possible subarrays using two nested loops. Maintain an `unordered_set<int>` for each starting point. When `set.size() == k`, increment the answer count. Break early if `set.size() > k`.
+
+```cpp
+class Solution {
+public:
+    int subarraysWithKDistinct(vector<int>& nums, int k) {
+        int n = nums.size(), count = 0;
+        for (int i = 0; i < n; i++) {
+            unordered_set<int> unique;
+            for (int j = i; j < n; j++) {
+                unique.insert(nums[j]);
+                if (unique.size() == k) count++;
+                else if (unique.size() > k) break;
+            }
+        }
+        return count;
+    }
+};
+```
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(N)$ | **Space:** $O(N)$ frequency array / map
+- **Explanation:** Finding subarrays with *exactly* $k$ unique elements directly with sliding window is tricky because shrinking the window doesn't monotonically decrease the number of valid subarrays.
+  Instead, notice that:
+  $$\text{exact}(k) = \text{atMost}(k) - \text{atMost}(k - 1)$$
+  In `atMost(k)`, we maintain a window `[left, right]` with at most $k$ distinct elements. Every time we expand `right`, the number of new valid subarrays ending at `right` is `(right - left + 1)`.
+
+```cpp
+class Solution {
+private:
+    int atMost(vector<int>& nums, int k) {
+        if (k <= 0) return 0;
+        int n = nums.size(), left = 0, count = 0;
+        unordered_map<int, int> freq;
+
+        for (int right = 0; right < n; right++) {
+            if (freq[nums[right]]++ == 0) {
+                k--;
+            }
+            while (k < 0) {
+                if (--freq[nums[left]] == 0) {
+                    k++;
+                }
+                left++;
+            }
+            count += (right - left + 1);
+        }
+        return count;
+    }
+public:
+    int subarraysWithKDistinct(vector<int>& nums, int k) {
+        return atMost(nums, k) - atMost(nums, k - 1);
+    }
+};
+```
+
+---
+**⚠️ Edge Cases & Interview Gotchas**
+- $k = 1$: `atMost(0)` must correctly return `0`.
+- Array where all elements are identical.
 
 ---
 
@@ -3537,6 +4169,117 @@ public:
 ---
 
 
+### [BONUS 7] 🟢 P2 [BONUS] LC 4: Median of Two Sorted Arrays [HARD]
+- **LeetCode Link:** [LC 4: Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/)
+- **Category / Sub-Pattern:** Sub-Pattern 7.2 (Binary Search on Answer Space / Partitions)
+
+**📜 Problem Statement & Explanation**
+Given two sorted arrays `nums1` and `nums2` of size `m` and `n` respectively, return the median of the two sorted arrays. The overall run time complexity should be $O(\log (m+n))$.
+
+**Example 1:**
+- **Input:** `nums1 = [1,3], nums2 = [2]`
+- **Output:** `2.00000`
+- **Explanation:** merged array = `[1,2,3]` and median is `2`.
+
+**Example 2:**
+- **Input:** `nums1 = [1,2], nums2 = [3,4]`
+- **Output:** `2.50000`
+- **Explanation:** merged array = `[1,2,3,4]` and median is `(2 + 3) / 2 = 2.5`.
+
+**Constraints:**
+- `nums1.length == m`, `nums2.length == n`
+- $0 \le m \le 1000$, $0 \le n \le 1000$
+- $1 \le m + n \le 2000$
+- $-10^6 \le nums1[i], nums2[i] \le 10^6$
+
+---
+**🧠 Short Solution Summary & Revision Notes**
+- **Main Pattern:** Sub-Pattern 7.2 (Binary Search on Answer Space / Partitions)
+- **Memory Mnemonic:** *"Binary search partition on smaller array. LeftMaxA <= RightMinB and LeftMaxB <= RightMinA."*
+
+---
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(M + N)$ | **Space:** $O(M + N)$
+- **Explanation:** Merge both arrays using the standard two-pointer merge algorithm into a single sorted array of size $M + N$. Return the middle element (for odd length) or the average of the two middle elements (for even length).
+
+```cpp
+class Solution {
+public:
+    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+        int m = nums1.size(), n = nums2.size();
+        vector<int> merged;
+        int i = 0, j = 0;
+        while (i < m && j < n) {
+            if (nums1[i] <= nums2[j]) merged.push_back(nums1[i++]);
+            else merged.push_back(nums2[j++]);
+        }
+        while (i < m) merged.push_back(nums1[i++]);
+        while (j < n) merged.push_back(nums2[j++]);
+
+        int total = m + n;
+        if (total % 2 == 1) return merged[total / 2];
+        return (merged[total / 2 - 1] + merged[total / 2]) / 2.0;
+    }
+};
+```
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(\log(\min(M, N)))$ | **Space:** $O(1)$
+- **Explanation:**
+  1. Ensure `nums1` is the shorter array (if not, swap).
+  2. Perform binary search for partition `cut1` in `nums1` in range `[0, m]`.
+  3. Set `cut2 = (m + n + 1) / 2 - cut1`.
+  4. Define boundary elements:
+     - `l1 = (cut1 == 0) ? INT_MIN : nums1[cut1 - 1]`
+     - `r1 = (cut1 == m) ? INT_MAX : nums1[cut1]`
+     - `l2 = (cut2 == 0) ? INT_MIN : nums2[cut2 - 1]`
+     - `r2 = (cut2 == n) ? INT_MAX : nums2[cut2]`
+  5. If `l1 <= r2` and `l2 <= r1`:
+     - If total elements is odd: `return max(l1, l2)`.
+     - If total elements is even: `return (max(l1, l2) + min(r1, r2)) / 2.0`.
+  6. If `l1 > r2`, move binary search left (`high = cut1 - 1`).
+  7. Else, move binary search right (`low = cut1 + 1`).
+
+```cpp
+class Solution {
+public:
+    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+        if (nums1.size() > nums2.size()) return findMedianSortedArrays(nums2, nums1);
+        int m = nums1.size(), n = nums2.size();
+        int low = 0, high = m;
+
+        while (low <= high) {
+            int cut1 = low + (high - low) / 2;
+            int cut2 = (m + n + 1) / 2 - cut1;
+
+            int l1 = (cut1 == 0) ? INT_MIN : nums1[cut1 - 1];
+            int r1 = (cut1 == m) ? INT_MAX : nums1[cut1];
+            int l2 = (cut2 == 0) ? INT_MIN : nums2[cut2 - 1];
+            int r2 = (cut2 == n) ? INT_MAX : nums2[cut2];
+
+            if (l1 <= r2 && l2 <= r1) {
+                if ((m + n) % 2 == 1) return max(l1, l2);
+                return (max(l1, l2) + min(r1, r2)) / 2.0;
+            } else if (l1 > r2) {
+                high = cut1 - 1;
+            } else {
+                low = cut1 + 1;
+            }
+        }
+        return 0.0;
+    }
+};
+```
+
+---
+**⚠️ Edge Cases & Interview Gotchas**
+- One array is completely empty: Handling `INT_MIN` / `INT_MAX` sentinels correctly prevents indexing bugs.
+- Division by 2 must use `2.0` to avoid integer truncation.
+
+---
+
+
 ## 8. OVERLAPPING INTERVALS
 
 ### 44. 🔴 P0 [Q] LC 56: Merge Intervals [MEDIUM]
@@ -3887,6 +4630,100 @@ public:
 
 ---
 
+### [BONUS 8] 🟢 P2 [BONUS] LC 986: Interval List Intersections [MEDIUM]
+- **LeetCode Link:** [LC 986: Interval List Intersections](https://leetcode.com/problems/interval-list-intersections/)
+- **Category / Sub-Pattern:** Sub-Pattern 8.1 (Interval Sweeps & Intersections)
+
+**📜 Problem Statement & Explanation**
+You are given two lists of closed intervals, `firstList` and `secondList`, where `firstList[i] = [start_i, end_i]` and `secondList[j] = [start_j, end_j]`. Each list of intervals is pairwise disjoint and in sorted order.
+Return the intersection of these two interval lists.
+
+**Example 1:**
+- **Input:** `firstList = [[0,2],[5,10],[13,23],[24,25]], secondList = [[1,5],[8,12],[15,24],[25,26]]`
+- **Output:** `[[1,2],[5,5],[8,10],[15,23],[24,24],[25,25]]`
+
+**Example 2:**
+- **Input:** `firstList = [[1,3],[5,9]], secondList = []`
+- **Output:** `[]`
+
+**Constraints:**
+- $0 \le firstList.length, secondList.length \le 1000$
+- `firstList[i].length == 2`, `secondList[j].length == 2`
+- $0 \le start_i < end_i \le 10^9$
+- $0 \le start_j < end_j \le 10^9$
+
+---
+**🧠 Short Solution Summary & Revision Notes**
+- **Main Pattern:** Sub-Pattern 8.1 (Interval Sweeps & Intersections)
+- **Memory Mnemonic:** *"Overlap start = max(A.start, B.start), Overlap end = min(A.end, B.end). Advance the one that ends first."*
+
+---
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(M \times N)$ | **Space:** $O(1)$ auxiliary
+- **Explanation:** Check all pairs $(i, j)$ using nested loops. For each pair, calculate `start = max(firstList[i][0], secondList[j][0])` and `end = min(firstList[i][1], secondList[j][1])`. If `start <= end`, record `[start, end]`.
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> intervalIntersection(vector<vector<int>>& firstList, vector<vector<int>>& secondList) {
+        vector<vector<int>> res;
+        for (const auto& a : firstList) {
+            for (const auto& b : secondList) {
+                int start = max(a[0], b[0]);
+                int end = min(a[1], b[1]);
+                if (start <= end) {
+                    res.push_back({start, end});
+                }
+            }
+        }
+        return res;
+    }
+};
+```
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(M + N)$ | **Space:** $O(1)$ auxiliary memory
+- **Explanation:** Because both lists are already sorted and disjoint, use two pointers `i` and `j`:
+  1. Potential overlap: `start = max(firstList[i][0], secondList[j][0])`, `end = min(firstList[i][1], secondList[j][1])`.
+  2. If `start <= end`, add `[start, end]` to result.
+  3. Discard the interval that ends earlier: if `firstList[i][1] < secondList[j][1]`, increment `i`; otherwise increment `j`.
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> intervalIntersection(vector<vector<int>>& firstList, vector<vector<int>>& secondList) {
+        vector<vector<int>> res;
+        int i = 0, j = 0;
+        int m = firstList.size(), n = secondList.size();
+
+        while (i < m && j < n) {
+            int start = max(firstList[i][0], secondList[j][0]);
+            int end = min(firstList[i][1], secondList[j][1]);
+
+            if (start <= end) {
+                res.push_back({start, end});
+            }
+
+            if (firstList[i][1] < secondList[j][1]) {
+                i++;
+            } else {
+                j++;
+            }
+        }
+        return res;
+    }
+};
+```
+
+---
+**⚠️ Edge Cases & Interview Gotchas**
+- Closed intervals mean single-point intersections (e.g., `[5, 5]`) are valid.
+- One or both lists empty returns `[]`.
+
+---
+
+
 ## 9. FAST & SLOW POINTERS (LINKED LIST)
 
 ### 48. 🔴 P0 [Q] LC 141: Linked List Cycle [EASY]
@@ -4153,6 +4990,91 @@ public:
 ---
 
 
+### [BONUS 9] 🟢 P2 [BONUS] LC 287: Find the Duplicate Number [MEDIUM]
+- **LeetCode Link:** [LC 287: Find the Duplicate Number](https://leetcode.com/problems/find-the-duplicate-number/)
+- **Category / Sub-Pattern:** Sub-Pattern 9.1 (Cycle Detection on Functional Graphs)
+
+**📜 Problem Statement & Explanation**
+Given an array of integers `nums` containing `n + 1` integers where each integer is in the range `[1, n]` inclusive. There is only one repeated number in `nums`, return this repeated number.
+You must solve the problem **without modifying** the array `nums` and using only **$O(1)$ constant extra space**.
+
+**Example 1:**
+- **Input:** `nums = [1,3,4,2,2]`
+- **Output:** `2`
+
+**Example 2:**
+- **Input:** `nums = [3,1,3,4,2]`
+- **Output:** `3`
+
+**Constraints:**
+- $1 \le n \le 10^5$
+- `nums.length == n + 1`
+- $1 \le nums[i] \le n$
+- All integers in `nums` appear only once except for precisely one integer which appears two or more times.
+
+---
+**🧠 Short Solution Summary & Revision Notes**
+- **Main Pattern:** Sub-Pattern 9.1 (Cycle Detection on Functional Graphs)
+- **Memory Mnemonic:** *"Floyd's Tortoise & Hare on Array: index -> nums[index]. Intersection -> Reset slow to 0 -> Meet at cycle start."*
+
+---
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(N \log N)$ or $O(N)$ with set | **Space:** $O(N)$ (or $O(1)$ with sorting, but sorting violates the "do not modify array" constraint)
+- **Explanation:** Use an `unordered_set<int>` to store visited numbers. The first number that already exists in the set is the duplicate.
+
+```cpp
+class Solution {
+public:
+    int findDuplicate(vector<int>& nums) {
+        unordered_set<int> seen;
+        for (int num : nums) {
+            if (seen.count(num)) return num;
+            seen.insert(num);
+        }
+        return -1;
+    }
+};
+```
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(N)$ | **Space:** $O(1)$ extra space, zero array modification
+- **Explanation:** Interpret the array as a linked list where `nums[i]` represents `node->next`. Because values are in range `[1, n]` and the array length is `n + 1`, index `0` can never be inside a cycle (since no value is `0`). A duplicate value means multiple indices point to the same value, forming a cycle entrance.
+  1. Phase 1 (Find intersection): `slow = nums[slow]`, `fast = nums[nums[fast]]`.
+  2. Phase 2 (Find cycle entrance): Reset `slow = 0`. Advance both pointers by 1 step (`slow = nums[slow]`, `fast = nums[fast]`) until they meet. The meeting point is the duplicate value.
+
+```cpp
+class Solution {
+public:
+    int findDuplicate(vector<int>& nums) {
+        int slow = nums[0];
+        int fast = nums[0];
+
+        // Phase 1: Detect cycle
+        do {
+            slow = nums[slow];
+            fast = nums[nums[fast]];
+        } while (slow != fast);
+
+        // Phase 2: Find entrance to cycle
+        slow = 0;
+        while (slow != fast) {
+            slow = nums[slow];
+            fast = nums[fast];
+        }
+        return slow;
+    }
+};
+```
+
+---
+**⚠️ Edge Cases & Interview Gotchas**
+- Modifying the array (e.g. sign negation `nums[abs(x)] = -nums[abs(x)]`) is strictly prohibited by problem constraints.
+- Why does index 0 never belong to a cycle? Because values are $\ge 1$, no element can point to index 0.
+
+---
+
+
 ## 10. MONOTONIC STACK
 
 ### 51. 🔴 P0 [Q] LC 20: Valid Parentheses [EASY]
@@ -4398,6 +5320,120 @@ public:
 **⚠️ Edge Cases & Interview Gotchas**
 - All heights equal.
 - Monotonically increasing or decreasing heights.
+
+---
+
+
+### [BONUS 10] 🟢 P2 [BONUS] LC 85: Maximal Rectangle [HARD]
+- **LeetCode Link:** [LC 85: Maximal Rectangle](https://leetcode.com/problems/maximal-rectangle/)
+- **Category / Sub-Pattern:** Sub-Pattern 10.1 (Histogram Expansion via Monotonic Stack)
+
+**📜 Problem Statement & Explanation**
+Given a `rows x cols` binary `matrix` filled with `'0'`s and `'1'`s, find the largest rectangle containing only `'1'`s and return its area.
+
+**Example 1:**
+- **Input:** `matrix = [["1","0","1","0","0"],["1","0","1","1","1"],["1","1","1","1","1"],["1","0","0","1","0"]]`
+- **Output:** `6`
+- **Explanation:** The maximal rectangle is shown in the middle with 6 ones.
+
+**Example 2:**
+- **Input:** `matrix = [["0"]]`
+- **Output:** `0`
+
+**Constraints:**
+- `rows == matrix.length`
+- `cols == matrix[i].length`
+- $1 \le rows, cols \le 200$
+- `matrix[i][j]` is `'0'` or `'1'`.
+
+---
+**🧠 Short Solution Summary & Revision Notes**
+- **Main Pattern:** Sub-Pattern 10.1 (Histogram Expansion via Monotonic Stack)
+- **Memory Mnemonic:** *"Row-by-row cumulative histogram: If '1' h++, else h=0. Run LC 84 Largest Rectangle in Histogram on each row."*
+
+---
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(M^3 \times N^3)$ | **Space:** $O(1)$
+- **Explanation:** Check every possible subrectangle $(r1, c1)$ to $(r2, c2)$. If all cells are `'1'`, calculate area $(r2 - r1 + 1) \times (c2 - c1 + 1)$ and update max area.
+
+```cpp
+class Solution {
+public:
+    int maximalRectangle(vector<vector<char>>& matrix) {
+        if (matrix.empty() || matrix[0].empty()) return 0;
+        int m = matrix.size(), n = matrix[0].size(), maxArea = 0;
+        for (int r1 = 0; r1 < m; r1++) {
+            for (int c1 = 0; c1 < n; c1++) {
+                for (int r2 = r1; r2 < m; r2++) {
+                    for (int c2 = c1; c2 < n; c2++) {
+                        bool allOnes = true;
+                        for (int r = r1; r <= r2 && allOnes; r++) {
+                            for (int c = c1; c <= c2; c++) {
+                                if (matrix[r][c] == '0') { allOnes = false; break; }
+                            }
+                        }
+                        if (allOnes) maxArea = max(maxArea, (r2 - r1 + 1) * (c2 - c1 + 1));
+                    }
+                }
+            }
+        }
+        return maxArea;
+    }
+};
+```
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(M \times N)$ | **Space:** $O(N)$
+- **Explanation:**
+  1. Treat each row as the base of a histogram. Maintain an array `heights` of length $N$.
+  2. For row $r$, if `matrix[r][c] == '1'`, `heights[c] += 1`; otherwise, `heights[c] = 0`.
+  3. Apply the LC 84 Monotonic Stack algorithm on `heights`: maintain a monotonic increasing stack of indices. When popping an index $i$, the popped bar has height $h = heights[i]$ and width $w = right - left - 1$.
+  4. Track the maximum area across all rows.
+
+```cpp
+class Solution {
+private:
+    int largestRectangleArea(vector<int>& heights) {
+        heights.push_back(0); // Sentinel to flush remaining elements
+        int n = heights.size(), maxArea = 0;
+        stack<int> st;
+
+        for (int i = 0; i < n; i++) {
+            while (!st.empty() && heights[st.top()] > heights[i]) {
+                int h = heights[st.top()];
+                st.pop();
+                int w = st.empty() ? i : (i - st.top() - 1);
+                maxArea = max(maxArea, h * w);
+            }
+            st.push(i);
+        }
+        heights.pop_back();
+        return maxArea;
+    }
+public:
+    int maximalRectangle(vector<vector<char>>& matrix) {
+        if (matrix.empty() || matrix[0].empty()) return 0;
+        int m = matrix.size(), n = matrix[0].size();
+        vector<int> heights(n, 0);
+        int maxArea = 0;
+
+        for (int r = 0; r < m; r++) {
+            for (int c = 0; c < n; c++) {
+                if (matrix[r][c] == '1') heights[c]++;
+                else heights[c] = 0;
+            }
+            maxArea = max(maxArea, largestRectangleArea(heights));
+        }
+        return maxArea;
+    }
+};
+```
+
+---
+**⚠️ Edge Cases & Interview Gotchas**
+- When `matrix[r][c] == '0'`, `heights[c]` must be reset to `0`, not simply left un-incremented.
+- Append a sentinel `0` to `heights` to cleanly flush all bars from the stack without post-loop cleanup logic.
 
 ---
 
@@ -4734,6 +5770,109 @@ public:
 ---
 
 
+### [BONUS 11] 🟢 P2 [BONUS] LC 621: Task Scheduler [MEDIUM]
+- **LeetCode Link:** [LC 621: Task Scheduler](https://leetcode.com/problems/task-scheduler/)
+- **Category / Sub-Pattern:** Sub-Pattern 11.1 (Priority Queue Simulation & Greedy Math)
+
+**📜 Problem Statement & Explanation**
+You are given an array of CPU `tasks`, each represented by letters A to Z, and a cooldown period `n`. Each cycle or interval allows the completion of one task. Tasks can be completed in any order, but there's a constraint: identical tasks must be separated by at least `n` intervals with other tasks or idling.
+Return the minimum number of intervals the CPU will take to finish all the given tasks.
+
+**Example 1:**
+- **Input:** `tasks = ["A","A","A","B","B","B"], n = 2`
+- **Output:** `8`
+- **Explanation:** `A -> B -> idle -> A -> B -> idle -> A -> B`. Total = 8 intervals.
+
+**Example 2:**
+- **Input:** `tasks = ["A","C","A","B","D","B"], n = 1`
+- **Output:** `6`
+
+**Constraints:**
+- $1 \le tasks.length \le 10^4$
+- `tasks[i]` is an uppercase English letter.
+- $0 \le n \le 100$
+
+---
+**🧠 Short Solution Summary & Revision Notes**
+- **Main Pattern:** Sub-Pattern 11.1 (Priority Queue Simulation & Greedy Math)
+- **Memory Mnemonic:** *"Max frequency determines frame: (maxFreq - 1) * (n + 1) + countOfMaxFreq. Result = max(tasks.size(), frameSize)."*
+
+---
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(\text{Total Intervals} \times \log 26)$ | **Space:** $O(26)$
+- **Explanation:** Simulate cycle by cycle using a Max-Heap of remaining task counts and a queue storing `{remainingCount, availableTime}` to manage the cooldown of tasks.
+
+```cpp
+class Solution {
+public:
+    int leastInterval(vector<char>& tasks, int n) {
+        vector<int> freq(26, 0);
+        for (char t : tasks) freq[t - 'A']++;
+        priority_queue<int> pq;
+        for (int f : freq) if (f > 0) pq.push(f);
+
+        queue<pair<int, int>> q; // {remainingCount, timeAvailable}
+        int time = 0;
+
+        while (!pq.empty() || !q.empty()) {
+            time++;
+            if (!pq.empty()) {
+                int cnt = pq.top() - 1;
+                pq.pop();
+                if (cnt > 0) q.push({cnt, time + n});
+            }
+            if (!q.empty() && q.front().second == time) {
+                pq.push(q.front().first);
+                q.pop();
+            }
+        }
+        return time;
+    }
+};
+```
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(N)$ | **Space:** $O(1)$ auxiliary memory
+- **Explanation:**
+  1. The task with the maximum frequency `maxFreq` forms the structure. Between each occurrence of this task, there must be at least `n` slots.
+  2. Number of chunks formed = `maxFreq - 1`.
+  3. Chunk size = `n + 1`.
+  4. Count how many distinct tasks share this maximum frequency (`countMax`).
+  5. The formula is `(maxFreq - 1) * (n + 1) + countMax`.
+  6. If other tasks fill all idle slots, no idling is needed, and the total intervals is simply `tasks.size()`.
+  7. Final answer: `max((int)tasks.size(), (maxFreq - 1) * (n + 1) + countMax)`.
+
+```cpp
+class Solution {
+public:
+    int leastInterval(vector<char>& tasks, int n) {
+        vector<int> freq(26, 0);
+        int maxFreq = 0;
+        for (char t : tasks) {
+            freq[t - 'A']++;
+            maxFreq = max(maxFreq, freq[t - 'A']);
+        }
+
+        int countMax = 0;
+        for (int f : freq) {
+            if (f == maxFreq) countMax++;
+        }
+
+        int emptySlots = (maxFreq - 1) * (n + 1) + countMax;
+        return max((int)tasks.size(), emptySlots);
+    }
+};
+```
+
+---
+**⚠️ Edge Cases & Interview Gotchas**
+- $n = 0$: Cooldown is 0, so the answer is strictly `tasks.size()`.
+- When `emptySlots < tasks.size()`, no idle cycles are needed. Taking `max` handles this naturally.
+
+---
+
+
 ## 12. TREE DFS / DEPTH FIRST SEARCH
 
 ### 58. 🟠 P1 [Q] LC 104: Maximum Depth of Binary Tree [EASY]
@@ -5047,6 +6186,91 @@ public:
 ---
 
 
+### [BONUS 12] 🟢 P2 [BONUS] LC 297: Serialize and Deserialize Binary Tree [HARD]
+- **LeetCode Link:** [LC 297: Serialize and Deserialize Binary Tree](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/)
+- **Category / Sub-Pattern:** Sub-Pattern 12.1 (Tree Preorder Traversal & String Stream State)
+
+**📜 Problem Statement & Explanation**
+Serialization is the process of converting a data structure or object into a sequence of bits so that it can be stored in a file or memory buffer, or transmitted across a network.
+Design an algorithm to serialize and deserialize a binary tree. There is no restriction on how your serialization/deserialization algorithm should work.
+
+**Example 1:**
+- **Input:** `root = [1,2,3,null,null,4,5]`
+- **Output:** `[1,2,3,null,null,4,5]`
+
+**Example 2:**
+- **Input:** `root = []`
+- **Output:** `[]`
+
+**Constraints:**
+- The number of nodes in the tree is in the range $[0, 10^4]$.
+- $-1000 \le Node.val \le 1000$.
+
+---
+**🧠 Short Solution Summary & Revision Notes**
+- **Main Pattern:** Sub-Pattern 12.1 (Tree Preorder Traversal & String Stream State)
+- **Memory Mnemonic:** *"Preorder DFS with '#' for null and comma delimiter. Stringstream in deserialize recursively builds root->left->right."*
+
+---
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(2^H)$ | **Space:** $O(2^H)$
+- **Explanation:** Store the complete binary tree array representation (like a heap array) including all null pointers up to depth $H$. For skewed trees, $2^H$ space blows up memory.
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(N)$ | **Space:** $O(N)$
+- **Explanation:**
+  - `serialize`: Use Preorder DFS (`Root, Left, Right`). If node is null, append `"#, "`. Otherwise, append `to_string(node->val) + ","` and recurse on left and right.
+  - `deserialize`: Read tokens separated by comma using `stringstream`. If token is `"#"`, return `nullptr`. Otherwise, create `TreeNode(stoi(token))` and recurse to build `root->left` and `root->right`.
+
+```cpp
+class Codec {
+private:
+    void serializeHelper(TreeNode* root, string& s) {
+        if (!root) {
+            s += "#,";
+            return;
+        }
+        s += to_string(root->val) + ",";
+        serializeHelper(root->left, s);
+        serializeHelper(root->right, s);
+    }
+
+    TreeNode* deserializeHelper(stringstream& ss) {
+        string token;
+        if (!getline(ss, token, ',')) return nullptr;
+        if (token == "#") return nullptr;
+
+        TreeNode* node = new TreeNode(stoi(token));
+        node->left = deserializeHelper(ss);
+        node->right = deserializeHelper(ss);
+        return node;
+    }
+
+public:
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        string s = "";
+        serializeHelper(root, s);
+        return s;
+    }
+
+    // Decodes your encoded data to tree.
+    TreeNode* deserialize(string data) {
+        stringstream ss(data);
+        return deserializeHelper(ss);
+    }
+};
+```
+
+---
+**⚠️ Edge Cases & Interview Gotchas**
+- Empty tree `root == nullptr` serializes to `"#, "` and deserializes safely to `nullptr`.
+- Negative numbers (e.g. `-100`) must be parsed properly by `stoi`.
+
+---
+
+
 ## 13. TREE BFS / LEVEL ORDER TRAVERSAL
 
 ### 62. 🔴 P0 [Q] LC 102: Binary Tree Level Order Traversal [MEDIUM]
@@ -5311,6 +6535,113 @@ public:
 ---
 
 
+### [BONUS 13] 🟢 P2 [BONUS] LC 314: Binary Tree Vertical Order Traversal [MEDIUM]
+- **LeetCode Link:** [LC 314: Binary Tree Vertical Order Traversal](https://leetcode.com/problems/binary-tree-vertical-order-traversal/)
+- **Category / Sub-Pattern:** Sub-Pattern 13.1 (Coordinate-Based BFS Traversal)
+
+**📜 Problem Statement & Explanation**
+Given the `root` of a binary tree, return the vertical order traversal of its nodes' values (i.e., from top to bottom, column by column).
+If two nodes are in the same row and column, the order should be from **left to right**.
+
+**Example 1:**
+- **Input:** `root = [3,9,20,null,null,15,7]`
+- **Output:** `[[9],[3,15],[20],[7]]`
+
+**Example 2:**
+- **Input:** `root = [3,9,8,4,0,1,7]`
+- **Output:** `[[4],[9],[3,0,1],[8],[7]]`
+
+**Constraints:**
+- The number of nodes in the tree is in the range $[0, 100]$.
+- $-100 \le Node.val \le 100$.
+
+---
+**🧠 Short Solution Summary & Revision Notes**
+- **Main Pattern:** Sub-Pattern 13.1 (Coordinate-Based BFS Traversal)
+- **Memory Mnemonic:** *"BFS with pair<Node*, col>. col-1 for left, col+1 for right. Hash map collects values, BFS preserves top-to-bottom automatically."*
+
+---
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(N \log N)$ | **Space:** $O(N)$
+- **Explanation:** Run DFS recording `{col, row, val}` for each node. Sort the list by `col` ascending, then `row` ascending. Group into columns.
+
+```cpp
+class Solution {
+    vector<tuple<int, int, int>> nodes; // {col, row, val}
+    void dfs(TreeNode* root, int r, int c) {
+        if (!root) return;
+        nodes.push_back({c, r, root->val});
+        dfs(root->left, r + 1, c - 1);
+        dfs(root->right, r + 1, c + 1);
+    }
+public:
+    vector<vector<int>> verticalOrder(TreeNode* root) {
+        if (!root) return {};
+        dfs(root, 0, 0);
+        // Sort by col, then by row
+        stable_sort(nodes.begin(), nodes.end(), [](const auto& a, const auto& b) {
+            if (get<0>(a) != get<0>(b)) return get<0>(a) < get<0>(b);
+            return get<1>(a) < get<1>(b);
+        });
+        vector<vector<int>> res;
+        map<int, vector<int>> mp;
+        for (auto& [c, r, v] : nodes) mp[c].push_back(v);
+        for (auto& [c, vList] : mp) res.push_back(vList);
+        return res;
+    }
+};
+```
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(N)$ | **Space:** $O(N)$
+- **Explanation:** Use BFS with a queue of pairs `queue<pair<TreeNode*, int>>` where `int` is column offset.
+  - Root starts at column `0`.
+  - Left child is at `col - 1`, right child at `col + 1`.
+  - Maintain `unordered_map<int, vector<int>> colMap` and track `minCol` and `maxCol`.
+  - Because BFS visits level by level, nodes naturally appear in top-to-bottom and left-to-right order without any sorting!
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> verticalOrder(TreeNode* root) {
+        if (!root) return {};
+        vector<vector<int>> res;
+        unordered_map<int, vector<int>> colMap;
+        queue<pair<TreeNode*, int>> q;
+        q.push({root, 0});
+        int minCol = 0, maxCol = 0;
+
+        while (!q.empty()) {
+            auto [node, col] = q.front();
+            q.pop();
+
+            colMap[col].push_back(node->val);
+            minCol = min(minCol, col);
+            maxCol = max(maxCol, col);
+
+            if (node->left) q.push({node->left, col - 1});
+            if (node->right) q.push({node->right, col + 1});
+        }
+
+        for (int c = minCol; c <= maxCol; c++) {
+            if (colMap.count(c)) {
+                res.push_back(colMap[c]);
+            }
+        }
+        return res;
+    }
+};
+```
+
+---
+**⚠️ Edge Cases & Interview Gotchas**
+- Empty tree returns `[]`.
+- Contrast with LC 987: LC 987 requires sorting node values if they share both row and column; LC 314 strictly preserves left-to-right arrival order.
+
+---
+
+
 ## 14. BINARY SEARCH TREE (BST)
 
 ### 65. 🔴 P0 [Q] LC 98: Validate Binary Search Tree [MEDIUM]
@@ -5559,6 +6890,104 @@ public:
 **⚠️ Edge Cases & Interview Gotchas**
 - Target key not present in tree.
 - Deleting root node.
+
+---
+
+
+### [BONUS 14] 🟢 P2 [BONUS] LC 99: Recover Binary Search Tree [MEDIUM]
+- **LeetCode Link:** [LC 99: Recover Binary Search Tree](https://leetcode.com/problems/recover-binary-search-tree/)
+- **Category / Sub-Pattern:** Sub-Pattern 14.1 (Inorder Inversion Detection)
+
+**📜 Problem Statement & Explanation**
+You are given the `root` of a binary search tree (BST), where the values of **exactly two nodes** of the tree were swapped by mistake. Recover the tree without changing its structure.
+
+**Example 1:**
+- **Input:** `root = [1,3,null,null,2]`
+- **Output:** `[3,1,null,null,2]`
+- **Explanation:** 3 cannot be a left child of 1 because $3 > 1$. Swapping 1 and 3 recovers the BST.
+
+**Example 2:**
+- **Input:** `root = [3,1,4,null,null,2]`
+- **Output:** `[2,1,4,null,null,1]`
+
+**Constraints:**
+- The number of nodes in the tree is in the range $[2, 1000]$.
+- $-2^{31} \le Node.val \le 2^{31} - 1$.
+
+---
+**🧠 Short Solution Summary & Revision Notes**
+- **Main Pattern:** Sub-Pattern 14.1 (Inorder Inversion Detection)
+- **Memory Mnemonic:** *"Inorder traversal must be sorted. First violation: first = prev. Second violation: second = curr. Swap(first->val, second->val)."*
+
+---
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(N \log N)$ | **Space:** $O(N)$
+- **Explanation:** Perform inorder traversal and store all node pointers and values in lists. Sort the values array. Walk the tree again in inorder and overwrite each node's value with the sorted values.
+
+```cpp
+class Solution {
+    vector<TreeNode*> nodes;
+    vector<int> vals;
+    void inorder(TreeNode* root) {
+        if (!root) return;
+        inorder(root->left);
+        nodes.push_back(root);
+        vals.push_back(root->val);
+        inorder(root->right);
+    }
+public:
+    void recoverTree(TreeNode* root) {
+        inorder(root);
+        sort(vals.begin(), vals.end());
+        for (int i = 0; i < nodes.size(); i++) {
+            nodes[i]->val = vals[i];
+        }
+    }
+};
+```
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(N)$ | **Space:** $O(H)$ recursion stack (or $O(1)$ via Morris Inorder)
+- **Explanation:** Inorder traversal of a valid BST visits nodes in strictly increasing order. When two nodes are swapped, there will be either:
+  1. Two violations (`prev->val > curr->val`): `first` is `prev` of the first violation, and `second` is `curr` of the second violation.
+  2. One violation (the swapped nodes were adjacent in inorder): `first` is `prev`, and `second` is `curr`.
+  After completing the traversal, swap the values of `first` and `second`.
+
+```cpp
+class Solution {
+private:
+    TreeNode* first = nullptr;
+    TreeNode* second = nullptr;
+    TreeNode* prev = nullptr;
+
+    void inorder(TreeNode* curr) {
+        if (!curr) return;
+        inorder(curr->left);
+
+        if (prev && prev->val > curr->val) {
+            if (!first) first = prev; // First violation
+            second = curr;           // Second violation (or adjacent)
+        }
+        prev = curr;
+
+        inorder(curr->right);
+    }
+
+public:
+    void recoverTree(TreeNode* root) {
+        inorder(root);
+        if (first && second) {
+            swap(first->val, second->val);
+        }
+    }
+};
+```
+
+---
+**⚠️ Edge Cases & Interview Gotchas**
+- Swapped nodes are direct parent-child or adjacent in inorder traversal (only one inversion is triggered).
+- Modifying node pointers vs swapping node values: Problem statement specifically asks to recover without changing tree structure.
 
 ---
 
@@ -5918,6 +7347,131 @@ public:
 **⚠️ Edge Cases & Interview Gotchas**
 - `n = 1` (returns `[["Q"]]`).
 - `n = 2` or `n = 3` (no solution, returns `[]`).
+
+---
+
+
+### [BONUS 15] 🟢 P2 [BONUS] LC 79: Word Search [MEDIUM]
+- **LeetCode Link:** [LC 79: Word Search](https://leetcode.com/problems/word-search/)
+- **Category / Sub-Pattern:** Sub-Pattern 15.1 (Grid DFS Backtracking)
+
+**📜 Problem Statement & Explanation**
+Given an `m x n` grid of characters `board` and a string `word`, return `true` if `word` exists in the grid.
+The word can be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell may not be used more than once.
+
+**Example 1:**
+- **Input:** `board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCCED"`
+- **Output:** `true`
+
+**Example 2:**
+- **Input:** `board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "SEE"`
+- **Output:** `true`
+
+**Constraints:**
+- `m == board.length`, `n = board[i].length`
+- $1 \le m, n \le 6$
+- $1 \le word.length \le 15$
+- `board` and `word` consist of only lowercase and uppercase English letters.
+
+---
+**🧠 Short Solution Summary & Revision Notes**
+- **Main Pattern:** Sub-Pattern 15.1 (Grid DFS Backtracking)
+- **Memory Mnemonic:** *"Mask cell board[r][c] = '#' -> explore 4 directions -> unmask board[r][c] = temp (backtrack)."*
+
+---
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(M \times N \times 4^L)$ | **Space:** $O(M \times N + L)$
+- **Explanation:** Maintain a 2D boolean array `visited[m][n]` and launch DFS from every cell matching `word[0]`.
+
+```cpp
+class Solution {
+    bool dfs(vector<vector<char>>& board, string& word, int r, int c, int idx, vector<vector<bool>>& visited) {
+        if (idx == word.size()) return true;
+        int m = board.size(), n = board[0].size();
+        if (r < 0 || r >= m || c < 0 || c >= n || visited[r][c] || board[r][c] != word[idx]) return false;
+
+        visited[r][c] = true;
+        bool found = dfs(board, word, r + 1, c, idx + 1, visited) ||
+                     dfs(board, word, r - 1, c, idx + 1, visited) ||
+                     dfs(board, word, r, c + 1, idx + 1, visited) ||
+                     dfs(board, word, r, c - 1, idx + 1, visited);
+        visited[r][c] = false;
+        return found;
+    }
+public:
+    bool exist(vector<vector<char>>& board, string word) {
+        int m = board.size(), n = board[0].size();
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+        for (int r = 0; r < m; r++) {
+            for (int c = 0; c < n; c++) {
+                if (dfs(board, word, r, c, 0, visited)) return true;
+            }
+        }
+        return false;
+    }
+};
+```
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(M \times N \times 3^L)$ | **Space:** $O(L)$ call stack (In-place grid masking)
+- **Explanation:**
+  1. Optimize space: Eliminate `visited` array by masking `board[r][c] = '#'` in-place, then restoring `board[r][c] = temp` during backtracking.
+  2. Pruning heuristic: If the frequency of `word[0]` is greater than `word.back()`, reverse `word` to start searching from the rarer character.
+
+```cpp
+class Solution {
+private:
+    bool dfs(vector<vector<char>>& board, const string& word, int r, int c, int idx) {
+        if (idx == word.size()) return true;
+        if (r < 0 || r >= board.size() || c < 0 || c >= board[0].size() || board[r][c] != word[idx]) {
+            return false;
+        }
+
+        char temp = board[r][c];
+        board[r][c] = '#'; // In-place visit mask
+
+        bool found = dfs(board, word, r + 1, c, idx + 1) ||
+                     dfs(board, word, r - 1, c, idx + 1) ||
+                     dfs(board, word, r, c + 1, idx + 1) ||
+                     dfs(board, word, r, c - 1, idx + 1);
+
+        board[r][c] = temp; // Backtrack
+        return found;
+    }
+
+public:
+    bool exist(vector<vector<char>>& board, string word) {
+        int m = board.size(), n = board[0].size();
+        // Character count check optimization
+        unordered_map<char, int> boardFreq, wordFreq;
+        for (auto& row : board) for (char c : row) boardFreq[c]++;
+        for (char c : word) wordFreq[c]++;
+        for (auto& [ch, count] : wordFreq) {
+            if (boardFreq[ch] < count) return false;
+        }
+
+        // Reverse search if end character is rarer
+        if (boardFreq[word[0]] > boardFreq[word.back()]) {
+            reverse(word.begin(), word.end());
+        }
+
+        for (int r = 0; r < m; r++) {
+            for (int c = 0; c < n; c++) {
+                if (board[r][c] == word[0] && dfs(board, word, r, c, 0)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+};
+```
+
+---
+**⚠️ Edge Cases & Interview Gotchas**
+- Failing to restore `board[r][c] = temp` breaks subsequent search paths.
+- Single-letter word `word = "A"` on a $1 \times 1$ board.
 
 ---
 
@@ -6437,6 +7991,126 @@ public:
 ---
 
 
+### [BONUS 16] 🟢 P2 [BONUS] LC 743: Network Delay Time [MEDIUM]
+- **LeetCode Link:** [LC 743: Network Delay Time](https://leetcode.com/problems/network-delay-time/)
+- **Category / Sub-Pattern:** Sub-Pattern 16.2 (Weighted Shortest Path / Dijkstra's Algorithm)
+
+**📜 Problem Statement & Explanation**
+You are given a network of `n` nodes, labeled from `1` to `n`. You are also given `times`, a list of travel times as directed edges `times[i] = (u_i, v_i, w_i)`, where $u_i$ is the source node, $v_i$ is the target node, and $w_i$ is the time it takes for a signal to travel from source to target.
+We will send a signal from a given node `k`. Return the minimum time it takes for all the `n` nodes to receive the signal. If it is impossible for all the `n` nodes to receive the signal, return `-1`.
+
+**Example 1:**
+- **Input:** `times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2`
+- **Output:** `2`
+
+**Example 2:**
+- **Input:** `times = [[1,2,1]], n = 2, k = 1`
+- **Output:** `1`
+
+**Example 3:**
+- **Input:** `times = [[1,2,1]], n = 2, k = 2`
+- **Output:** `-1`
+
+**Constraints:**
+- $1 \le k \le n \le 100$
+- $1 \le times.length \le 6000$
+- $times[i].length == 3$
+- $1 \le u_i, v_i \le n$, $u_i \ne v_i$
+- $0 \le w_i \le 100$
+- All pairs $(u_i, v_i)$ are unique.
+
+---
+**🧠 Short Solution Summary & Revision Notes**
+- **Main Pattern:** Sub-Pattern 16.2 (Weighted Shortest Path / Dijkstra's Algorithm)
+- **Memory Mnemonic:** *"Dijkstra's Algorithm: Min-heap of {dist, node}. Relax edges if dist[u] + w < dist[v]. Answer is max(dist)."*
+
+---
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(V \times E)$ | **Space:** $O(V)$
+- **Explanation:** Bellman-Ford algorithm: Initialize `dist` array of size $n+1$ with $\infty$, `dist[k] = 0`. Relax all edges in `times` $n - 1$ times.
+
+```cpp
+class Solution {
+public:
+    int networkDelayTime(vector<vector<int>>& times, int n, int k) {
+        vector<int> dist(n + 1, 1e9);
+        dist[k] = 0;
+        for (int i = 1; i < n; i++) {
+            for (const auto& edge : times) {
+                int u = edge[0], v = edge[1], w = edge[2];
+                if (dist[u] != 1e9 && dist[u] + w < dist[v]) {
+                    dist[v] = dist[u] + w;
+                }
+            }
+        }
+        int maxTime = 0;
+        for (int i = 1; i <= n; i++) {
+            if (dist[i] == 1e9) return -1;
+            maxTime = max(maxTime, dist[i]);
+        }
+        return maxTime;
+    }
+};
+```
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O((V + E) \log V)$ | **Space:** $O(V + E)$
+- **Explanation:** Dijkstra's Algorithm:
+  1. Construct adjacency list `adj[u] = {{v, w}}`.
+  2. Maintain `dist` vector initialized to `INT_MAX`, with `dist[k] = 0`.
+  3. Min-heap `priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>>` stores `{currentDist, node}`.
+  4. Pop `{d, u}`. If `d > dist[u]`, continue (stale entry).
+  5. For each neighbor `{v, weight}`: if `dist[u] + weight < dist[v]`, update `dist[v]` and push `{dist[v], v}`.
+  6. Return `max_element(dist)` from `1` to `n`. If any node is unreachable (`INT_MAX`), return `-1`.
+
+```cpp
+class Solution {
+public:
+    int networkDelayTime(vector<vector<int>>& times, int n, int k) {
+        vector<vector<pair<int, int>>> adj(n + 1);
+        for (const auto& edge : times) {
+            adj[edge[0]].push_back({edge[1], edge[2]});
+        }
+
+        vector<int> dist(n + 1, INT_MAX);
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+
+        dist[k] = 0;
+        pq.push({0, k}); // {distance, node}
+
+        while (!pq.empty()) {
+            auto [d, u] = pq.top();
+            pq.pop();
+
+            if (d > dist[u]) continue;
+
+            for (auto& [v, weight] : adj[u]) {
+                if (dist[u] + weight < dist[v]) {
+                    dist[v] = dist[u] + weight;
+                    pq.push({dist[v], v});
+                }
+            }
+        }
+
+        int maxTime = 0;
+        for (int i = 1; i <= n; i++) {
+            if (dist[i] == INT_MAX) return -1;
+            maxTime = max(maxTime, dist[i]);
+        }
+        return maxTime;
+    }
+};
+```
+
+---
+**⚠️ Edge Cases & Interview Gotchas**
+- Nodes are 1-indexed, so arrays must be of size `n + 1`.
+- Graph may contain disconnected components where some nodes are unreachable.
+
+---
+
+
 ## 17. TOPOLOGICAL SORT (KAHN'S ALGORITHM)
 
 ### 77. 🔴 P0 [Q] LC 207: Course Schedule [MEDIUM]
@@ -6621,6 +8295,118 @@ public:
 **⚠️ Edge Cases & Interview Gotchas**
 - Cycle present (returns empty vector `{}`).
 - No prerequisites (returns `[0, 1, ..., n-1]`).
+
+---
+
+
+### [BONUS 17] 🟢 P2 [BONUS] LC 269: Alien Dictionary [HARD]
+- **LeetCode Link:** [LC 269: Alien Dictionary](https://leetcode.com/problems/alien-dictionary/)
+- **Category / Sub-Pattern:** Sub-Pattern 17.1 (Graph Construction & Topological Kahn's Algorithm)
+
+**📜 Problem Statement & Explanation**
+There is a new alien language that uses the English alphabet. The characters in the dictionary are sorted lexicographically by the rules of this new language.
+Given a list of strings `words` from the alien language's dictionary, return a string of the unique letters in the new alien language sorted in lexicographically increasing order. If there is no valid ordering, return `""`. If there are multiple valid solutions, return any of them.
+
+**Example 1:**
+- **Input:** `words = ["wrt","wrf","er","ett","rftt"]`
+- **Output:** `"wertf"`
+
+**Example 2:**
+- **Input:** `words = ["z","x"]`
+- **Output:** `"zx"`
+
+**Example 3:**
+- **Input:** `words = ["z","x","z"]`
+- **Output:** `""` (Explanation: The order is invalid because 'z' cannot appear both before and after 'x').
+
+**Constraints:**
+- $1 \le words.length \le 100$
+- $1 \le words[i].length \le 100$
+- `words[i]` consists of only lowercase English letters.
+
+---
+**🧠 Short Solution Summary & Revision Notes**
+- **Main Pattern:** Sub-Pattern 17.1 (Graph Construction & Topological Kahn's Algorithm)
+- **Memory Mnemonic:** *"Compare adjacent words for first mismatch -> directed edge. Prefix edge case check. Kahn's BFS for cycle detection."*
+
+---
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(26!)$ | **Space:** $O(26)$
+- **Explanation:** Generate all permutations of 26 letters and verify each permutation against every word pair in the dictionary. Intractable.
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(C)$ where $C$ is total characters across all words | **Space:** $O(1)$ fixed 26-character alphabet graph
+- **Explanation:**
+  1. Extract all unique characters from `words` into `inDegree` map.
+  2. Compare adjacent word pairs `w1` and `w2`:
+     - If `w1.size() > w2.size()` and `w1.rfind(w2, 0) == 0` (e.g. `["abc", "ab"]`), it's invalid prefix ordering; immediately return `""`.
+     - Find the first index $j$ where `w1[j] != w2[j]`. Add edge `w1[j] -> w2[j]` and increment `inDegree[w2[j]]` (ensuring edges are deduplicated using set).
+  3. Kahn's Algorithm: Push all characters with `inDegree == 0` into queue.
+  4. While queue is not empty, pop `u`, append to `result`, and decrement `inDegree` of neighbors.
+  5. If `result.size() == inDegree.size()`, return `result`; else return `""` (cycle detected).
+
+```cpp
+class Solution {
+public:
+    string alienOrder(vector<string>& words) {
+        unordered_map<char, unordered_set<char>> adj;
+        unordered_map<char, int> inDegree;
+
+        for (const string& word : words) {
+            for (char c : word) {
+                inDegree[c] = 0;
+            }
+        }
+
+        for (int i = 0; i < (int)words.size() - 1; i++) {
+            const string& w1 = words[i];
+            const string& w2 = words[i + 1];
+
+            // Invalid prefix check: e.g. ["apple", "app"]
+            if (w1.size() > w2.size() && w1.compare(0, w2.size(), w2) == 0) {
+                return "";
+            }
+
+            int minLen = min(w1.size(), w2.size());
+            for (int j = 0; j < minLen; j++) {
+                if (w1[j] != w2[j]) {
+                    if (!adj[w1[j]].count(w2[j])) {
+                        adj[w1[j]].insert(w2[j]);
+                        inDegree[w2[j]]++;
+                    }
+                    break;
+                }
+            }
+        }
+
+        queue<char> q;
+        for (auto& [ch, deg] : inDegree) {
+            if (deg == 0) q.push(ch);
+        }
+
+        string result = "";
+        while (!q.empty()) {
+            char u = q.front();
+            q.pop();
+            result += u;
+
+            for (char v : adj[u]) {
+                if (--inDegree[v] == 0) {
+                    q.push(v);
+                }
+            }
+        }
+
+        return result.size() == inDegree.size() ? result : "";
+    }
+};
+```
+
+---
+**⚠️ Edge Cases & Interview Gotchas**
+- The prefix trap: `["abc", "ab"]` where the longer word appears before its prefix is invalid and must return `""`.
+- Duplicate edges between characters: using `unordered_set<char>` for adjacency prevents double-incrementing `inDegree`.
 
 ---
 
@@ -6814,6 +8600,109 @@ public:
 **⚠️ Edge Cases & Interview Gotchas**
 - All cities isolated (returns n).
 - All cities connected in single component (returns 1).
+
+---
+
+
+### [BONUS 18] 🟢 P2 [BONUS] LC 721: Accounts Merge [MEDIUM]
+- **LeetCode Link:** [LC 721: Accounts Merge](https://leetcode.com/problems/accounts-merge/)
+- **Category / Sub-Pattern:** Sub-Pattern 18.1 (Union-Find Component Grouping)
+
+**📜 Problem Statement & Explanation**
+Given a list of `accounts` where each element `accounts[i]` is a list of strings, where the first element `accounts[i][0]` is a name, and the rest of the elements are emails representing emails of the account.
+Now, we would like to merge these accounts. Two accounts definitely belong to the same person if there is some common email to both accounts. Note that two accounts with the same name might belong to different people, as people might have the same name. A person can have any number of accounts, but all of their accounts definitely have the same name.
+After merging the accounts, return the accounts in the following format: the first element of each account is the name, and the rest of the elements are emails in sorted order.
+
+**Example 1:**
+- **Input:** `accounts = [["John","johnsmith@mail.com","john_newyork@mail.com"],["John","johnsmith@mail.com","john00@mail.com"],["Mary","mary@mail.com"],["John","johnnybravo@mail.com"]]`
+- **Output:** `[["John","john00@mail.com","john_newyork@mail.com","johnsmith@mail.com"],["Mary","mary@mail.com"],["John","johnnybravo@mail.com"]]`
+
+**Constraints:**
+- $1 \le accounts.length \le 1000$
+- $2 \le accounts[i].length \le 10$
+- $1 \le accounts[i][j].length \le 30$
+- `accounts[i][0]` consists of English letters.
+- `accounts[i][j]` (for $j \ge 1$) is a valid email.
+
+---
+**🧠 Short Solution Summary & Revision Notes**
+- **Main Pattern:** Sub-Pattern 18.1 (Union-Find Component Grouping)
+- **Memory Mnemonic:** *"Map email -> first occurrence account index. Union current account with previous account index for all shared emails."*
+
+---
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(N^2 \times L)$ | **Space:** $O(N \times L)$
+- **Explanation:** Repeatedly scan all pairs of accounts. If two accounts share any common email, merge their email sets into one account and delete the second account. Repeat until no two accounts can be merged.
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(N \times K \alpha(N) + N \times K \log K)$ where $N$ is accounts, $K$ is emails per account | **Space:** $O(N \times K)$
+- **Explanation:**
+  1. Build a DSU over account indices `0` to `n - 1`.
+  2. Maintain `unordered_map<string, int> emailToAccount` mapping each email to the first account index that contained it.
+  3. For each account $i$, for each email $e$:
+     - If $e$ is already seen in account $j$, union accounts $i$ and $j$.
+     - Else, set `emailToAccount[e] = i`.
+  4. Collect all emails by parent root: `unordered_map<int, vector<string>> mergedEmails`.
+  5. For each group, sort emails, prepend `accounts[root][0]`, and add to result.
+
+```cpp
+class DSU {
+public:
+    vector<int> parent;
+    DSU(int n) : parent(n) {
+        iota(parent.begin(), parent.end(), 0);
+    }
+    int find(int x) {
+        if (parent[x] == x) return x;
+        return parent[x] = find(parent[x]);
+    }
+    void unite(int x, int y) {
+        int rootX = find(x), rootY = find(y);
+        if (rootX != rootY) parent[rootX] = rootY;
+    }
+};
+
+class Solution {
+public:
+    vector<vector<string>> accountsMerge(vector<vector<string>>& accounts) {
+        int n = accounts.size();
+        DSU dsu(n);
+        unordered_map<string, int> emailToAccount;
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 1; j < accounts[i].size(); j++) {
+                const string& email = accounts[i][j];
+                if (emailToAccount.count(email)) {
+                    dsu.unite(i, emailToAccount[email]);
+                } else {
+                    emailToAccount[email] = i;
+                }
+            }
+        }
+
+        unordered_map<int, vector<string>> components;
+        for (auto& [email, accIdx] : emailToAccount) {
+            int root = dsu.find(accIdx);
+            components[root].push_back(email);
+        }
+
+        vector<vector<string>> merged;
+        for (auto& [root, emailList] : components) {
+            sort(emailList.begin(), emailList.end());
+            vector<string> account = {accounts[root][0]};
+            account.insert(account.end(), emailList.begin(), emailList.end());
+            merged.push_back(account);
+        }
+        return merged;
+    }
+};
+```
+
+---
+**⚠️ Edge Cases & Interview Gotchas**
+- Same account name belonging to two different people with no overlapping emails (must stay separate).
+- Duplicate emails within the same account line.
 
 ---
 
@@ -7112,6 +9001,96 @@ public:
 **⚠️ Edge Cases & Interview Gotchas**
 - All identical elements `[7,7,7,7]` (returns 1).
 - Strictly decreasing array.
+
+---
+
+
+### [BONUS 19] 🟢 P2 [BONUS] LC 152: Maximum Product Subarray [MEDIUM]
+- **LeetCode Link:** [LC 152: Maximum Product Subarray](https://leetcode.com/problems/maximum-product-subarray/)
+- **Category / Sub-Pattern:** Sub-Pattern 19.1 (State-Tracking Kadane Variation)
+
+**📜 Problem Statement & Explanation**
+Given an integer array `nums`, find a subarray that has the largest product, and return the product.
+The test cases are generated so that the answer will fit in a 32-bit integer.
+
+**Example 1:**
+- **Input:** `nums = [2,3,-2,4]`
+- **Output:** `6`
+- **Explanation:** `[2,3]` has the largest product 6.
+
+**Example 2:**
+- **Input:** `nums = [-2,0,-1]`
+- **Output:** `0`
+
+**Constraints:**
+- $1 \le nums.length \le 2 \times 10^4$
+- $-10 \le nums[i] \le 10$
+- The product of any prefix or suffix of `nums` is guaranteed to fit in a 32-bit integer.
+
+---
+**🧠 Short Solution Summary & Revision Notes**
+- **Main Pattern:** Sub-Pattern 19.1 (State-Tracking Kadane Variation)
+- **Memory Mnemonic:** *"Track currMax AND currMin. If nums[i] < 0, swap(currMax, currMin). Kadane with multiplication."*
+
+---
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(N^2)$ | **Space:** $O(1)$
+- **Explanation:** Iterate over all pairs $(i, j)$, calculate the product of subarray `nums[i..j]`, and update `maxProduct`.
+
+```cpp
+class Solution {
+public:
+    int maxProduct(vector<int>& nums) {
+        int n = nums.size(), maxProd = INT_MIN;
+        for (int i = 0; i < n; i++) {
+            int prod = 1;
+            for (int j = i; j < n; j++) {
+                prod *= nums[j];
+                maxProd = max(maxProd, prod);
+            }
+        }
+        return maxProd;
+    }
+};
+```
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(N)$ | **Space:** $O(1)$
+- **Explanation:** Because multiplying two negative numbers yields a positive number, a minimum negative product can suddenly become the maximum positive product when multiplied by a negative number.
+  1. Maintain `currMax`, `currMin`, and `res`, all initialized to `nums[0]`.
+  2. For each element $x$ from `1` to `n-1`:
+     - If $x < 0$, `swap(currMax, currMin)`.
+     - `currMax = max(x, currMax * x)`.
+     - `currMin = min(x, currMin * x)`.
+     - `res = max(res, currMax)`.
+
+```cpp
+class Solution {
+public:
+    int maxProduct(vector<int>& nums) {
+        int currMax = nums[0];
+        int currMin = nums[0];
+        int res = nums[0];
+
+        for (int i = 1; i < nums.size(); i++) {
+            int x = nums[i];
+            if (x < 0) {
+                swap(currMax, currMin);
+            }
+            currMax = max(x, currMax * x);
+            currMin = min(x, currMin * x);
+            res = max(res, currMax);
+        }
+        return res;
+    }
+};
+```
+
+---
+**⚠️ Edge Cases & Interview Gotchas**
+- Arrays containing zeros: `max(x, currMax * x)` automatically resets the running subarray when encountering 0.
+- Single element array with negative value e.g. `[-2]`.
 
 ---
 
@@ -7442,6 +9421,94 @@ public:
 ---
 
 
+### [BONUS 20] 🟢 P2 [BONUS] LC 518: Coin Change II [MEDIUM]
+- **LeetCode Link:** [LC 518: Coin Change II](https://leetcode.com/problems/coin-change-ii/)
+- **Category / Sub-Pattern:** Sub-Pattern 20.1 (Unbounded Knapsack Combinations)
+
+**📜 Problem Statement & Explanation**
+You are given an integer array `coins` representing coins of different denominations and an integer `amount` representing a total amount of money.
+Return the number of combinations that make up that amount. If that amount of money cannot be made up by any combination of the coins, return `0`.
+You may assume that you have an infinite number of each kind of coin. The answer is guaranteed to fit into a signed 32-bit integer.
+
+**Example 1:**
+- **Input:** `amount = 5, coins = [1,2,5]`
+- **Output:** `4`
+- **Explanation:** There are four ways to make up the amount:
+  $5=5$
+  $5=2+2+1$
+  $5=2+1+1+1$
+  $5=1+1+1+1+1$
+
+**Example 2:**
+- **Input:** `amount = 3, coins = [2]`
+- **Output:** `0`
+
+**Constraints:**
+- $1 \le coins.length \le 300$
+- $1 \le coins[i] \le 5000$
+- All the values of `coins` are unique.
+- $0 \le amount \le 5000$
+
+---
+**🧠 Short Solution Summary & Revision Notes**
+- **Main Pattern:** Sub-Pattern 20.1 (Unbounded Knapsack Combinations)
+- **Memory Mnemonic:** *"Combinations vs Permutations: Coins in OUTER loop, amount in INNER loop. dp[a] += dp[a - coin]."*
+
+---
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(2^{\text{amount}})$ | **Space:** $O(\text{amount})$ recursion stack
+- **Explanation:** Naive recursive backtracking trying each coin from index `idx` to avoid duplicate permutations.
+
+```cpp
+class Solution {
+    int backtrack(int idx, int remaining, vector<int>& coins) {
+        if (remaining == 0) return 1;
+        if (idx == coins.size() || remaining < 0) return 0;
+        int take = backtrack(idx, remaining - coins[idx], coins);
+        int skip = backtrack(idx + 1, remaining, coins);
+        return take + skip;
+    }
+public:
+    int change(int amount, vector<int>& coins) {
+        return backtrack(0, amount, coins);
+    }
+};
+```
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(N \times \text{amount})$ | **Space:** $O(\text{amount})$ 1D DP array
+- **Explanation:**
+  - Let `dp[a]` be the number of combinations to make sum `a`.
+  - Initialize `dp[0] = 1`.
+  - **Crucial order of loops:** Put `coins` in the **outer** loop and `amount` in the **inner** loop. This guarantees that coins are considered in a fixed order, ensuring combinations are counted rather than permutations (e.g., `[1, 2]` is counted once, not as both `[1, 2]` and `[2, 1]`).
+  - Transition: `dp[a] += dp[a - coin]`.
+
+```cpp
+class Solution {
+public:
+    int change(int amount, vector<int>& coins) {
+        vector<unsigned int> dp(amount + 1, 0);
+        dp[0] = 1;
+
+        for (int coin : coins) {
+            for (int a = coin; a <= amount; a++) {
+                dp[a] += dp[a - coin];
+            }
+        }
+        return dp[amount];
+    }
+};
+```
+
+---
+**⚠️ Edge Cases & Interview Gotchas**
+- If the outer loop is `amount` and inner is `coins`, you compute **permutations** (LC 377 Combination Sum IV) instead of **combinations**.
+- Use `unsigned int` to prevent intermediate 32-bit signed overflow before final reduction.
+
+---
+
+
 ## 21. BIT MANIPULATION & BITMASKING
 
 ### 89. 🔴 P0 [Q] LC 136: Single Number [EASY]
@@ -7635,3 +9702,94 @@ public:
 - `n = 0` (returns `[0]`).
 
 ---
+
+### [BONUS 21] 🟢 P2 [BONUS] LC 260: Single Number III [MEDIUM]
+- **LeetCode Link:** [LC 260: Single Number III](https://leetcode.com/problems/single-number-iii/)
+- **Category / Sub-Pattern:** Sub-Pattern 21.1 (XOR Partitioning & Rightmost Set Bit Masking)
+
+**📜 Problem Statement & Explanation**
+Given an integer array `nums`, in which exactly two elements appear only once and all the other elements appear exactly twice. Find the two elements that appear only once. You can return the answer in any order.
+You must write an algorithm that runs in **linear runtime complexity** and uses only **constant extra space**.
+
+**Example 1:**
+- **Input:** `nums = [1,2,1,3,2,5]`
+- **Output:** `[3,5]`
+- **Explanation:** `[5, 3]` is also valid.
+
+**Example 2:**
+- **Input:** `nums = [-1,0]`
+- **Output:** `[-1,0]`
+
+**Constraints:**
+- $2 \le nums.length \le 3 \times 10^4$
+- $-2^{31} \le nums[i] \le 2^{31} - 1$
+- Each integer in `nums` will appear twice, only two integers will appear once.
+
+---
+**🧠 Short Solution Summary & Revision Notes**
+- **Main Pattern:** Sub-Pattern 21.1 (XOR Partitioning & Rightmost Set Bit Masking)
+- **Memory Mnemonic:** *"Total XOR = a ^ b. diff = (unsigned)XOR & (-(unsigned)XOR) isolates differentiating bit. Partition into 2 buckets."*
+
+---
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(N)$ | **Space:** $O(N)$
+- **Explanation:** Use an `unordered_map<int, int>` to count frequencies of all numbers. Return the two numbers with count 1. Violates the $O(1)$ extra space requirement.
+
+```cpp
+class Solution {
+public:
+    vector<int> singleNumber(vector<int>& nums) {
+        unordered_map<int, int> freq;
+        for (int x : nums) freq[x]++;
+        vector<int> res;
+        for (auto& [val, count] : freq) {
+            if (count == 1) res.push_back(val);
+        }
+        return res;
+    }
+};
+```
+
+---
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(N)$ | **Space:** $O(1)$ constant auxiliary memory
+- **Explanation:**
+  1. XOR all numbers together. Duplicate numbers cancel out ($x \oplus x = 0$), leaving `xorSum = a ^ b`.
+  2. Since $a \ne b$, `xorSum` must have at least one set bit. Any set bit indicates a position where $a$ and $b$ differ.
+  3. Isolate the rightmost set bit: `diff = (unsigned int)xorSum & (-(unsigned int)xorSum)`.
+  4. Partition the numbers into two groups based on whether that bit is set:
+     - Group 1: `(num & diff) == 0`
+     - Group 2: `(num & diff) != 0`
+  5. XOR elements within each group independently. The duplicate numbers will cancel within their respective groups, isolating $a$ in one group and $b$ in the other.
+
+```cpp
+class Solution {
+public:
+    vector<int> singleNumber(vector<int>& nums) {
+        long long xorSum = 0;
+        for (int num : nums) {
+            xorSum ^= num;
+        }
+
+        // Isolate rightmost set bit
+        long long diff = xorSum & (-xorSum);
+
+        int a = 0, b = 0;
+        for (int num : nums) {
+            if (num & diff) {
+                a ^= num;
+            } else {
+                b ^= num;
+            }
+        }
+        return {a, b};
+    }
+};
+```
+
+---
+**⚠️ Edge Cases & Interview Gotchas**
+- When `xorSum == INT_MIN` ($-2^{31}$), negating it in signed 32-bit integer causes undefined behavior / signed integer overflow. Using `long long` or `unsigned int` prevents this overflow bug.
+
+---
+
