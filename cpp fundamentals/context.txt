@@ -1,0 +1,22 @@
+TASK: Create a Pure C++ Fundamentals & STL Syntax Revision Handbook.
+
+GOAL
+Provide a clean, focused, pure fundamental C++ revision handbook. This document contains NO specific DSA problem code recipes or question-and-answer pairs. It is strictly a reference manual for C++ language syntax, STL container methods, function argument signatures, return types, character/ASCII processing, pointers/references, and memory gotchas.
+
+DOCUMENT FORMAT & REQUIREMENTS
+- Cheat-sheet style for rapid review before writing C++ code.
+- Organized by language feature / STL container.
+- For every method/function: provide header required, exact parameter syntax, return type, short explanation, and inline code snippet.
+- Include explicit "Don't Forget" gotchas and edge cases.
+
+CORE SECTIONS
+1. Character & ASCII Processing (`<cctype>`)
+2. `std::string` Complete Reference (`<string>`)
+3. `std::vector` & Arrays (`<vector>`)
+4. Hash Maps & Maps (`<unordered_map>`, `<map>`)
+5. Sets & Priority Queues (`<unordered_set>`, `<set>`, `<queue>`)
+6. Containers & Adapters: Stack, Queue, Pair, Tuple (`<stack>`, `<queue>`, `<utility>`, `<tuple>`)
+7. `<algorithm>` & `<numeric>` Reference
+8. Pointers, References, Const, & Struct Syntax
+9. Fast I/O, Buffer Flushing, & String Tokenization
+10. Numeric Limits, Math Functions, & Overflow Prevention (`<climits>`, `<cmath>`)
