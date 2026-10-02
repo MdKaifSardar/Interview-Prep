@@ -3,461 +3,533 @@
          Curated High-Yield Patterns, Sub-Patterns & Problem Blueprints
 ================================================================================
 
-Total Patterns: 21
-Total Sub-Patterns: 39
-Total Core Blueprint Problems: 91 (100% Unique - Zero Duplicates)
-Total Bonus Blueprint Problems: 21 (P2 - Extension & Deep Mastery)
-Total Blueprint Problems: 112
+Total Patterns: 25
+Total Sub-Patterns: 61
+Total Core Blueprint Problems: 112 (100% Unique - Zero Duplicates)
+Follow-up Variants: 5 (embedded under their parent problem, marked with ↳)
+Total Bonus Blueprint Problems: 22 (P2 - Extension & Deep Mastery)
+Total Blueprint Problems (IDs #1 - #134, one continuous sequence): 134
+Daily Baseline: every core problem except those marked (P2 - Optional).
 
 --------------------------------------------------------------------------------
 1. MATRIX SIMULATION & ARRAY TRANSFORMATIONS (p_matrix_simulation_transformations)
 --------------------------------------------------------------------------------
 Sub-Pattern 1.1: Matrix Spiral Traversal & Generation (sp_matrix_spiral)
-  - LC 54: Spiral Matrix [MEDIUM]
+  - #1 LC 54: Spiral Matrix [MEDIUM]
     Key Concept: 4-boundary shrinking loop (top, bottom, left, right).
-  - LC 59: Spiral Matrix II [MEDIUM]
-    Key Concept: Generating N x N matrix in spiral order filling 1..N^2.
+    ↳ #1a Follow-up Variant: LC 59: Spiral Matrix II [MEDIUM]
+      Key Concept: Generating N x N matrix in spiral order filling 1..N^2.
 
 Sub-Pattern 1.2: Matrix Symmetry & In-Place Rotations (sp_matrix_rotation)
-  - LC 48: Rotate Image [MEDIUM]
+  - #2 LC 48: Rotate Image [MEDIUM]
     Key Concept: Transpose matrix (swap A[i][j] & A[j][i]) + reverse each row in-place.
-  - Custom / Interview: Rotate Matrix 90 Deg Anti-Clockwise [MEDIUM]
-    Key Concept: Transpose matrix + reverse each column.
+    ↳ #2a Follow-up Variant: Custom / Interview: Rotate Matrix 90 Deg Anti-Clockwise [MEDIUM]
+      Key Concept: Transpose matrix + reverse each column.
 
 Sub-Pattern 1.3: Matrix State Marking & Pattern Generation (sp_matrix_state_pattern)
-  - LC 73: Set Matrix Zeroes [MEDIUM]
+  - #3 LC 73: Set Matrix Zeroes [MEDIUM]
     Key Concept: Use 1st row and 1st column as dummy markers for O(1) space.
-  - LC 118: Pascal's Triangle [EASY]
+  - #4 LC 118: Pascal's Triangle [EASY]
     Key Concept: Dynamic row generation using previous row element sums.
-  - LC 31: Next Permutation [MEDIUM]
+  - #5 LC 31: Next Permutation [MEDIUM]
     Key Concept: Find decrease pivot -> swap with next larger -> reverse suffix.
 
-
-
 Sub-Pattern 1.Bonus: Bonus Blueprint (P2 - Extension)
-  - [BONUS 1] LC 289: Game of Life [MEDIUM]
+  - #6 [BONUS] LC 289: Game of Life [MEDIUM]
     Key Concept: 2-bit intermediate encoding: 0->0: 0, 1->1: 1, 1->0: 2, 0->1: 3. Modulo 2 at the end.
 
 --------------------------------------------------------------------------------
 2. COMPLETE SORTING ALGORITHMS SUITE (p_sorting_algorithms_comparators)
 --------------------------------------------------------------------------------
 Sub-Pattern 2.1: Elementary Comparison Sorts (O(N^2)) (sp_sort_elementary)
-  - ALG 1: Selection Sort Algorithm Blueprint [EASY]
+  - #7 ALG 1: Selection Sort Algorithm Blueprint [EASY]
     Key Concept: Find min element in unsorted partition and swap with start.
-  - ALG 2: Bubble Sort Algorithm Blueprint [EASY]
+  - #8 ALG 2: Bubble Sort Algorithm Blueprint [EASY]
     Key Concept: Repeatedly swap adjacent inverted pairs with early exit flag.
-  - ALG 3: Insertion Sort Algorithm Blueprint [EASY]
+  - #9 ALG 3: Insertion Sort Algorithm Blueprint [EASY]
     Key Concept: Shift elements right to insert key into sorted prefix.
 
 Sub-Pattern 2.2: Divide & Conquer & Advanced Sorts (O(N log N)) (sp_sort_divide_conquer)
-  - ALG 4: Merge Sort & Inversion Counting Blueprint [MEDIUM]
+  - #10 ALG 4: Merge Sort & Inversion Counting Blueprint [MEDIUM]
     Key Concept: Divide halves recursively and merge in O(N log N) time.
-  - ALG 5: Quick Sort Algorithm Blueprint [MEDIUM]
+  - #11 ALG 5: Quick Sort Algorithm Blueprint [MEDIUM]
     Key Concept: Lomuto/Hoare randomized pivot partitioning.
 
 Sub-Pattern 2.3: Linear Non-Comparison Sorts (O(N)) (sp_sort_linear)
-  - ALG 6: Counting Sort Algorithm Blueprint [EASY]
+  - #12 ALG 6: Counting Sort Algorithm Blueprint [EASY] (P2 - Optional)
     Key Concept: Frequency array for bounded integer range [0, K].
 
 Sub-Pattern 2.4: Custom Comparators & String Sorting (sp_sort_specialized)
-  - LC 179: Largest Number [MEDIUM]
+  - #13 LC 179: Largest Number [MEDIUM]
     Key Concept: Custom string concatenation comparator (a + b > b + a).
 
-
-
 Sub-Pattern 2.Bonus: Bonus Blueprint (P2 - Extension)
-  - [BONUS 2] LC 148: Sort List [MEDIUM]
+  - #14 [BONUS] LC 148: Sort List [MEDIUM]
     Key Concept: Fast/slow pointer with prev unlinking to bisect list -> Recursive Merge Sort -> Dummy head merge.
 
 --------------------------------------------------------------------------------
 3. HASHING / FREQUENCY COUNTING (p_hashing_frequency_counting)
 --------------------------------------------------------------------------------
 Sub-Pattern 3.1: Frequency Counting & Anagrams (sp_hash_frequency)
-  - LC 217: Contains Duplicate [EASY]
+  - #15 LC 217: Contains Duplicate [EASY]
     Key Concept: O(1) set presence check.
-  - LC 49: Group Anagrams [MEDIUM]
+  - #16 LC 49: Group Anagrams [MEDIUM]
     Key Concept: 26-char frequency vector encoding as map key.
 
 Sub-Pattern 3.2: O(1) Pair & Complement Lookup (sp_hash_lookup)
-  - LC 1: Two Sum [EASY]
+  - #17 LC 1: Two Sum [EASY]
     Key Concept: Complement lookup (target - nums[i]) in unordered_map.
-  - LC 128: Longest Consecutive Sequence [MEDIUM]
+  - #18 LC 128: Longest Consecutive Sequence [MEDIUM]
     Key Concept: O(1) set lookup for sequence start boundary (!set.count(num - 1)).
 
-Sub-Pattern 3.3: Prefix XOR & Bitwise Hashing (sp_hash_xor)
-  - IB 1: Subarray with Given XOR [MEDIUM]
-    Key Concept: Maintain running XOR sum (xr). Lookup (xr ^ target) in map.
-
-
-
 Sub-Pattern 3.Bonus: Bonus Blueprint (P2 - Extension)
-  - [BONUS 3] LC 380: Insert Delete GetRandom O(1) [MEDIUM]
+  - #19 [BONUS] LC 380: Insert Delete GetRandom O(1) [MEDIUM]
     Key Concept: Vector for random index + Hash map for value-to-index. Swap with last element on remove.
 
 --------------------------------------------------------------------------------
 4. PREFIX SUM & DIFFERENCE ARRAYS (p_prefix_sum_difference_arrays)
 --------------------------------------------------------------------------------
 Sub-Pattern 4.1: Standard Prefix Sum & Subarray Sum K (sp_prefix_basic)
-  - LC 560: Subarray Sum Equals K [MEDIUM]
+  - #20 LC 560: Subarray Sum Equals K [MEDIUM]
     Key Concept: Running sum - K hash map lookup.
-  - LC 525: Contiguous Array [MEDIUM]
+    ↳ #20a Follow-up Variant: IB 1: Subarray with Given XOR [MEDIUM]
+      Key Concept: Maintain running XOR sum (xr). Lookup (xr ^ target) in map.
+  - #21 LC 525: Contiguous Array [MEDIUM]
     Key Concept: Convert 0 to -1, track earliest index of prefix sum.
 
 Sub-Pattern 4.2: Difference Array & Range Updates (sp_prefix_diff)
-  - LC 1109: Corporate Flight Bookings [MEDIUM]
+  - #22 LC 1109: Corporate Flight Bookings [MEDIUM] (P2 - Optional)
     Key Concept: Difference array +val at L, -val at R+1; compute prefix sum at end.
 
 Sub-Pattern 4.3: Prefix & Suffix Products (sp_prefix_product)
-  - LC 238: Product of Array Except Self [MEDIUM]
+  - #23 LC 238: Product of Array Except Self [MEDIUM]
     Key Concept: Prefix products from left x running suffix product from right without division.
 
 Sub-Pattern 4.4: Prefix Sum with Modulo Arithmetic (sp_prefix_modulo)
-  - LC 523: Continuous Subarray Sum [MEDIUM]
+  - #24 LC 523: Continuous Subarray Sum [MEDIUM]
     Key Concept: Store earliest index of (running_sum % k) in map (len >= 2).
 
-
-
 Sub-Pattern 4.Bonus: Bonus Blueprint (P2 - Extension)
-  - [BONUS 4] LC 304: Range Sum Query 2D - Immutable [MEDIUM]
+  - #25 [BONUS] LC 304: Range Sum Query 2D - Immutable [MEDIUM]
     Key Concept: Inclusion-Exclusion Principle: Precompute sum from (0,0) to (r,c). Query = BottomRight - Top - Left + TopLeft.
 
 --------------------------------------------------------------------------------
-5. TWO POINTERS (p_two_pointers)
+5. ARRAY GREEDY & KADANE'S ALGORITHM (p_array_greedy_kadane)
 --------------------------------------------------------------------------------
-Sub-Pattern 5.1: Opposite Direction Pointers (sp_tp_opposite)
-  - LC 167: Two Sum II - Input Array Is Sorted [MEDIUM]
+Sub-Pattern 5.1: Kadane's Algorithm & Running Best (sp_greedy_kadane)
+  - #26 LC 53: Maximum Subarray [MEDIUM]
+    Key Concept: Kadane: curr = max(nums[i], curr + nums[i]); best = max(best, curr). Drop a running sum the moment it hurts.
+  - #27 LC 121: Best Time to Buy and Sell Stock [EASY]
+    Key Concept: Track the minimum price seen so far; profit if sold today = price - minSoFar. One pass.
+
+Sub-Pattern 5.2: Voting & Cancellation Greedy (sp_greedy_voting)
+  - #28 LC 169: Majority Element [EASY]
+    Key Concept: Boyer-Moore Voting: count == 0 -> new candidate; same -> +1, different -> -1. The majority survives all cancellations.
+
+Sub-Pattern 5.3: Reachability & Circuit Greedy (sp_greedy_reach)
+  - #29 LC 55: Jump Game [MEDIUM]
+    Key Concept: Track farthest reachable index; if i > farthest you are stuck. farthest = max(farthest, i + nums[i]).
+  - #30 LC 134: Gas Station [MEDIUM]
+    Key Concept: If total gas < total cost -> -1. Else one pass: whenever the running tank goes negative, restart from i + 1.
+
+--------------------------------------------------------------------------------
+6. TWO POINTERS (p_two_pointers)
+--------------------------------------------------------------------------------
+Sub-Pattern 6.1: Same-Direction Read/Write Pointers (sp_tp_same_direction)
+  - #31 LC 283: Move Zeroes [EASY]
+    Key Concept: Write pointer w: for each non-zero, swap(nums[w++], nums[i]). Order of non-zeros preserved, zeros drift right.
+  - #32 LC 26: Remove Duplicates from Sorted Array [EASY]
+    Key Concept: Write pointer w = 1; copy nums[i] only if it differs from the last kept value nums[w-1]. Return w.
+
+Sub-Pattern 6.2: Opposite Direction Pointers (sp_tp_opposite)
+  - #33 LC 167: Two Sum II - Input Array Is Sorted [MEDIUM]
     Key Concept: Opposite pointers converging inward.
-  - LC 15: 3Sum [MEDIUM]
+  - #34 LC 15: 3Sum [MEDIUM]
     Key Concept: Sorted array + outer loop + opposite pointers with duplicate skipping.
-  - LC 11: Container With Most Water [MEDIUM]
+  - #35 LC 11: Container With Most Water [MEDIUM]
     Key Concept: Shrinking boundary pointers, moving shorter height inward.
-  - LC 42: Trapping Rain Water [HARD]
+  - #36 LC 42: Trapping Rain Water [HARD]
     Key Concept: Two pointers tracking maxLeft and maxRight heights.
 
-Sub-Pattern 5.2: Partitioning & Backward Pointers (sp_tp_partitioning)
-  - LC 75: Sort Colors (Dutch National Flag) [MEDIUM]
+Sub-Pattern 6.3: Partitioning & Backward Pointers (sp_tp_partitioning)
+  - #37 LC 75: Sort Colors (Dutch National Flag) [MEDIUM]
     Key Concept: Dutch National Flag 3-way low, mid, high pointer algorithm.
-  - LC 88: Merge Sorted Array [EASY]
+  - #38 LC 88: Merge Sorted Array [EASY]
     Key Concept: Fill destination array backwards from (m + n - 1).
 
-
-
-Sub-Pattern 5.Bonus: Bonus Blueprint (P2 - Extension)
-  - [BONUS 5] LC 18: 4Sum [MEDIUM]
+Sub-Pattern 6.Bonus: Bonus Blueprint (P2 - Extension)
+  - #39 [BONUS] LC 18: 4Sum [MEDIUM]
     Key Concept: Sort -> Two outer loops + Two-pointer convergence inner loop. Skip duplicates at all 4 levels + use long long for sum.
 
 --------------------------------------------------------------------------------
-6. SLIDING WINDOW (p_sliding_window)
+7. STRING MANIPULATION & PALINDROMES (p_string_manipulation_palindromes)
 --------------------------------------------------------------------------------
-Sub-Pattern 6.1: Variable Length Sliding Window (sp_sw_variable)
-  - LC 3: Longest Substring Without Repeating Characters [MEDIUM]
+Sub-Pattern 7.1: Palindrome Check & Expand Around Center (sp_str_palindrome)
+  - #40 LC 125: Valid Palindrome [EASY]
+    Key Concept: Two pointers from both ends; skip non-alphanumeric chars, compare tolower() values, move inward.
+  - #41 LC 5: Longest Palindromic Substring [MEDIUM]
+    Key Concept: Expand around center: 2N - 1 centers (odd i,i and even i,i+1). Expand while ends match; length = r - l - 1.
+
+Sub-Pattern 7.2: Word-Level String Manipulation (sp_str_words)
+  - #42 LC 151: Reverse Words in a String [MEDIUM]
+    Key Concept: Reverse the whole string, then reverse each word back, compacting extra spaces with a write pointer.
+
+--------------------------------------------------------------------------------
+8. SLIDING WINDOW (p_sliding_window)
+--------------------------------------------------------------------------------
+Sub-Pattern 8.1: Variable Length Sliding Window (sp_sw_variable)
+  - #43 LC 3: Longest Substring Without Repeating Characters [MEDIUM]
     Key Concept: Expand right, shrink left when duplicate character found.
-  - LC 209: Minimum Size Subarray Sum [MEDIUM]
+  - #44 LC 209: Minimum Size Subarray Sum [MEDIUM]
     Key Concept: Expand right until sum >= target, shrink left to minimize length.
-  - LC 76: Minimum Window Substring [HARD]
+  - #45 LC 76: Minimum Window Substring [HARD]
     Key Concept: Gold-standard variable window with required match counter.
 
-Sub-Pattern 6.2: Fixed-Size Sliding Window (sp_sw_fixed)
-  - LC 438: Find All Anagrams in a String [MEDIUM]
+Sub-Pattern 8.2: Fixed-Size Sliding Window (sp_sw_fixed)
+  - #46 LC 438: Find All Anagrams in a String [MEDIUM]
     Key Concept: Fixed window of size |P| with 26-char frequency comparison.
 
-Sub-Pattern 6.3: Variable Window with K Operations / Replacement (sp_sw_k_ops)
-  - LC 1004: Max Consecutive Ones III [MEDIUM]
+Sub-Pattern 8.3: Variable Window with K Operations / Replacement (sp_sw_k_ops)
+  - #47 LC 1004: Max Consecutive Ones III [MEDIUM]
     Key Concept: Track zero count in window; shrink left when zero count > K.
-  - LC 424: Longest Repeating Character Replacement [MEDIUM]
+  - #48 LC 424: Longest Repeating Character Replacement [MEDIUM]
     Key Concept: Track max_freq in window; shrink left when (window_len - max_freq) > K.
 
+Sub-Pattern 8.4: Monotonic Deque Window (sp_sw_monotonic_deque)
+  - #49 LC 239: Sliding Window Maximum [HARD]
+    Key Concept: Monotonic decreasing deque of indices: pop front if outside the window, pop back while <= current. Front = window max.
 
-
-Sub-Pattern 6.Bonus: Bonus Blueprint (P2 - Extension)
-  - [BONUS 6] LC 992: Subarrays with K Different Integers [HARD]
+Sub-Pattern 8.Bonus: Bonus Blueprint (P2 - Extension)
+  - #50 [BONUS] LC 992: Subarrays with K Different Integers [HARD]
     Key Concept: exact(k) = atMost(k) - atMost(k - 1). Window of size (r - l + 1) contributes all subarrays ending at r.
 
 --------------------------------------------------------------------------------
-7. BINARY SEARCH (p_binary_search)
+9. BINARY SEARCH (p_binary_search)
 --------------------------------------------------------------------------------
-Sub-Pattern 7.1: Standard & Boundary Search (sp_bs_standard)
-  - LC 704: Binary Search [EASY]
+Sub-Pattern 9.1: Standard & Boundary Search (sp_bs_standard)
+  - #51 LC 704: Binary Search [EASY]
     Key Concept: Classic low <= high midpoint search.
+  - #52 LC 34: Find First and Last Position of Element in Sorted Array [MEDIUM]
+    Key Concept: Two boundary binary searches. On a match, record it and keep searching left (first) or right (last).
 
-Sub-Pattern 7.2: Rotated & Modified Array Search (sp_bs_rotated)
-  - LC 33: Search In Rotated Sorted Array [MEDIUM]
+Sub-Pattern 9.2: Rotated & Modified Array Search (sp_bs_rotated)
+  - #53 LC 33: Search In Rotated Sorted Array [MEDIUM]
     Key Concept: Compare mid with left/right to determine sorted half.
-  - LC 153: Find Minimum in Rotated Sorted Array [MEDIUM]
+  - #54 LC 153: Find Minimum in Rotated Sorted Array [MEDIUM]
     Key Concept: Compare mid with high (mid > high => min in right half).
 
-Sub-Pattern 7.3: Binary Search on Answer Space (sp_bs_on_answer)
-  - LC 875: Koko Eating Bananas [MEDIUM]
+Sub-Pattern 9.3: Binary Search on Answer Space (sp_bs_on_answer)
+  - #55 LC 875: Koko Eating Bananas [MEDIUM]
     Key Concept: Binary search speed range [1, max_piles].
-  - LC 1011: Capacity To Ship Packages Within D Days [MEDIUM]
+  - #56 LC 1011: Capacity To Ship Packages Within D Days [MEDIUM]
     Key Concept: Binary search capacity range [max_weight, sum_weight].
 
-Sub-Pattern 7.4: 2D Matrix & Unsorted Condition Search (sp_bs_matrix_peak)
-  - LC 74: Search a 2D Matrix [MEDIUM]
+Sub-Pattern 9.4: 2D Matrix & Unsorted Condition Search (sp_bs_matrix_peak)
+  - #57 LC 74: Search a 2D Matrix [MEDIUM]
     Key Concept: Virtual 1D mapping on M x N grid: matrix[mid / N][mid % N].
-  - LC 162: Find Peak Element [MEDIUM]
+  - #58 LC 162: Find Peak Element [MEDIUM]
     Key Concept: Compare nums[mid] with nums[mid + 1] on unsorted array.
 
-
-
-Sub-Pattern 7.Bonus: Bonus Blueprint (P2 - Extension)
-  - [BONUS 7] LC 4: Median of Two Sorted Arrays [HARD]
+Sub-Pattern 9.Bonus: Bonus Blueprint (P2 - Extension)
+  - #59 [BONUS] LC 4: Median of Two Sorted Arrays [HARD]
     Key Concept: Binary search partition on smaller array. LeftMaxA <= RightMinB and LeftMaxB <= RightMinA.
 
 --------------------------------------------------------------------------------
-8. OVERLAPPING INTERVALS (p_overlapping_intervals)
+10. OVERLAPPING INTERVALS (p_overlapping_intervals)
 --------------------------------------------------------------------------------
-Sub-Pattern 8.1: Interval Merging & Insertion (sp_int_merge)
-  - LC 56: Merge Intervals [MEDIUM]
+Sub-Pattern 10.1: Interval Merging & Insertion (sp_int_merge)
+  - #60 LC 56: Merge Intervals [MEDIUM]
     Key Concept: Sort by start time, merge overlapping bounds.
-  - LC 57: Insert Interval [MEDIUM]
+  - #61 LC 57: Insert Interval [MEDIUM]
     Key Concept: 3-phase linear insertion (left, merged mid, right).
-  - LC 435: Non-overlapping Intervals [MEDIUM]
+
+Sub-Pattern 10.2: Greedy Interval Scheduling & Sweep Line (sp_int_greedy_sweep)
+  - #62 LC 435: Non-overlapping Intervals [MEDIUM]
     Key Concept: Greedy scheduling sorted by end time.
-  - LC 253: Meeting Rooms II [MEDIUM]
+  - #63 LC 253: Meeting Rooms II [MEDIUM]
     Key Concept: Sort by start time + Min-Heap of active room end-times.
 
-
-
-Sub-Pattern 8.Bonus: Bonus Blueprint (P2 - Extension)
-  - [BONUS 8] LC 986: Interval List Intersections [MEDIUM]
+Sub-Pattern 10.Bonus: Bonus Blueprint (P2 - Extension)
+  - #64 [BONUS] LC 986: Interval List Intersections [MEDIUM]
     Key Concept: Overlap start = max(A.start, B.start), Overlap end = min(A.end, B.end). Advance the one that ends first.
 
 --------------------------------------------------------------------------------
-9. FAST & SLOW POINTERS (LINKED LIST) (p_fast_slow_pointers_linked_list)
+11. LINKED LIST MANIPULATION (p_linked_list_manipulation)
 --------------------------------------------------------------------------------
-Sub-Pattern 9.1: Cycle Detection & Midpoint (sp_ll_cycle)
-  - LC 141: Linked List Cycle [EASY]
+Sub-Pattern 11.1: In-Place Reversal & Re-linking (sp_ll_reversal)
+  - #65 LC 206: Reverse Linked List [EASY]
+    Key Concept: 3 pointers prev/curr/next. Save next -> flip curr->next to prev -> advance. Return prev.
+  - #66 LC 234: Palindrome Linked List [EASY]
+    Key Concept: Find middle (slow/fast) -> reverse second half -> compare halves -> reverse back to restore the input.
+
+Sub-Pattern 11.2: Dummy Node Merge & Construction (sp_ll_dummy)
+  - #67 LC 21: Merge Two Sorted Lists [EASY]
+    Key Concept: Dummy node + tail pointer; attach the smaller head each step; attach the leftover list at the end.
+  - #68 LC 2: Add Two Numbers [MEDIUM]
+    Key Concept: Dummy + carry; loop while l1 || l2 || carry. digit = sum % 10, carry = sum / 10.
+
+Sub-Pattern 11.3: Two-Pointer Gap & Intersection (sp_ll_gap)
+  - #69 LC 19: Remove Nth Node From End of List [MEDIUM]
+    Key Concept: Dummy before head; move fast n + 1 steps ahead, then move both until fast is null; slow->next is the node to delete.
+  - #70 LC 160: Intersection of Two Linked Lists [EASY]
+    Key Concept: Two pointers; when one reaches the end, redirect it to the other list's head. They meet at the intersection (or both at null).
+
+Sub-Pattern 11.4: Linked List Design (Hash Map + DLL) (sp_ll_design)
+  - #71 LC 146: LRU Cache [MEDIUM]
+    Key Concept: unordered_map key -> list iterator + doubly linked list ordered by recency (front = most recent). get/put move to front; evict from back.
+
+--------------------------------------------------------------------------------
+12. FAST & SLOW POINTERS (LINKED LIST) (p_fast_slow_pointers_linked_list)
+--------------------------------------------------------------------------------
+Sub-Pattern 12.1: Cycle Detection & Midpoint (sp_ll_cycle)
+  - #72 LC 141: Linked List Cycle [EASY]
     Key Concept: Fast pointer moves 2 steps, slow moves 1 step; collision = cycle.
-  - LC 142: Linked List Cycle II [MEDIUM]
-    Key Concept: Floyd's cycle detection + entry point recovery.
-  - LC 143: Reorder List [MEDIUM]
+    ↳ #72a Follow-up Variant: LC 142: Linked List Cycle II [MEDIUM]
+      Key Concept: Floyd's cycle detection + entry point recovery.
+  - #73 LC 143: Reorder List [MEDIUM]
     Key Concept: Midpoint split + reverse second half + alternate weaving.
 
-
-
-Sub-Pattern 9.Bonus: Bonus Blueprint (P2 - Extension)
-  - [BONUS 9] LC 287: Find the Duplicate Number [MEDIUM]
+Sub-Pattern 12.Bonus: Bonus Blueprint (P2 - Extension)
+  - #74 [BONUS] LC 287: Find the Duplicate Number [MEDIUM]
     Key Concept: Floyd's Tortoise & Hare on Array: index -> nums[index]. Intersection -> Reset slow to 0 -> Meet at cycle start.
 
 --------------------------------------------------------------------------------
-10. MONOTONIC STACK (p_monotonic_stack)
+13. STACK & MONOTONIC STACK (p_stack_monotonic_stack)
 --------------------------------------------------------------------------------
-Sub-Pattern 10.1: Basic Stack Matching (sp_ms_basic)
-  - LC 20: Valid Parentheses [EASY]
+Sub-Pattern 13.1: Basic Stack Matching (sp_ms_basic)
+  - #75 LC 20: Valid Parentheses [EASY]
     Key Concept: Push opening brackets, pop & match closing brackets.
 
-Sub-Pattern 10.2: Next Greater / Smaller Element (sp_ms_next_greater)
-  - LC 739: Daily Temperatures [MEDIUM]
+Sub-Pattern 13.2: Stack Design (Auxiliary State) (sp_stack_design)
+  - #76 LC 155: Min Stack [MEDIUM]
+    Key Concept: Store (value, minSoFar) pairs; every entry remembers the minimum at and below it, so getMin is the top's second field.
+
+Sub-Pattern 13.3: Next Greater / Smaller Element (sp_ms_next_greater)
+  - #77 LC 496: Next Greater Element I [EASY]
+    Key Concept: Monotonic decreasing stack over nums2; when x > top, x is the next greater of top. Store in a hashmap, then answer nums1.
+  - #78 LC 739: Daily Temperatures [MEDIUM]
     Key Concept: Monotonic decreasing stack storing indices.
-  - LC 84: Largest Rectangle in Histogram [HARD]
+  - #79 LC 84: Largest Rectangle in Histogram [HARD] (P2 - Optional)
     Key Concept: Monotonic increasing stack calculating width on pop.
 
-
-
-Sub-Pattern 10.Bonus: Bonus Blueprint (P2 - Extension)
-  - [BONUS 10] LC 85: Maximal Rectangle [HARD]
+Sub-Pattern 13.Bonus: Bonus Blueprint (P2 - Extension)
+  - #80 [BONUS] LC 85: Maximal Rectangle [HARD]
     Key Concept: Row-by-row cumulative histogram: If '1' h++, else h=0. Run LC 84 Largest Rectangle in Histogram on each row.
 
 --------------------------------------------------------------------------------
-11. HEAP / PRIORITY QUEUE (p_heap_priority_queue)
+14. HEAP / PRIORITY QUEUE (p_heap_priority_queue)
 --------------------------------------------------------------------------------
-Sub-Pattern 11.1: Top K Elements / Min-Heap Pattern (sp_heap_topk)
-  - LC 215: Kth Largest Element in an Array [MEDIUM]
+Sub-Pattern 14.1: Top K Elements (Heap of Size K) (sp_heap_topk)
+  - #81 LC 215: Kth Largest Element in an Array [MEDIUM]
     Key Concept: Min-Heap of size K (or Quickselect).
-  - LC 347: Top K Frequent Elements [MEDIUM]
+  - #82 LC 347: Top K Frequent Elements [MEDIUM]
     Key Concept: Frequency map + Min-Heap of size K.
-  - LC 295: Find Median from Data Stream [HARD]
+  - #83 LC 973: K Closest Points to Origin [MEDIUM]
+    Key Concept: Max-heap of size k keyed by squared distance; pop whenever size > k. No sqrt needed.
+
+Sub-Pattern 14.2: Two Heaps Median Tracking (sp_heap_two_heaps)
+  - #84 LC 295: Find Median from Data Stream [HARD]
     Key Concept: Dual Heap pattern (Max-Heap lower half, Min-Heap upper half).
-  - LC 23: Merge k Sorted Lists [HARD]
+
+Sub-Pattern 14.3: K-Way Merge (sp_heap_kway_merge)
+  - #85 LC 23: Merge k Sorted Lists [HARD]
     Key Concept: Min-Heap of size K storing current head node of each list.
 
-
-
-Sub-Pattern 11.Bonus: Bonus Blueprint (P2 - Extension)
-  - [BONUS 11] LC 621: Task Scheduler [MEDIUM]
+Sub-Pattern 14.Bonus: Bonus Blueprint (P2 - Extension)
+  - #86 [BONUS] LC 621: Task Scheduler [MEDIUM]
     Key Concept: Max frequency determines frame: (maxFreq - 1) * (n + 1) + countOfMaxFreq. Result = max(tasks.size(), frameSize).
 
 --------------------------------------------------------------------------------
-12. TREE DFS / DEPTH FIRST SEARCH (p_tree_dfs_depth_first_search)
+15. TREE DFS / DEPTH FIRST SEARCH (p_tree_dfs_depth_first_search)
 --------------------------------------------------------------------------------
-Sub-Pattern 12.1: Tree Height & Depth Recursion (sp_tree_dfs_height)
-  - LC 104: Maximum Depth of Binary Tree [EASY]
+Sub-Pattern 15.1: Tree Height & Depth Recursion (sp_tree_dfs_height)
+  - #87 LC 104: Maximum Depth of Binary Tree [EASY]
     Key Concept: 1 + max(dfs(left), dfs(right)).
-  - LC 543: Diameter of Binary Tree [EASY]
+  - #88 LC 543: Diameter of Binary Tree [EASY]
     Key Concept: Post-order height calculation updating global max.
-  - LC 236: Lowest Common Ancestor of a Binary Tree [MEDIUM]
-    Key Concept: Bottom-up DFS node bubbling matching P and Q.
-  - LC 124: Binary Tree Maximum Path Sum [HARD]
+  - #89 LC 124: Binary Tree Maximum Path Sum [HARD]
     Key Concept: Post-order DFS returning max branch while tracking global split path sum.
 
+Sub-Pattern 15.2: Lowest Common Ancestor (LCA) (sp_tree_lca)
+  - #90 LC 236: Lowest Common Ancestor of a Binary Tree [MEDIUM]
+    Key Concept: Bottom-up DFS node bubbling matching P and Q.
 
+Sub-Pattern 15.3: Tree Mirror & Construction (sp_tree_dfs_construct)
+  - #91 LC 226: Invert Binary Tree [EASY]
+    Key Concept: At every node swap left and right children, then recurse into both subtrees (or BFS and swap each node).
+  - #92 LC 101: Symmetric Tree [EASY]
+    Key Concept: isMirror(a, b): both null -> true; one null or values differ -> false; else isMirror(a->left, b->right) && isMirror(a->right, b->left).
+  - #93 LC 105: Construct Binary Tree from Preorder and Inorder Traversal [MEDIUM]
+    Key Concept: preorder[preIdx++] is the root; its index in inorder (via hashmap) splits left and right subtrees. Build left before right.
 
-Sub-Pattern 12.Bonus: Bonus Blueprint (P2 - Extension)
-  - [BONUS 12] LC 297: Serialize and Deserialize Binary Tree [HARD]
+Sub-Pattern 15.Bonus: Bonus Blueprint (P2 - Extension)
+  - #94 [BONUS] LC 297: Serialize and Deserialize Binary Tree [HARD]
     Key Concept: Preorder DFS with '#' for null and comma delimiter. Stringstream in deserialize recursively builds root->left->right.
 
 --------------------------------------------------------------------------------
-13. TREE BFS / LEVEL ORDER TRAVERSAL (p_tree_bfs_level_order_traversal)
+16. TREE BFS / LEVEL ORDER TRAVERSAL (p_tree_bfs_level_order_traversal)
 --------------------------------------------------------------------------------
-Sub-Pattern 13.1: Standard Level Order Traversal (sp_tree_bfs_level)
-  - LC 102: Binary Tree Level Order Traversal [MEDIUM]
+Sub-Pattern 16.1: Standard Level Order Traversal (sp_tree_bfs_level)
+  - #95 LC 102: Binary Tree Level Order Traversal [MEDIUM]
     Key Concept: Queue iteration processing level size snapshot.
-  - LC 199: Binary Tree Right Side View [MEDIUM]
+  - #96 LC 199: Binary Tree Right Side View [MEDIUM]
     Key Concept: Collect last node per queue level snapshot.
-  - LC 103: Binary Tree Zigzag Level Order Traversal [MEDIUM]
+  - #97 LC 103: Binary Tree Zigzag Level Order Traversal [MEDIUM]
     Key Concept: Alternating level insertion direction.
 
-
-
-Sub-Pattern 13.Bonus: Bonus Blueprint (P2 - Extension)
-  - [BONUS 13] LC 314: Binary Tree Vertical Order Traversal [MEDIUM]
+Sub-Pattern 16.Bonus: Bonus Blueprint (P2 - Extension)
+  - #98 [BONUS] LC 314: Binary Tree Vertical Order Traversal [MEDIUM]
     Key Concept: BFS with pair<Node*, col>. col-1 for left, col+1 for right. Hash map collects values, BFS preserves top-to-bottom automatically.
 
 --------------------------------------------------------------------------------
-14. BINARY SEARCH TREE (BST) (p_binary_search_tree_bst)
+17. BINARY SEARCH TREE (BST) (p_binary_search_tree_bst)
 --------------------------------------------------------------------------------
-Sub-Pattern 14.1: BST Validation & Inorder Property (sp_bst_validate)
-  - LC 98: Validate Binary Search Tree [MEDIUM]
+Sub-Pattern 17.1: BST Validation & Inorder Property (sp_bst_validate)
+  - #99 LC 98: Validate Binary Search Tree [MEDIUM]
     Key Concept: Pass valid range [minVal, maxVal] downwards recursively.
-  - LC 230: Kth Smallest Element in a BST [MEDIUM]
+  - #100 LC 230: Kth Smallest Element in a BST [MEDIUM]
     Key Concept: In-order BST traversal yields sorted elements.
-  - LC 450: Delete Node in a BST [MEDIUM]
+
+Sub-Pattern 17.2: BST Search & Mutation (sp_bst_mutation)
+  - #101 LC 450: Delete Node in a BST [MEDIUM]
     Key Concept: BST node deletion with in-order successor swap.
 
-
-
-Sub-Pattern 14.Bonus: Bonus Blueprint (P2 - Extension)
-  - [BONUS 14] LC 99: Recover Binary Search Tree [MEDIUM]
+Sub-Pattern 17.Bonus: Bonus Blueprint (P2 - Extension)
+  - #102 [BONUS] LC 99: Recover Binary Search Tree [MEDIUM]
     Key Concept: Inorder traversal must be sorted. First violation: first = prev. Second violation: second = curr. Swap(first->val, second->val).
 
 --------------------------------------------------------------------------------
-15. BACKTRACKING / SUBSETS & PERMUTATIONS (p_backtracking_subsets_permutations)
+18. TRIE (PREFIX TREE) (p_trie_prefix_tree)
 --------------------------------------------------------------------------------
-Sub-Pattern 15.1: Subsets & Combination Choice (sp_bt_subsets)
-  - LC 78: Subsets [MEDIUM]
+Sub-Pattern 18.1: Trie Insert / Search / Prefix (sp_trie_basic)
+  - #103 LC 208: Implement Trie (Prefix Tree) [MEDIUM]
+    Key Concept: Node = children[26] + isEnd flag. insert creates missing nodes; search needs isEnd at the last node; startsWith only needs the path to exist.
+
+Sub-Pattern 18.Bonus: Bonus Blueprint (P2 - Extension)
+  - #104 [BONUS] LC 211: Design Add and Search Words Data Structure [MEDIUM]
+    Key Concept: Trie insert as usual. search is DFS: a letter follows one child, '.' tries every non-null child. Success needs isEnd at the end.
+
+--------------------------------------------------------------------------------
+19. BACKTRACKING / SUBSETS & PERMUTATIONS (p_backtracking_subsets_permutations)
+--------------------------------------------------------------------------------
+Sub-Pattern 19.1: Subsets & Combinations (sp_bt_subsets)
+  - #105 LC 78: Subsets [MEDIUM]
     Key Concept: Include / Exclude decision tree recursion.
-  - LC 46: Permutations [MEDIUM]
-    Key Concept: Used boolean array or in-place swap recursion.
-  - LC 39: Combination Sum [MEDIUM]
+  - #106 LC 39: Combination Sum [MEDIUM]
     Key Concept: Unbounded choice recursion with index control.
-  - LC 51: N-Queens [HARD]
+
+Sub-Pattern 19.2: Permutations (sp_bt_permutations)
+  - #107 LC 46: Permutations [MEDIUM]
+    Key Concept: Used boolean array or in-place swap recursion.
+
+Sub-Pattern 19.3: Grid & Constraint Backtracking (sp_bt_constraint)
+  - #108 LC 51: N-Queens [HARD] (P2 - Optional)
     Key Concept: Constraint hashing (cols, main diagonals, anti-diagonals).
 
-
-
-Sub-Pattern 15.Bonus: Bonus Blueprint (P2 - Extension)
-  - [BONUS 15] LC 79: Word Search [MEDIUM]
+Sub-Pattern 19.Bonus: Bonus Blueprint (P2 - Extension)
+  - #109 [BONUS] LC 79: Word Search [MEDIUM]
     Key Concept: Mask cell board[r][c] = '#' -> explore 4 directions -> unmask board[r][c] = temp (backtrack).
 
 --------------------------------------------------------------------------------
-16. GRAPH DFS / BFS (p_graph_dfs_bfs)
+20. GRAPH DFS / BFS (p_graph_dfs_bfs)
 --------------------------------------------------------------------------------
-Sub-Pattern 16.1: Grid Matrix Flood Fill DFS (sp_graph_grid_dfs)
-  - LC 200: Number of Islands [MEDIUM]
+Sub-Pattern 20.1: Grid Flood Fill (DFS/BFS) (sp_graph_grid_dfs)
+  - #110 LC 200: Number of Islands [MEDIUM]
     Key Concept: Matrix traversal + 4-directional flood fill sink.
-  - LC 133: Clone Graph [MEDIUM]
+
+Sub-Pattern 20.2: Graph Traversal, Cloning & Bipartite Check (sp_graph_traversal)
+  - #111 LC 133: Clone Graph [MEDIUM]
     Key Concept: Hash map node mapping (original -> clone) during DFS/BFS.
-  - LC 785: Is Graph Bipartite? [MEDIUM]
+  - #112 LC 785: Is Graph Bipartite? [MEDIUM]
     Key Concept: 2-color graph coloring via BFS/DFS.
 
-Sub-Pattern 16.2: Multi-Source BFS (sp_graph_multisource_bfs)
-  - LC 994: Rotting Oranges [MEDIUM]
+Sub-Pattern 20.3: Multi-Source BFS & Shortest Paths (sp_graph_multisource_bfs)
+  - #113 LC 994: Rotting Oranges [MEDIUM]
     Key Concept: Pre-populate queue with all initial rotten sources; level time tick.
-  - LC 127: Word Ladder [HARD]
+  - #114 LC 127: Word Ladder [HARD] (P2 - Optional)
     Key Concept: Unweighted shortest path BFS on mutated character state space.
 
-
-
-Sub-Pattern 16.Bonus: Bonus Blueprint (P2 - Extension)
-  - [BONUS 16] LC 743: Network Delay Time [MEDIUM]
+Sub-Pattern 20.Bonus: Bonus Blueprint (P2 - Extension)
+  - #115 [BONUS] LC 743: Network Delay Time [MEDIUM]
     Key Concept: Dijkstra's Algorithm: Min-heap of {dist, node}. Relax edges if dist[u] + w < dist[v]. Answer is max(dist).
 
 --------------------------------------------------------------------------------
-17. TOPOLOGICAL SORT (KAHN'S ALGORITHM) (p_topological_sort_kahn_s_algorithm)
+21. TOPOLOGICAL SORT (KAHN'S ALGORITHM) (p_topological_sort_kahn_s_algorithm)
 --------------------------------------------------------------------------------
-Sub-Pattern 17.1: Kahn's BFS In-degree Algorithm (sp_topo_kahns)
-  - LC 207: Course Schedule [MEDIUM]
+Sub-Pattern 21.1: Kahn's BFS In-degree Algorithm (sp_topo_kahns)
+  - #116 LC 207: Course Schedule [MEDIUM]
     Key Concept: In-degree array + Queue processing; visited count == N => DAG.
-  - LC 210: Course Schedule II [MEDIUM]
-    Key Concept: Kahn's algorithm collecting top-sort ordering array.
+    ↳ #116a Follow-up Variant: LC 210: Course Schedule II [MEDIUM]
+      Key Concept: Kahn's algorithm collecting top-sort ordering array.
 
-
-
-Sub-Pattern 17.Bonus: Bonus Blueprint (P2 - Extension)
-  - [BONUS 17] LC 269: Alien Dictionary [HARD]
+Sub-Pattern 21.Bonus: Bonus Blueprint (P2 - Extension)
+  - #117 [BONUS] LC 269: Alien Dictionary [HARD]
     Key Concept: Compare adjacent words for first mismatch -> directed edge. Prefix edge case check. Kahn's BFS for cycle detection.
 
 --------------------------------------------------------------------------------
-18. DISJOINT SET UNION (DSU / UNION-FIND) (p_disjoint_set_union_dsu_union_find)
+22. DISJOINT SET UNION (DSU / UNION-FIND) (p_disjoint_set_union_dsu_union_find)
 --------------------------------------------------------------------------------
-Sub-Pattern 18.1: DSU Path Compression & Union by Rank (sp_dsu_basic)
-  - LC 684: Redundant Connection [MEDIUM]
+Sub-Pattern 22.1: DSU Path Compression & Union by Rank (sp_dsu_basic)
+  - #118 LC 684: Redundant Connection [MEDIUM] (P2 - Optional)
     Key Concept: Find cycle by checking if find(u) == find(v) before union(u, v).
-  - LC 547: Number of Provinces [MEDIUM]
+  - #119 LC 547: Number of Provinces [MEDIUM] (P2 - Optional)
     Key Concept: Connected component counting via DSU union operations.
 
-
-
-Sub-Pattern 18.Bonus: Bonus Blueprint (P2 - Extension)
-  - [BONUS 18] LC 721: Accounts Merge [MEDIUM]
+Sub-Pattern 22.Bonus: Bonus Blueprint (P2 - Extension)
+  - #120 [BONUS] LC 721: Accounts Merge [MEDIUM]
     Key Concept: Map email -> first occurrence account index. Union current account with previous account index for all shared emails.
 
 --------------------------------------------------------------------------------
-19. 1D DYNAMIC PROGRAMMING (p_1d_dynamic_programming)
+23. 1D DYNAMIC PROGRAMMING (p_1d_dynamic_programming)
 --------------------------------------------------------------------------------
-Sub-Pattern 19.1: State Transition & Space Optimization (sp_dp_1d_basic)
-  - LC 198: House Robber [MEDIUM]
+Sub-Pattern 23.1: State Transition & Space Optimization (sp_dp_1d_basic)
+  - #121 LC 198: House Robber [MEDIUM]
     Key Concept: dp[i] = max(dp[i-1], dp[i-2] + nums[i]) with 2 variables.
-  - LC 70: Climbing Stairs [EASY]
+  - #122 LC 70: Climbing Stairs [EASY]
     Key Concept: Fibonacci base DP transition.
-  - LC 139: Word Break [MEDIUM]
+  - #123 LC 139: Word Break [MEDIUM]
     Key Concept: dp[i] = true if dp[j] && wordDict.count(s[j..i]).
-  - LC 300: Longest Increasing Subsequence [MEDIUM]
+  - #124 LC 300: Longest Increasing Subsequence [MEDIUM]
     Key Concept: O(N^2) DP or O(N log N) Patience Sorting with std::lower_bound.
 
-
-
-Sub-Pattern 19.Bonus: Bonus Blueprint (P2 - Extension)
-  - [BONUS 19] LC 152: Maximum Product Subarray [MEDIUM]
+Sub-Pattern 23.Bonus: Bonus Blueprint (P2 - Extension)
+  - #125 [BONUS] LC 152: Maximum Product Subarray [MEDIUM]
     Key Concept: Track currMax AND currMin. If nums[i] < 0, swap(currMax, currMin). Kadane with multiplication.
 
 --------------------------------------------------------------------------------
-20. KNAPSACK / 2D DYNAMIC PROGRAMMING (p_knapsack_2d_dynamic_programming)
+24. KNAPSACK / 2D DYNAMIC PROGRAMMING (p_knapsack_2d_dynamic_programming)
 --------------------------------------------------------------------------------
-Sub-Pattern 20.1: Unbounded & 0/1 Knapsack Grid DP (sp_dp_knapsack)
-  - LC 322: Coin Change [MEDIUM]
+Sub-Pattern 24.1: Unbounded & 0/1 Knapsack (sp_dp_knapsack)
+  - #126 LC 322: Coin Change [MEDIUM]
     Key Concept: dp[i] = min(dp[i], 1 + dp[i - coin]).
-  - LC 1143: Longest Common Subsequence [MEDIUM]
-    Key Concept: 2D matrix matching grid dp[i][j].
-  - LC 416: Partition Equal Subset Sum [MEDIUM]
+  - #127 LC 416: Partition Equal Subset Sum [MEDIUM] (P2 - Optional)
     Key Concept: 0/1 Knapsack reduction with target sum = total / 2.
-  - LC 72: Edit Distance [HARD]
+
+Sub-Pattern 24.2: Two-String Grid DP (sp_dp_two_string)
+  - #128 LC 1143: Longest Common Subsequence [MEDIUM]
+    Key Concept: 2D matrix matching grid dp[i][j].
+  - #129 LC 72: Edit Distance [HARD] (P2 - Optional)
     Key Concept: 3-operation (Insert, Delete, Replace) matrix grid DP.
 
-
-
-Sub-Pattern 20.Bonus: Bonus Blueprint (P2 - Extension)
-  - [BONUS 20] LC 518: Coin Change II [MEDIUM]
+Sub-Pattern 24.Bonus: Bonus Blueprint (P2 - Extension)
+  - #130 [BONUS] LC 518: Coin Change II [MEDIUM]
     Key Concept: Combinations vs Permutations: Coins in OUTER loop, amount in INNER loop. dp[a] += dp[a - coin].
 
 --------------------------------------------------------------------------------
-21. BIT MANIPULATION & BITMASKING (p_bit_manipulation_bitmasking)
+25. BIT MANIPULATION & BITMASKING (p_bit_manipulation_bitmasking)
 --------------------------------------------------------------------------------
-Sub-Pattern 21.1: XOR Cancelation & Bit Operations (sp_bit_xor)
-  - LC 136: Single Number [EASY]
+Sub-Pattern 25.1: XOR Cancelation & Bit Operations (sp_bit_xor)
+  - #131 LC 136: Single Number [EASY]
     Key Concept: XOR cancellation property (A ^ A = 0, A ^ 0 = A).
-  - LC 191: Number of 1 Bits [EASY]
+  - #132 LC 191: Number of 1 Bits [EASY]
     Key Concept: Brian Kernighan's algorithm (n & (n - 1) clears lowest set bit).
-  - LC 338: Counting Bits [EASY]
+  - #133 LC 338: Counting Bits [EASY]
     Key Concept: DP bit shift relationship (dp[i] = dp[i >> 1] + (i & 1)).
+
+Sub-Pattern 25.Bonus: Bonus Blueprint (P2 - Extension)
+  - #134 [BONUS] LC 260: Single Number III [MEDIUM]
+    Key Concept: Total XOR = a ^ b. diff = (unsigned)XOR & (-(unsigned)XOR) isolates differentiating bit. Partition into 2 buckets.
 
 ================================================================================
                    END OF PREPFORGE SDE REVISION ROADMAP
 ================================================================================
-
-
-Sub-Pattern 21.Bonus: Bonus Blueprint (P2 - Extension)
-  - [BONUS 21] LC 260: Single Number III [MEDIUM]
-    Key Concept: Total XOR = a ^ b. diff = (unsigned)XOR & (-(unsigned)XOR) isolates differentiating bit. Partition into 2 buckets.
-
