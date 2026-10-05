@@ -1,4 +1,4 @@
-# JavaScript & TypeScript Technical Interview Master List (104 Questions)
+# JavaScript & TypeScript Technical Interview Master List
 
 **Track:** Fresher → 0–1 YOE → Junior Full Stack / Backend / Frontend / Startup
 
@@ -110,19 +110,15 @@
 57. 🔴 P0 [Q] Find and fix the bug in async code that uses await inside forEach(), leaves a Promise rejection unhandled, or shows stale results because of a race condition.
 58. 🔴 P0 [Q] Find and fix the bug in code that loses this in a callback or reads a stale closure value.
 
-## Coding Challenges
+## Coding Challenges (High-Yield Polyfills & Utilities)
 
-59. 🔴 P0 [Q] Implement map(), filter(), and reduce() from scratch.
+59. 🔴 P0 [Q] Implement Array.prototype.reduce() from scratch (handling empty arrays and missing initialValue).
 60. 🔴 P0 [Q] Implement debounce() and explain exactly how it works.
 61. 🔴 P0 [Q] Implement throttle() and explain the difference from debounce.
-62. 🔴 P0 [Q] Implement Promise.all() from scratch.
-63. 🟠 P1 [Q] Implement a deep-clone utility and explain the limitations of your approach.
-64. 🔴 P0 [Q] Implement a bind() polyfill.
-65. 🔴 P0 [Q] Implement memoize() and explain how closures make it work.
-66. 🟠 P1 [Q] Implement a retry function with exponential backoff.
-67. 🟠 P1 [Q] Implement flat(depth) recursively.
-68. 🟠 P1 [Q] Implement a function that runs async tasks with a concurrency limit.
-69. 🟠 P1 [Q] Implement an EventEmitter with on(), off(), once(), and emit().
+62. 🔴 P0 [Q] Implement Promise.all() from scratch (order preservation, fast-reject).
+63. 🔴 P0 [Q] Implement memoize() and explain how closures make it work.
+64. 🟠 P1 [Q] Implement an EventEmitter with on(), off(), once(), and emit().
+65. 🟠 P1 [Q] Implement a deep-clone utility (and explain structuredClone vs JSON.parse/stringify limitations).
 
 ## DSA in JavaScript
 
@@ -133,37 +129,38 @@
 74. 🔴 P0 [Q] Count character frequencies in a string and find the first non-repeating character.
 75. 🟠 P1 [Q] Reverse the words in a sentence and capitalize the first letter of each word.
 76. 🟠 P1 [Q] Check whether a string of brackets is valid using a stack.
-77. 🔴 P0 [Q] Find the largest and second-largest numbers in an array without sorting.
-78. 🔴 P0 [Q] Solve Two Sum using a hash map, and explain why it beats the nested-loop approach.
-79. 🟠 P1 [Q] Find the missing number in an array containing 1 to n.
-80. 🟠 P1 [Q] Move all zeros to the end of an array in place while preserving order.
-81. 🟠 P1 [Q] Rotate an array by k positions.
-82. 🟠 P1 [Q] Merge two sorted arrays into one sorted array.
-83. 🟠 P1 [Q] Find the intersection of two arrays.
-84. 🟠 P1 [Q] Split an array into chunks of size n.
-85. 🟠 P1 [Q] Implement binary search on a sorted array.
-86. 🟠 P1 [Q] Compute Fibonacci recursively, iteratively, and with memoization, and compare their time complexities.
-87. 🟠 P1 [Q] Implement a singly linked list and reverse it.
+77. 🔴 P0 [Q] Find the longest substring without repeating characters (sliding window pattern).
+78. 🔴 P0 [Q] Find the largest and second-largest numbers in an array without sorting.
+79. 🔴 P0 [Q] Solve Two Sum using a hash map, and explain why it beats the nested-loop approach.
+80. 🟠 P1 [Q] Find the most frequent element in an array using a hash map.
+81. 🟠 P1 [Q] Find the missing number in an array containing 1 to n.
+82. 🟠 P1 [Q] Move all zeros to the end of an array in place while preserving order.
+83. 🟠 P1 [Q] Rotate an array by k positions.
+84. 🟠 P1 [Q] Merge two sorted arrays into one sorted array.
+85. 🟠 P1 [Q] Find the intersection of two arrays.
+86. 🟠 P1 [Q] Split an array into chunks of size n.
+87. 🟠 P1 [Q] Flatten a deeply nested array or object into dot-notation keys (e.g. { a: { b: 1 } } → { "a.b": 1 }).
+88. 🟠 P1 [Q] Compute Fibonacci recursively, iteratively, and with memoization, and compare their time complexities.
 
 ## TypeScript
 
-88. 🔴 P0 [C] What is TypeScript, how does it relate to JavaScript, and why doesn't it check types at runtime (type erasure)?
-89. 🔴 P0 [C] How does type inference work, and when should you add explicit type annotations?
-90. 🔴 P0 [Q] What is the difference between type and interface, and when would you use each?
-91. 🟠 P1 [C] What is structural typing, and how does it differ from nominal typing?
-92. 🔴 P0 [Q] What is the difference between any, unknown, and never?
-93. 🔴 P0 [Q] What are union and intersection types, and how do literal types work?
-94. 🟠 P1 [Q] How do optional properties, null/undefined, and strictNullChecks work, what does strict mode enable, and what does readonly do?
-95. 🔴 P0 [Q] What is type narrowing, and how do typeof, instanceof, in, and custom type predicates (x is T) narrow types?
-96. 🟠 P1 [Q] What is a discriminated union, and how do you use never for exhaustive checks?
-97. 🟠 P1 [Q] How do you type function parameters, return values, optional/default parameters, and callbacks, and what are function overloads?
-98. 🔴 P0 [Q] What are generics, how do you write generic functions, interfaces, and types, and how do generic constraints (extends) work?
-99. 🟠 P1 [Q] How do keyof and indexed access types (T[K]) work, and how do they combine with generics (e.g., a type-safe getProperty function)?
-100.  🔴 P0 [Q] What do Partial, Required, Pick, Omit, and Record do, and when would you use each?
-101.  🟠 P1 [Q] What do ReturnType and Parameters do, and when are they useful?
-102.  🟠 P1 [Q] What is the difference between an enum and a union of string literals, and what does as const do?
-103.  🟠 P1 [Q] How do you type an async function that fetches API data, and why should you still validate the response at runtime?
-104.  🟠 P1 [Q] What are type assertions (as), what are their risks, and how do you safely handle unknown errors in catch blocks?
+89. 🔴 P0 [C] What is TypeScript, how does it relate to JavaScript, and why doesn't it check types at runtime (type erasure)?
+90. 🔴 P0 [C] How does type inference work, and when should you add explicit type annotations?
+91. 🔴 P0 [Q] What is the difference between type and interface, and when would you use each?
+92. 🟠 P1 [C] What is structural typing, and how does it differ from nominal typing?
+93. 🔴 P0 [Q] What is the difference between any, unknown, and never?
+94. 🔴 P0 [Q] What are union and intersection types, and how do literal types work?
+95. 🟠 P1 [Q] How do optional properties, null/undefined, and strictNullChecks work, what does strict mode enable, and what does readonly do?
+96. 🔴 P0 [Q] What is type narrowing, and how do typeof, instanceof, in, and custom type predicates (x is T) narrow types?
+97. 🟠 P1 [Q] What is a discriminated union, and how do you use never for exhaustive checks?
+98. 🟠 P1 [Q] How do you type function parameters, return values, optional/default parameters, and callbacks, and what are function overloads?
+99. 🔴 P0 [Q] What are generics, how do you write generic functions, interfaces, and types, and how do generic constraints (extends) work?
+100. 🟠 P1 [Q] How do keyof and indexed access types (T[K]) work, and how do they combine with generics (e.g., a type-safe getProperty function)?
+101. 🔴 P0 [Q] What do Partial, Required, Pick, Omit, and Record do, and when would you use each?
+102. 🟠 P1 [Q] What do ReturnType and Parameters do, and when are they useful?
+103. 🟠 P1 [Q] What is the difference between an enum and a union of string literals, and what does as const do?
+104. 🟠 P1 [Q] How do you type an async function that fetches API data, and why should you still validate the response at runtime?
+105. 🟠 P1 [Q] What are type assertions (as), what are their risks, and how do you safely handle unknown errors in catch blocks?
 
 ---
 
