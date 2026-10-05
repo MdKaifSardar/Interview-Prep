@@ -1,6 +1,6 @@
-# JavaScript & TypeScript Master Answer Key — Index (101 Questions)
+# JavaScript Master Answer Key — Index (84 Questions)
 
-Companion answer key to [javascript-interview-questions.md](javascript-interview-questions.md) covering all **101 questions**. Every single answer strictly follows our standardized 4-part framework designed for rapid revision AND deep conceptual mastery:
+Companion answer key to [javascript-interview-questions.md](javascript-interview-questions.md) covering all **84 pure JavaScript questions**. Every single answer strictly follows our standardized 4-part framework designed for rapid revision AND deep conceptual mastery:
 1. **TL;DR:** 1–2 sentence summary for rapid recall.
 2. **💡 Core Concept & Explanation:** Intuitive breakdown of *why* and *how* the underlying mechanism works.
 3. **🛠️ Code / Visual Diagram / Table:** Working code snippet, polyfill function, ASCII flow, or comparative table.
@@ -25,16 +25,22 @@ Answers are split into one page per topic & pattern group so they load fast and 
 | 7 | [7. Output & Debugging Questions](answers/07-output-and-debugging-questions.md) | #52 – #58 | 7 |
 | 8 | [8. Coding Challenges (High-Yield Polyfills & Utilities)](answers/08-coding-challenges-and-polyfills.md) | #59 – #65 | 7 |
 | 9 | [9. DSA in JavaScript](answers/09-dsa-in-javascript.md) | #66 – #84 | 19 |
-| 10 | [10. TypeScript](answers/10-typescript-mastery.md) | #85 – #101 | 17 |
 
-**Total: 101 Questions**
+**Total: 84 Questions**
+
+---
+
+## Next Step: TypeScript Preparation
+For TypeScript questions and full-stack type safety answers, switch to your dedicated repository:
+👉 [TypeScript Master Answer Key (50 Questions)](../typescript/typescript-interview-answers.md)
 
 ---
 
 ## Revision Modes
 
-- **Core Interview Fast-Sweep:** all 🔴 P0 questions (Essential concepts, How JavaScript Works, Event Loop, Closures, `this`, Promises, Polyfills, core DSA, core TypeScript)
+- **Core Interview Fast-Sweep:** all 🔴 P0 questions (Essential concepts, How JavaScript Works, Event Loop, Closures, `this`, Promises, Polyfills, core DSA)
 - **Full Coverage:** 🔴 P0 + 🟠 P1
 - **Machine Coding / Output Round:** Focus on [07 · Output & Debugging Questions](answers/07-output-and-debugging-questions.md) and [08 · Polyfills & Utilities](answers/08-coding-challenges-and-polyfills.md)
 - **JS DSA Round:** Focus on [09 · DSA in JavaScript](answers/09-dsa-in-javascript.md)
-- **TypeScript Round:** Focus on [10 · TypeScript](answers/10-typescript-mastery.md)
+- **TypeScript Round:** Switch to [TypeScript Master Answer Key](../typescript/typescript-interview-answers.md)
+

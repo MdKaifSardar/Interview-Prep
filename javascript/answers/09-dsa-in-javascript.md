@@ -1,4 +1,4 @@
-[⬅️ Previous: 08 · Polyfills & Utilities](08-coding-challenges-and-polyfills.md) &nbsp;|&nbsp; [📋 Index](../javascript-interview-answers.md) &nbsp;|&nbsp; [Next: 10 · TypeScript ➡️](10-typescript-mastery.md)
+[⬅️ Previous: 08 · Polyfills & Utilities](08-coding-challenges-and-polyfills.md) &nbsp;|&nbsp; [📋 Index](../javascript-interview-answers.md) &nbsp;|&nbsp; (end) ⏭️
 
 ---
 
@@ -857,6 +857,8 @@ function fibIterative(n) {
 - Calling `fibRecursive(50)` will freeze the JS execution thread for minutes due to $2^{50} pprox 1.12 	imes 10^{15}$ function calls!
 
 
+> **Next Step:** For comprehensive TypeScript interview preparation, continue to the dedicated [TypeScript Master Answer Key](../../typescript/typescript-interview-answers.md).
+
 ---
 
-[⬅️ Previous: 08 · Polyfills & Utilities](08-coding-challenges-and-polyfills.md) &nbsp;|&nbsp; [📋 Index](../javascript-interview-answers.md) &nbsp;|&nbsp; [Next: 10 · TypeScript ➡️](10-typescript-mastery.md)
+[⬅️ Previous: 08 · Polyfills & Utilities](08-coding-challenges-and-polyfills.md) &nbsp;|&nbsp; [📋 Index](../javascript-interview-answers.md) &nbsp;|&nbsp; (end) ⏭️
