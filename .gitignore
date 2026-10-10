@@ -1,6 +1,10 @@
 # Local progress tracker web app & plan
 progresss tracker/
 
+# Local trackers & spreadsheets
+*.xlsx
+Interview_Prep_Tracker.xlsx
+
 # Environment files
 *.env.local
 *.env
