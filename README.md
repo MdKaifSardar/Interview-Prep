@@ -11,7 +11,8 @@ Curated, high-yield interview preparation modules for Software Engineering, Full
 | **🟨 JavaScript** | [Questions](file:///e:/CSE/interview%20prep/javascript/javascript-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/javascript/javascript-interview-answers.md) | ✅ Complete (180 Qs) |
 | **🟢 Node.js & Express.js** | [Questions](file:///e:/CSE/interview%20prep/nodejs/nodejs-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/nodejs/nodejs-interview-answers.md) | ✅ Complete (72 Qs) |
 | **🍃 MongoDB** | [Questions](file:///e:/CSE/interview%20prep/mongodb/mongodb-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/mongodb/mongodb-interview-answers.md) | ✅ Complete (100 Qs) |
-| **🗄️ Relational DBMS & SQL** | [Questions](file:///e:/CSE/interview%20prep/dbms/dbms-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/dbms/dbms-interview-answers.md) | ✅ Complete (70 Qs) |
+| **🗄️ Relational DBMS Architecture** | [Questions](file:///e:/CSE/interview%20prep/dbms/dbms-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/dbms/dbms-interview-answers.md) | ✅ Complete (70 Qs) |
+| **📊 SQL & Query Engineering** | [Questions](file:///e:/CSE/interview%20prep/sql/sql-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/sql/sql-interview-answers.md) | ✅ Complete (80 Qs) |
 | **⚛️ React & Next.js (Full-Stack)** | [Questions](file:///e:/CSE/interview%20prep/react/react-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/react/react-interview-answers.md) | ✅ Complete (75 Qs) |
 | **⚡ Data Structures & Algorithms** | [Questions](file:///e:/CSE/interview%20prep/dsa/dsa-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/dsa/dsa-interview-answers.md) | ✅ Complete (91 Core + 21 Bonus Qs) |
 
@@ -27,7 +28,7 @@ Interview-Prep/
 │   ├── dsa-interview-answers.md           <-- Comprehensive 5-Part Answer Key
 │   └── revision_roadmap.txt               <-- Curated High-Yield Revision Roadmap
 ├── javascript/                            <-- JavaScript Language Module
-│   ├── javascript-interview-questions.md  <-- 180-Question Master List
+│   ├── javascript-interview-questions.md  <-- 84-Question Master List
 │   └── javascript-interview-answers.md    <-- Comprehensive 4-Part Answer Key
 ├── nodejs/                                <-- Node.js & Express.js Backend Module
 │   ├── nodejs-interview-questions.md      <-- 72-Question Master List
@@ -35,9 +36,12 @@ Interview-Prep/
 ├── mongodb/                               <-- MongoDB NoSQL Module
 │   ├── mongodb-interview-questions.md     <-- 100-Question Master List
 │   └── mongodb-interview-answers.md       <-- Comprehensive 4-Part Answer Key
-├── dbms/                                  <-- Relational DBMS & SQL Module
+├── dbms/                                  <-- Relational DBMS Architecture Module
 │   ├── dbms-interview-questions.md        <-- 70-Question Master List
 │   └── dbms-interview-answers.md          <-- Comprehensive 4-Part Answer Key
+├── sql/                                   <-- SQL & Query Engineering Module
+│   ├── sql-interview-questions.md         <-- 80-Question Master List
+│   └── sql-interview-answers.md           <-- Comprehensive 4-Part Answer Key
 └── react/                                 <-- React & Next.js Full-Stack Module
     ├── react-interview-questions.md       <-- 75-Question Master List
     └── react-interview-answers.md         <-- Comprehensive 4-Part Answer Key
