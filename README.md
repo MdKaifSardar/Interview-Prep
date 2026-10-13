@@ -8,7 +8,7 @@ Curated, high-yield interview preparation modules for Software Engineering, Full
 
 | Topic | Questions Sheet | Answers Master Key | Status |
 | :--- | :--- | :--- | :--- |
-| **🟨 JavaScript** | [Questions](file:///e:/CSE/interview%20prep/javascript/javascript-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/javascript/javascript-interview-answers.md) | ✅ Complete (180 Qs) |
+| **🟨 JavaScript** | [Questions](file:///e:/CSE/interview%20prep/javascript/javascript-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/javascript/javascript-interview-answers.md) | ✅ Complete (84 Qs) |
 | **🟢 Node.js & Express.js** | [Questions](file:///e:/CSE/interview%20prep/nodejs/nodejs-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/nodejs/nodejs-interview-answers.md) | ✅ Complete (72 Qs) |
 | **🍃 MongoDB** | [Questions](file:///e:/CSE/interview%20prep/mongodb/mongodb-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/mongodb/mongodb-interview-answers.md) | ✅ Complete (100 Qs) |
 | **🗄️ Relational DBMS Architecture** | [Questions](file:///e:/CSE/interview%20prep/dbms/dbms-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/dbms/dbms-interview-answers.md) | ✅ Complete (70 Qs) |
