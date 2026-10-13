@@ -1,0 +1,21 @@
+{
+  "name": "nodejs-interview-lab",
+  "version": "1.0.0",
+  "description": "Zero-bloat hands-on coding lab for Node.js technical interview drills",
+  "main": "runner.js",
+  "scripts": {
+    "test": "node --test exercises/**/test.js",
+    "test:watch": "node --test --watch exercises/**/test.js",
+    "lab": "node runner.js"
+  },
+  "keywords": ["nodejs", "interview-prep", "coding-drills"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2",
+    "supertest": "^7.0.0",
+    "zod": "^3.23.8"
+  }
+}

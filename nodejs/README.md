@@ -8,6 +8,7 @@ Comprehensive interview preparation guide covering Node.js architecture, libuv e
 
 - **Questions Master Sheet:** [nodejs-interview-questions.md](nodejs-interview-questions.md) (72 Questions)
 - **Master Answer Key (Index):** [nodejs-interview-answers.md](nodejs-interview-answers.md) (Paginated 11-section breakdown)
+- **🧪 Hands-On Coding Lab:** [lab/README.md](lab/README.md) (24 interactive local coding drills with self-validating tests)
 
 ---
 

@@ -8,6 +8,7 @@ Comprehensive interview preparation guide covering React 18/19 fundamentals, JSX
 
 - **Questions Master Sheet:** [react-interview-questions.md](react-interview-questions.md) (75 Questions)
 - **Master Answer Key (Index):** [react-interview-answers.md](react-interview-answers.md) (Paginated 10-section breakdown)
+- **🧪 Hands-On Coding Lab:** [lab/README.md](lab/README.md) (20 interactive local coding drills with Vitest test validation)
 
 ---
 
