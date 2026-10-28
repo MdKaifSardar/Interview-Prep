@@ -1,27 +1,24 @@
-TASK: Create a Pure JavaScript Fundamentals for DSA & Problem Solving Revision Handbook & Master Q&A Module.
+TASK: Create a Pure JavaScript Fundamentals & Algorithmic Syntax Revision Handbook.
 
 GOAL
-Provide a clean, focused, pure fundamental JavaScript revision handbook and 50-question master key specifically tailored for solving Data Structures & Algorithms (DSA) problems, LeetCode rounds, and CoderPad live coding interviews in JavaScript.
-
-This module is completely separate from general web/full-stack JavaScript topics (DOM, CSS, browser APIs, frameworks). It focuses exclusively on algorithmic syntax, V8 engine mechanics, numerical precision, string manipulation, matrix/grid handling, custom sorting, Map/Set semantics, binary search templates, heaps, recursion call-stack limits, and time/space complexity of built-ins.
+Provide a clean, focused, pure fundamental JavaScript revision handbook for Data Structures & Algorithms (DSA), technical coding interviews, LeetCode rounds, and CoderPad whiteboard sessions. This document contains NO question-and-answer pairs or multi-page questionnaire fragmentation. It is strictly a single, unified reference manual for JavaScript language mechanics, numeric precision, string & character processing, safe matrix allocation, custom comparators, Map/Set semantics, queue/stack performance, minimal binary heaps, binary search templates, and built-in time complexity gotchas.
 
 DOCUMENT FORMAT & REQUIREMENTS
-- Cheat-sheet style handbook (`js-dsa-syntax-handbook.md`) for rapid pre-interview review.
-- Master question list (`js-dsa-interview-questions.md`) with 50 high-yield questions categorized into 10 modules.
-- Paginated answers (`answers/01-...md` through `10-...md`) strictly following the standardized 4-part framework:
-  1. TL;DR
-  2. 💡 Core Concept & Explanation
-  3. 🛠️ Syntax / Code Template
-  4. ⚠️ LeetCode / Interview Pitfall
+- Single-sheet cheat-sheet style for rapid review in one go (15–20 minutes) before writing JavaScript code in interviews.
+- Organized by language feature / container / pattern.
+- For every method/feature: provide exact syntax, return types, short explanation, inline code snippet, and explicit "Don't Forget" gotchas / edge cases.
+- Completely separate from full-stack/browser JavaScript (DOM, CSS, Node HTTP).
 
-CORE TOPIC MODULES
-1. Numbers, Math & Floating-Point Precision
-2. Strings, ASCII & Character Manipulation
-3. Arrays, 2D Matrices & Grid Traversal
-4. Sorting & Custom Comparators
-5. Hash Maps & Hash Sets (Map & Set)
-6. Stacks, Queues & Deques
-7. Heaps & Priority Queues in JavaScript
-8. Two Pointers, Sliding Window & Binary Search
-9. Trees, Graphs & Recursion/Backtracking
-10. Bit Manipulation & Built-In Complexity
+CORE SECTIONS
+1. Numbers, Integer Math & Precision
+2. Character & ASCII Processing
+3. String Complete Reference & Regex
+4. Arrays & 2D Matrix Complete Reference
+5. Sorting & Custom Comparators
+6. Hash Maps & Hash Sets (Map & Set)
+7. Stacks, Queues & Deques
+8. Minimal Binary Heap (Priority Queue)
+9. Binary Search & Two-Pointer Templates
+10. Linked List, Tree & Graph Boilerplates
+11. Bit Manipulation Complete Reference
+12. Built-In Time & Space Complexity Master Matrix
