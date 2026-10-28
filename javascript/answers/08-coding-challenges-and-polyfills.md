@@ -6,14 +6,18 @@
 
 ### 59. 🔴 P0 [Q] Implement Array.prototype.reduce() from scratch (handling empty arrays and missing initialValue).
 
-> **TL;DR:** Polyfilling `Array.prototype.reduce` requires executing a reducer callback across each element while accumulating the return value. If no `initialValue` is provided, the first non-empty element becomes the accumulator and iteration begins at the subsequent index. An empty array without an `initialValue` throws a `TypeError`.
+> **TL;DR:** `Array.prototype.reduce` executes a reducer callback across every element, accumulating a single return value. If `initialValue` is omitted, the first element becomes the accumulator and iteration starts at index 1. Calling it on an empty array without an initial value throws a `TypeError`.
 
 **💡 Core Concept & Explanation**
-- **Specification Requirements:**
-  1. `callback` must be a callable function (`typeof callback === 'function'`).
-  2. If `initialValue` is supplied, `accum = initialValue` and iteration begins at index `0`.
-  3. If `initialValue` is omitted (`arguments.length < 2`), search for the first assigned index (`i in this`). If none exists, throw `TypeError('Reduce of empty array with no initial value')`.
-  4. Sparse array holes must be skipped (`i in this`).
+1. **Validation & Initial Value:**
+   - Verify `callback` is a callable function.
+   - Check if `initialValue` was passed using `arguments.length >= 2`. Checking `initialValue !== undefined` is a bug because a caller can legitimately pass `undefined` as their accumulator!
+2. **Empty Array Guard:**
+   - If the array is empty and no `initialValue` was provided, immediately throw `TypeError('Reduce of empty array with no initial value')`.
+3. **Iteration & Accumulation:**
+   - If `initialValue` is given, `acc = initialValue` and start index is `0`.
+   - If omitted, `acc = this[0]` and start index is `1`.
+   - Loop sequentially through the array, passing `(accumulator, currentValue, index, array)` into `callback`.
 
 **🛠️ Code / Visual Diagram / Table**
 
@@ -23,255 +27,210 @@ Array.prototype.myReduce = function(callback, initialValue) {
     throw new TypeError(callback + ' is not a function');
   }
 
-  let accum = initialValue;
-  let startIndex = 0;
+  const hasInitial = arguments.length >= 2;
 
-  // Handle missing initial value (arguments.length < 2)
-  if (arguments.length < 2) {
-    while (startIndex < this.length && !(startIndex in this)) {
-      startIndex++; // Skip leading holes in sparse arrays
-    }
-    if (startIndex >= this.length) {
-      throw new TypeError('Reduce of empty array with no initial value');
-    }
-    accum = this[startIndex++];
+  // Empty array without initial value throws TypeError
+  if (this.length === 0 && !hasInitial) {
+    throw new TypeError('Reduce of empty array with no initial value');
   }
 
-  // Iterate over remaining elements
+  let acc = hasInitial ? initialValue : this[0];
+  let startIndex = hasInitial ? 0 : 1;
+
   for (let i = startIndex; i < this.length; i++) {
-    if (i in this) {
-      accum = callback(accum, this[i], i, this);
-    }
+    acc = callback(acc, this[i], i, this);
   }
 
-  return accum;
+  return acc;
 };
 
-// Test cases:
+// Test Cases:
 console.log([1, 2, 3, 4].myReduce((acc, x) => acc + x, 0)); // 10
 console.log([1, 2, 3, 4].myReduce((acc, x) => acc * x));    // 24 (no initialValue)
-// [].myReduce((acc, x) => acc + x); // Throws TypeError: Reduce of empty array...
+console.log([5].myReduce((acc, x) => acc + x));             // 5
+// [].myReduce((acc, x) => acc + x);                         // Throws TypeError!
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- **The Empty Array + Missing Initial Value Trap:** Calling `[].reduce((a, b) => a + b)` throws a runtime `TypeError`. Not checking `arguments.length < 2` and attempting `accum = this[0]` results in `undefined` accumulator bugs instead of throwing the spec-mandated error!
+- **The `undefined` Initial Value Trap:** Never write `if (!initialValue)` or `if (initialValue === undefined)`. If someone calls `[1, 2].reduce(fn, undefined)`, `arguments.length` is `2`, and `undefined` is their valid starting accumulator.
+- **Senior Follow-Up Flex (Sparse Arrays):** In full ECMAScript spec, sparse holes (e.g. `[1, , 3]`) are skipped via `if (i in this)`. Mentioning this to the interviewer demonstrates senior engine knowledge without cluttering your core solution.
 
 ---
 
 ### 60. 🔴 P0 [Q] Implement debounce() and explain exactly how it works.
 
-> **TL;DR:** `debounce` delays function execution until a specified quiet delay period has passed since the last invocation. It uses closure-scoped timers to reset the countdown on every call, suppressing rapid event bursts (e.g. search input, resize).
+> **TL;DR:** `debounce` delays function execution until a specified quiet period has elapsed since the last invocation. Every incoming trigger clears the active timer and schedules a new one, suppressing rapid event bursts (e.g. search inputs, window resize).
 
 **💡 Core Concept & Explanation**
-When handling high-frequency events (keypresses, window resizing, scroll), executing heavy logic on every event degrades performance. `debounce` wraps the original function in a closure containing a `timerId`.
-- On every invocation, any existing timer is cleared via `clearTimeout(timerId)`.
-- A new timer is scheduled via `setTimeout`.
-- Execution only triggers after calls cease for the full `delay` duration.
-- Advanced implementations support an `immediate` (leading edge) flag and a `cancel()` method.
+- **Closure Scope:** `debounce` returns an inner function that encloses a persistent `timerId` variable.
+- **Reset Mechanism:** On each call, `clearTimeout(timerId)` cancels the pending invocation before starting a new `setTimeout`.
+- **Context & Arguments:** The wrapped function must preserve `this` and any arguments passed to the event handler using `fn.apply(this, args)`.
+
+```
+Incoming Calls:  --[Key A]--[Key B]--[Key C]----------------------->
+Timer Cleared:       ❌        ❌      (Wait 300ms uninterrupted...)
+Execution:                                               🔥 [FIRE fn]
+```
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-function debounce(fn, delay, immediate = false) {
+function debounce(fn, delay) {
   let timerId = null;
 
-  function debounced(...args) {
-    const context = this;
-    const callNow = immediate && !timerId;
+  return function(...args) {
+    // 1. Cancel previous pending timer
+    clearTimeout(timerId);
 
-    if (timerId) {
-      clearTimeout(timerId);
-    }
-
+    // 2. Restart delay countdown
     timerId = setTimeout(() => {
-      timerId = null;
-      if (!immediate) {
-        fn.apply(context, args);
-      }
+      fn.apply(this, args);
     }, delay);
-
-    if (callNow) {
-      fn.apply(context, args);
-    }
-  }
-
-  debounced.cancel = function() {
-    if (timerId) {
-      clearTimeout(timerId);
-      timerId = null;
-    }
   };
-
-  return debounced;
 }
 
-// Usage Example:
-const handleSearch = debounce((query) => {
-  console.log('Searching API for:', query);
+// Usage Example: Search Typeahead
+const handleSearch = debounce(function(query) {
+  console.log('Searching API for:', query, '| Context:', this);
 }, 300);
 
-// Keypresses at 0ms, 100ms, 200ms -> Only 1 API call fires at 500ms!
-```
-
-```
-User Typing:   --[A]--[B]--[C]----------------------------->
-Timer Reset:     x     x    |---------- 300ms ----------|
-Function Call:                                          [FIRE C]
+// Keypresses at 0ms, 100ms, 200ms -> Only 1 API call executes at 500ms
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- **Preserving `this` and Arguments:** Forgetting `const context = this; fn.apply(context, args)` causes event handler callbacks to lose their DOM element `this` binding and event arguments.
-
+- **Preserving `this` Context:** If you write `setTimeout(function() { fn(...args); }, delay)`, `this` will default to `window` or `undefined` (in strict mode). An arrow function inherits `this` lexically from the outer wrapper, preserving the correct DOM element context.
+- **Interviewer Extension (Cancel & Immediate):** If asked to support `.cancel()`, simply attach `debounced.cancel = () => clearTimeout(timerId);` to the returned function.
 
 ---
 
 ### 61. 🔴 P0 [Q] Implement throttle() and explain the difference from debounce.
 
-> **TL;DR:** `throttle` guarantees a function is executed at most once within a specified time window, regardless of trigger frequency. While `debounce` waits for quiet periods, `throttle` delivers steady, periodic execution during continuous events (e.g. scroll handlers, window resize).
+> **TL;DR:** `throttle` ensures a function executes at most once per specified time interval, providing steady, periodic execution during continuous events (e.g. scrolling, mouse movement). While `debounce` waits for silence, `throttle` guarantees a regulated execution rate.
 
 **💡 Core Concept & Explanation**
 1. **Debounce vs Throttle:**
-   - **Debounce:** "Wait until user stops typing for 300ms, then run."
-   - **Throttle:** "Run at most once every 300ms while user is continuously scrolling."
-2. **Implementation Strategies:**
-   - **Timestamp Approach (Leading Edge):** Compares `Date.now() - lastExecTime >= limit`. Fires immediately on first trigger.
-   - **Timer Approach (Trailing Edge):** Uses `setTimeout` block to defer execution.
-   - **Hybrid Production Throttle:** Supports both `leading: true` and `trailing: true` options.
+   - **Debounce:** "Wait until the user has stopped triggering for $N$ ms, then run once." (Search inputs, resize end).
+   - **Throttle:** "Run at most once every $N$ ms while triggers continue." (Infinite scroll, scroll progress bars).
+2. **The Flag/Timer Pattern:**
+   - Maintain a boolean `inThrottle` inside a closure.
+   - If `inThrottle` is `false`: execute `fn` immediately (leading edge), set `inThrottle = true`, and schedule a `setTimeout` to flip `inThrottle` back to `false` after the interval.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-function throttle(fn, limit, options = { leading: true, trailing: true }) {
-  let timerId = null;
-  let lastExecTime = 0;
-  let lastArgs = null;
-  let lastContext = null;
+// Approach 1: Flag / Timer Pattern (Most common in interviews)
+function throttle(fn, limit) {
+  let inThrottle = false;
 
-  function throttled(...args) {
-    const now = Date.now();
-
-    if (!lastExecTime && options.leading === false) {
-      lastExecTime = now;
+  return function(...args) {
+    if (!inThrottle) {
+      fn.apply(this, args);
+      inThrottle = true;
+      setTimeout(() => {
+        inThrottle = false;
+      }, limit);
     }
-
-    const remaining = limit - (now - lastExecTime);
-
-    lastArgs = args;
-    lastContext = this;
-
-    if (remaining <= 0 || remaining > limit) {
-      if (timerId) {
-        clearTimeout(timerId);
-        timerId = null;
-      }
-      lastExecTime = now;
-      fn.apply(lastContext, lastArgs);
-      lastArgs = lastContext = null;
-    } else if (!timerId && options.trailing !== false) {
-      timerId = setTimeout(() => {
-        lastExecTime = options.leading === false ? 0 : Date.now();
-        timerId = null;
-        fn.apply(lastContext, lastArgs);
-        lastArgs = lastContext = null;
-      }, remaining);
-    }
-  }
-
-  throttled.cancel = function() {
-    if (timerId) clearTimeout(timerId);
-    lastExecTime = 0;
-    timerId = lastArgs = lastContext = null;
   };
-
-  return throttled;
 }
+
+// Approach 2: Timestamp Pattern (Guaranteed leading-edge clock check)
+function throttleByTime(fn, limit) {
+  let lastCall = 0;
+
+  return function(...args) {
+    const now = Date.now();
+    if (now - lastCall >= limit) {
+      lastCall = now;
+      fn.apply(this, args);
+    }
+  };
+}
+
+// Usage Example: Scroll listener
+window.addEventListener('scroll', throttle(() => {
+  console.log('Recalculating scroll position at most once every 200ms');
+}, 200));
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- **Trailing Edge Loss:** A basic timestamp-only throttle ignores the final event trigger if it occurs within the cooldown window. Always use a hybrid timer/timestamp approach when trailing execution is required.
-
+- **The Trailing-Call Tradeoff:** The simple flag and timestamp patterns execute on the *leading edge* (first trigger) and drop calls that occur during the cooldown window. If the interviewer asks: *"What if the user scrolls and stops, and we need the final position executed?"*, explain that a hybrid version stores `lastArgs` and uses `setTimeout` to trigger the trailing call when cooldown finishes.
 
 ---
 
 ### 62. 🔴 P0 [Q] Implement Promise.all() from scratch.
 
-> **TL;DR:** `Promise.all(iterable)` returns a single Promise that resolves to an array of results when all input promises settle, or rejects immediately upon the first rejected promise (fast-fail behavior). Non-promise items are automatically wrapped with `Promise.resolve()`.
+> **TL;DR:** `Promise.all(promises)` takes an array/iterable of promises and returns a single Promise that resolves to an array of results in the **exact original order** when all input promises fulfill, or rejects immediately with the reason of the first rejected promise (fail-fast).
 
 **💡 Core Concept & Explanation**
-1. **Inputs & Edge Cases:** Must handle non-array iterables, empty arrays (`Promise.all([])` resolves immediately to `[]`), and non-Promise values in the array.
-2. **Order Preservation:** Asynchronous promises resolve at different speeds. The output array MUST preserve the original input array element positions, NOT the order of resolution completion.
-3. **Completion Tracking:** Maintains a counter `completedCount`. When `completedCount === total`, the main outer promise resolves.
+1. **Validation & Edge Cases:** If the input array is empty, resolve immediately with `[]`.
+2. **Order Preservation:** Promises settle asynchronously at different speeds. You must assign each result to its specific input index `results[index] = value`, **not** `results.push(value)`.
+3. **Completion Counter:** Maintain a `completedCount`. Increment it on every resolved promise. When `completedCount === promises.length`, resolve the outer promise.
+4. **Wrap Non-Promises:** Wrap each item with `Promise.resolve(item)` to correctly handle plain values.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-function promiseAll(iterable) {
+function promiseAll(promises) {
   return new Promise((resolve, reject) => {
-    // 1. Validate iterable
-    if (iterable == null || typeof iterable[Symbol.iterator] !== 'function') {
-      return reject(new TypeError('Argument is not iterable'));
+    // 1. Validate input
+    if (!Array.isArray(promises)) {
+      return reject(new TypeError('Argument must be an array'));
     }
 
-    const promises = Array.from(iterable);
-    const results = new Array(promises.length);
-    let completedCount = 0;
-
-    // 2. Handle empty input array immediately
+    // 2. Empty array resolves immediately
     if (promises.length === 0) {
       return resolve([]);
     }
 
-    // 3. Iterate and track each item
+    const results = [];
+    let completedCount = 0;
+
+    // 3. Process each item in parallel
     promises.forEach((item, index) => {
-      Promise.resolve(item).then(
-        (value) => {
-          results[index] = value; // Preserve original index position!
+      Promise.resolve(item)
+        .then((value) => {
+          results[index] = value; // Preserve original input index!
           completedCount++;
+
           if (completedCount === promises.length) {
             resolve(results);
           }
-        },
-        (error) => {
-          reject(error); // Fast-reject on first error
-        }
-      );
+        })
+        .catch(reject); // Fast-reject on the very first error
     });
   });
 }
 
-// Test Run:
+// Test cases:
 const p1 = Promise.resolve(42);
-const p2 = new Promise(res => setTimeout(() => res('fast'), 50));
-const p3 = new Promise(res => setTimeout(() => res('slow'), 200));
+const p2 = new Promise((res) => setTimeout(() => res('slow'), 100));
+const p3 = 'plain string';
 
-promiseAll([p1, p2, p3]).then(console.log); // [42, 'fast', 'slow']
+promiseAll([p1, p2, p3]).then(console.log); // [42, 'slow', 'plain string']
+promiseAll([p1, Promise.reject('Error!'), p2]).catch(console.error); // 'Error!'
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- **Array Push Trap:** Using `results.push(value)` inside `.then()` is a critical bug! Slow promises will resolve later and be pushed out of order. You MUST assign directly to `results[index] = value`.
-
+- **The `results.length` vs `completedCount` Trap:** Never write `if (results.length === promises.length)`. If the 3rd promise resolves first and you assign `results[2] = val`, JavaScript arrays automatically report `.length = 3` even though indices 0 and 1 are empty! Always track completed items using an explicit integer counter (`completedCount`).
 
 ---
 
 ### 63. 🔴 P0 [Q] Implement memoize() and explain how closures make it work.
 
-> **TL;DR:** `memoize` caches the return values of expensive pure functions based on their input parameters using a closure-scoped `Map` or object. Repeated calls with identical arguments skip computation and return cached values instantly in $O(1)$ time.
+> **TL;DR:** `memoize` caches the return values of expensive pure functions based on their serialized arguments using a closure-scoped `Map`. Subsequent calls with identical arguments skip computation and return the cached result in $O(1)$ time.
 
 **💡 Core Concept & Explanation**
-- **Closure Cache:** `memoize` returns an inner function that maintains persistent access to a private `cache = new Map()` defined in the outer scope.
-- **Key Serialization:** Serializes multi-argument calls into a unique lookup key.
-- **Resolver Option:** A custom `resolver` function enables callers to generate custom cache keys for complex object arguments.
+- **Closure Cache:** The outer `memoize` function instantiates a private `cache = new Map()`. The returned wrapper function closes over and retains access to this cache across calls.
+- **Key Serialization:** Input arguments are serialized into a lookup key (typically via `JSON.stringify(args)`).
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-function memoize(fn, resolver) {
+function memoize(fn) {
   const cache = new Map();
 
-  function memoized(...args) {
-    const key = resolver
-      ? resolver.apply(this, args)
-      : (args.length === 1 ? args[0] : JSON.stringify(args));
+  return function(...args) {
+    const key = JSON.stringify(args);
 
     if (cache.has(key)) {
       return cache.get(key);
@@ -280,35 +239,35 @@ function memoize(fn, resolver) {
     const result = fn.apply(this, args);
     cache.set(key, result);
     return result;
-  }
-
-  memoized.cache = cache; // Expose cache for inspection/clearing
-  return memoized;
+  };
 }
 
-// Usage: Expensive Fibonacci
-const fib = memoize(function(n) {
-  if (n <= 1) return n;
-  return fib(n - 1) + fib(n - 2);
+// Usage Example: Expensive computation
+const factorial = memoize(function(n) {
+  if (n <= 1) return 1;
+  return n * factorial(n - 1);
 });
 
-console.log(fib(40)); // Computes in ~1ms instead of 30 seconds!
+console.log(factorial(100)); // Computed & cached
+console.log(factorial(100)); // Instant O(1) cache hit!
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- **Object Key Collisions:** Relying on default `args.join(',')` converts object arguments to `"[object Object]"`. Two different objects `{ a: 1 }` and `{ b: 2 }` collide under the exact same string key! Always use a custom `resolver` or `WeakMap` for object parameter memoization.
-
+- **`JSON.stringify` Limitations:**
+  - In JavaScript, `JSON.stringify` does not handle circular references and treats `undefined` or functions inconsistently.
+  - Object key order difference: `{ a: 1, b: 2 }` and `{ b: 2, a: 1 }` produce different strings despite representing identical objects.
+  - *Interview Solution:* Mention that for complex object arguments in production, callers can pass a custom `keyResolver` function `(args) => ...` or use a nested `WeakMap`.
 
 ---
 
 ### 64. 🟠 P1 [Q] Implement an EventEmitter with on(), off(), once(), and emit().
 
-> **TL;DR:** An `EventEmitter` implements the Publish-Subscribe pattern, maintaining an event dictionary (`Map<string, Function[]>`) to register event handlers (`on`), emit event payloads (`emit`), deregister handlers (`off`), and execute one-time handlers (`once`).
+> **TL;DR:** An `EventEmitter` implements the Publish-Subscribe pattern. It maintains an internal map of event names to listener arrays (`Map<string, Function[]>`) to register (`on`), trigger (`emit`), remove (`off`), and execute one-time handlers (`once`).
 
 **💡 Core Concept & Explanation**
-- **PubSub Architecture:** Decouples event producers from consumers.
-- **Handling `once()`:** Wraps the original callback in a wrapper function that automatically calls `off(event, wrapper)` before executing the underlying callback.
-- **Iteration Protection:** During `emit()`, iterate over a shallow clone `[...listeners]` to prevent index skipping if a listener unsubscribes itself during execution.
+- **Event Store:** `Map<string, Function[]>` where keys are event names and values are arrays of subscriber callbacks.
+- **`once()` Wrapper:** Wraps the original listener in a temporary function that deregisters itself via `this.off()` before executing the callback.
+- **Safe Iteration in `emit()`:** Always iterate over a shallow clone `[...listeners]` so that if a listener calls `off()` during execution, it doesn't cause array-mutation indexing bugs.
 
 **🛠️ Code / Visual Diagram / Table**
 
@@ -318,115 +277,120 @@ class EventEmitter {
     this.events = new Map();
   }
 
+  // Register listener
   on(event, listener) {
-    if (typeof listener !== 'function') throw new TypeError('Listener must be a function');
     if (!this.events.has(event)) {
       this.events.set(event, []);
     }
     this.events.get(event).push(listener);
-    return this; // Chainable API
+    return this; // Allows method chaining
   }
 
+  // Remove listener
   off(event, listener) {
     if (!this.events.has(event)) return this;
-    const listeners = this.events.get(event).filter(
-      l => l !== listener && l._original !== listener
+
+    const filtered = this.events.get(event).filter(
+      (fn) => fn !== listener && fn._original !== listener
     );
-    this.events.set(event, listeners);
+    this.events.set(event, filtered);
     return this;
   }
 
+  // One-time listener
   once(event, listener) {
     const wrapper = (...args) => {
       this.off(event, wrapper);
       listener.apply(this, args);
     };
-    wrapper._original = listener; // Preserve reference for off() removal
+    wrapper._original = listener; // Allows removing via off() before once fires
     return this.on(event, wrapper);
   }
 
+  // Trigger event listeners
   emit(event, ...args) {
     if (!this.events.has(event)) return false;
-    const listeners = [...this.events.get(event)]; // Copy array to prevent mutation issues
-    listeners.forEach(listener => listener.apply(this, args));
+
+    // Clone array to avoid bugs if a listener unbinds itself during iteration
+    const listeners = [...this.events.get(event)];
+    listeners.forEach((fn) => fn.apply(this, args));
     return true;
   }
 }
 
 // Test Run:
 const emitter = new EventEmitter();
-const logMsg = (msg) => console.log('Event:', msg);
+const onUserLogin = (user) => console.log('Welcome,', user);
 
-emitter.on('data', logMsg);
-emitter.once('data', (msg) => console.log('ONCE:', msg));
+emitter.on('login', onUserLogin);
+emitter.once('login', () => console.log('This only prints on FIRST login!'));
 
-emitter.emit('data', 'First');  // Logs Event: First, ONCE: First
-emitter.emit('data', 'Second'); // Logs Event: Second (ONCE callback removed!)
+emitter.emit('login', 'Kaif');
+// Welcome, Kaif
+// This only prints on FIRST login!
+
+emitter.emit('login', 'Alex');
+// Welcome, Alex (once listener is gone!)
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
-- **Memory Leaks:** Failing to remove event listeners (`off`) in long-lived single-page applications causes retained closures and severe memory leaks. Node.js logs a warning if more than 10 listeners are attached to a single event.
-
+- **Array Mutation During Emission:** If a subscriber calls `emitter.off()` inside its callback while `emit()` is executing, mutating the array in-place skips the subsequent callback in the loop! Slicing or spreading `[...listeners]` prevents this.
 
 ---
 
 ### 65. 🟠 P1 [Q] Implement a deep-clone utility (and explain structuredClone vs JSON.parse/stringify limitations).
 
-> **TL;DR:** Deep cloning recursively duplicates nested objects and arrays while handling circular references using a `WeakMap`. Special built-in types (`Date`, `RegExp`, `Map`, `Set`) require explicit constructor instantiations, while primitives are returned directly.
+> **TL;DR:** Deep cloning creates a completely independent copy of nested objects and arrays. An interview-optimal deep clone checks for primitives, detects circular references using a `WeakMap`, and recursively clones object and array properties.
 
 **💡 Core Concept & Explanation**
-- **Shallow Copy vs Deep Copy:** `Object.assign()` and spread `{...obj}` duplicate only top-level memory pointers. Nested objects remain mutated across copies.
-- **Built-in Limitations:**
-  - `JSON.parse(JSON.stringify(obj))`: Strips functions, `undefined`, `Symbol`; converts `NaN`/`Infinity` to `null`; converts `Date` to string; throws `TypeError` on circular references.
-  - `structuredClone()`: Native modern Web API; cannot clone functions, DOM nodes, or prototypes.
-- **Custom Deep Clone:** Uses a `WeakMap` as a memory registry to detect circular references and break infinite recursive call stacks.
+1. **Primitives & Null:** If the value is primitive or `null`, return it directly.
+2. **Circular References:** Use a `WeakMap` tracker `(originalObj -> clonedObj)`. If an object has already been encountered in the traversal, return its existing clone to prevent infinite recursion.
+3. **Array vs Plain Object:** Initialize the new container based on `Array.isArray(value)` and recursively duplicate own enumerable keys.
 
 **🛠️ Code / Visual Diagram / Table**
 
 ```javascript
-function deepClone(obj, hash = new WeakMap()) {
-  // 1. Handle Primitives & null/undefined
-  if (obj === null || typeof obj !== 'object') {
-    return obj;
+function deepClone(value, map = new WeakMap()) {
+  // 1. Return primitives and null directly
+  if (value === null || typeof value !== 'object') {
+    return value;
   }
 
-  // 2. Handle Circular References
-  if (hash.has(obj)) {
-    return hash.get(obj);
+  // 2. Prevent infinite loops from circular references
+  if (map.has(value)) {
+    return map.get(value);
   }
 
-  // 3. Handle Special Built-in Objects
-  if (obj instanceof Date) return new Date(obj);
-  if (obj instanceof RegExp) return new RegExp(obj.source, obj.flags);
-  if (obj instanceof Map) {
-    const mapCopy = new Map();
-    hash.set(obj, mapCopy);
-    obj.forEach((val, key) => mapCopy.set(deepClone(key, hash), deepClone(val, hash)));
-    return mapCopy;
-  }
-  if (obj instanceof Set) {
-    const setCopy = new Set();
-    hash.set(obj, setCopy);
-    obj.forEach(val => setCopy.add(deepClone(val, hash)));
-    return setCopy;
-  }
+  // 3. Initialize array or object container
+  const clone = Array.isArray(value) ? [] : {};
+  map.set(value, clone);
 
-  // 4. Handle Arrays & Plain Objects
-  const clone = Array.isArray(obj) ? [] : Object.create(Object.getPrototypeOf(obj));
-  hash.set(obj, clone);
-
-  // Copy all own enumerable symbols and string keys
-  Reflect.ownKeys(obj).forEach(key => {
-    clone[key] = deepClone(obj[key], hash);
-  });
+  // 4. Recursively copy properties
+  for (const key of Object.keys(value)) {
+    clone[key] = deepClone(value[key], map);
+  }
 
   return clone;
 }
+
+// Test Circular Reference:
+const original = { a: 1, nested: { b: 2 } };
+original.self = original; // Circular loop!
+
+const copied = deepClone(original);
+console.log(copied.nested.b); // 2
+console.log(copied.self === copied); // true (circularity correctly preserved!)
 ```
 
-**⚠️ Interview Pitfall / Pro-Tip**
-- **Prototype Chain & Property Descriptors:** Using simple `{}` discards custom object prototypes and non-enumerable getter/setter properties. `Object.create(Object.getPrototypeOf(obj))` preserves custom class inheritance.
+| Method | Handles Functions? | Handles Circular Refs? | Handles `Date` / `RegExp`? | Performance |
+| :--- | :--- | :--- | :--- | :--- |
+| `JSON.parse(JSON.stringify())` | ❌ Stripped | ❌ Throws `TypeError` | ❌ Converted to string / `{}` | Slow |
+| `structuredClone()` (Native) | ❌ Throws `DataCloneError` | ✅ Yes | ✅ Yes | Fast |
+| Custom `deepClone` | ✅ Retained | ✅ Yes (via `WeakMap`) | ✅ Configurable | Direct |
 
+**⚠️ Interview Pitfall / Pro-Tip**
+- **The `JSON.parse` Traps:** In an interview, always mention why `JSON.parse(JSON.stringify(obj))` is flawed: it drops functions and `undefined`, turns `NaN`/`Infinity` to `null`, converts `Date` to strings, and throws on circular references.
+- **Special Types (Date / RegExp):** If the interviewer asks about `Date` or `RegExp`, explain that you can handle them in one line: `if (value instanceof Date) return new Date(value);` and `if (value instanceof RegExp) return new RegExp(value.source, value.flags);`.
 
 ---
 
