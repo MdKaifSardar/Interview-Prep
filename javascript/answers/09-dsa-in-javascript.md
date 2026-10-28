@@ -16,7 +16,7 @@ Understanding JavaScript engine internals (V8) prevents accidental performance t
 - **`Map` / `Set` vs `Object` / `Array`:** `Set.prototype.has()` and `Map.prototype.get()` use hash tables for $O(1)$ lookup time, whereas `Array.prototype.includes()` performs an $O(n)$ linear scan.
 - **`Array.prototype.sort()`:** Implements **Timsort** (hybrid insertion sort + merge sort), running in $O(n \log n)$ time. Default sorting coerces elements to strings alphabetically (`[10, 2].sort()` yields `[10, 2]`), requiring an explicit numeric comparator function `(a, b) => a - b`.
 
-**🛠️ Code / Visual Diagram / Table**
+**🛠️ Code / Benchmark Comparison**
 
 ```javascript
 // Benchmark Example: Array shift() vs Index Increment Pointer
@@ -54,127 +54,91 @@ console.timeEnd('pointer'); // ~1ms!
 
 ---
 
-### 67. 🟠 P1 [Q] Implement a stack and a queue in JavaScript: [LeetCode 232: Implement Queue using Stacks](https://leetcode.com/problems/implement-queue-using-stacks/) & [LeetCode 225: Implement Stack using Queues](https://leetcode.com/problems/implement-stack-using-queues/), and explain why shift() is inefficient for a queue.
+### 9.2 Hash Maps & Frequency Counting
 
-> **TL;DR:** Stacks follow LIFO (Last-In, First-Out) using $O(1)$ `push()` and `pop()`. Queues follow FIFO (First-In, First-Out). Modeling a Queue with `arr.shift()` causes $O(n)$ element re-indexing on every dequeue. On LeetCode, queues are implemented using two stacks (`inStack` and `outStack`) for amortized $O(1)$ operations.
+### 67. 🔴 P0 [Q] [LeetCode 1: Two Sum](https://leetcode.com/problems/two-sum/)
 
-**💡 Core Concept & Explanation**
-- **LeetCode 232 (Queue using Two Stacks):**
-  - Maintain `inStack` for `push` and `outStack` for `pop`/`peek`.
-  - When `pop()` or `peek()` is called and `outStack` is empty, transfer all elements from `inStack` to `outStack`. This reverses their order to FIFO!
-  - Each element is moved between stacks at most once, achieving amortized $O(1)$ time per operation.
+**📜 Problem Statement & LeetCode Link**
+- **LeetCode Link:** [LeetCode 1: Two Sum](https://leetcode.com/problems/two-sum/)
+- **Description:** Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`. You may assume that each input would have exactly one solution, and you may not use the same element twice.
 
-**🛠️ Code / Visual Diagram / Table**
+**🧠 Solution Summary & Pattern Mnemonic**
+- **Pattern:** Hash Map Complement Lookup.
+- **Mnemonic:** *"Don't search forward for a pair; store the past and look back for the complement in $O(1)$."*
+
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(n^2)$ | **Space:** $O(1)$
+- **Explanation:** Use two nested loops to check every possible pair `(i, j)` where $j > i$. Suboptimal because checking pairs takes quadratic time.
 
 ```javascript
-// LeetCode 232: Implement Queue using Stacks
-var MyQueue = function() {
-  this.inStack = [];
-  this.outStack = [];
-};
-
-MyQueue.prototype.push = function(x) {
-  this.inStack.push(x);
-};
-
-MyQueue.prototype.pop = function() {
-  this.peek(); // Ensures outStack has elements
-  return this.outStack.pop();
-};
-
-MyQueue.prototype.peek = function() {
-  if (this.outStack.length === 0) {
-    while (this.inStack.length > 0) {
-      this.outStack.push(this.inStack.pop());
+var twoSumBrute = function(nums, target) {
+  for (let i = 0; i < nums.length; i++) {
+    for (let j = i + 1; j < nums.length; j++) {
+      if (nums[i] + nums[j] === target) {
+        return [i, j];
+      }
     }
   }
-  return this.outStack[this.outStack.length - 1];
+  return [];
 };
-
-MyQueue.prototype.empty = function() {
-  return this.inStack.length === 0 && this.outStack.length === 0;
-};
-
-// Usage Example:
-const queue = new MyQueue();
-queue.push(1);
-queue.push(2);
-console.log(queue.peek());  // 1
-console.log(queue.pop());   // 1
-console.log(queue.empty()); // false
 ```
 
-**⚠️ Interview Pitfall / Pro-Tip**
-- **Transferring Elements:** In `MyQueue`, do not transfer elements back and forth on every `push`. Only transfer from `inStack` to `outStack` on `pop`/`peek` when `outStack` is completely empty. This preserves the amortized $O(1)$ bound.
-
----
-
-### 9.2 Strings & Palindromes
-
-### 68. 🔴 P0 [Q] [LeetCode 125: Valid Palindrome](https://leetcode.com/problems/valid-palindrome/) — Reverse a string and check whether it is a palindrome, with and without built-in methods.
-
-> **TL;DR:** [LeetCode 125](https://leetcode.com/problems/valid-palindrome/) requires verifying if a string is a palindrome after converting to lowercase and removing all non-alphanumeric characters. The Two-Pointer technique compares characters from both ends inward in $O(n)$ time and $O(1)$ space.
-
-**💡 Core Concept & Explanation**
-- **Alphanumeric Filtering:** Palindrome checks must ignore case and non-alphanumeric characters. You can clean the string with regex `/[^a-z0-9]/gi` or skip non-alphanumeric characters directly using ASCII ranges during pointer movement.
-- **Two-Pointer Approach:** Start `left = 0`, `right = s.length - 1`. Advance pointers while skipping non-alphanumerics, checking if `s[left].toLowerCase() === s[right].toLowerCase()`.
-
-**🛠️ Code / Visual Diagram / Table**
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(n)$ | **Space:** $O(n)$
+- **Explanation:** As we iterate through `nums`, calculate `complement = target - nums[i]`. If `complement` already exists in our `Map`, we have found the matching pair in a single pass.
 
 ```javascript
 /**
- * @param {string} s
- * @return {boolean}
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number[]}
  */
-var isPalindrome = function(s) {
-  let left = 0;
-  let right = s.length - 1;
+var twoSum = function(nums, target) {
+  const map = new Map(); // value -> index
 
-  function isAlphanumeric(ch) {
-    const code = ch.charCodeAt(0);
-    return (
-      (code >= 48 && code <= 57) || // 0-9
-      (code >= 65 && code <= 90) || // A-Z
-      (code >= 97 && code <= 122)   // a-z
-    );
-  }
+  for (let i = 0; i < nums.length; i++) {
+    const complement = target - nums[i];
 
-  while (left < right) {
-    while (left < right && !isAlphanumeric(s[left])) left++;
-    while (left < right && !isAlphanumeric(s[right])) right--;
-
-    if (s[left].toLowerCase() !== s[right].toLowerCase()) {
-      return false;
+    if (map.has(complement)) {
+      return [map.get(complement), i];
     }
 
-    left++;
-    right--;
+    map.set(nums[i], i);
   }
 
-  return true;
+  return [];
 };
-
-// Test Cases:
-console.log(isPalindrome("A man, a plan, a canal: Panama")); // true
-console.log(isPalindrome("race a car"));                     // false
-console.log(isPalindrome(" "));                              // true
 ```
 
-**⚠️ Interview Pitfall / Pro-Tip**
-- **String Cleaning Memory Tradeoff:** Doing `s.replace(/[^a-z0-9]/gi, '').toLowerCase()` is a clean 3-line solution, but it allocates a new string in memory ($O(n)$ space). Moving pointers and skipping characters in-place achieves $O(1)$ auxiliary space.
+**⚠️ Edge Cases & Interview Gotchas**
+- **Same Element Reuse:** Check `map.has(complement)` *before* setting `map.set(nums[i], i)` so an element like `nums[i] = 3` with `target = 6` does not match itself.
 
 ---
 
-### 69. 🔴 P0 [Q] [LeetCode 242: Valid Anagram](https://leetcode.com/problems/valid-anagram/) — Check whether two strings are anagrams.
+### 68. 🔴 P0 [Q] [LeetCode 242: Valid Anagram](https://leetcode.com/problems/valid-anagram/)
 
-> **TL;DR:** [LeetCode 242](https://leetcode.com/problems/valid-anagram/) checks if $t$ is an anagram of $s$. If lengths differ, return `false`. A 26-element integer frequency array or `Map` counts character frequencies in $s$ and decrements with $t$ in $O(n)$ time and $O(1)$ auxiliary space.
+**📜 Problem Statement & LeetCode Link**
+- **LeetCode Link:** [LeetCode 242: Valid Anagram](https://leetcode.com/problems/valid-anagram/)
+- **Description:** Given two strings `s` and `t`, return `true` if `t` is an anagram of `s`, and `false` otherwise.
 
-**💡 Core Concept & Explanation**
-1. **Length Check:** If `s.length !== t.length`, return `false` immediately.
-2. **Frequency Counter:** Since inputs consist of lowercase English letters, a 26-element array `freq` indexed by `char.charCodeAt(0) - 97` is faster than a hash map and consumes $O(1)$ fixed space.
-3. If any frequency drops below 0 when scanning $t$, return `false`.
+**🧠 Solution Summary & Pattern Mnemonic**
+- **Pattern:** 26-Element Fixed Frequency Array.
+- **Mnemonic:** *"If character counts cancel to zero, they are anagrams."*
 
-**🛠️ Code / Visual Diagram / Table**
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(n \log n)$ | **Space:** $O(n)$
+- **Explanation:** Split both strings into arrays, sort alphabetically, and compare joined strings. Correct, but sorting takes $O(n \log n)$ time and creates unnecessary array copies.
+
+```javascript
+var isAnagramBrute = function(s, t) {
+  if (s.length !== t.length) return false;
+  return s.split('').sort().join('') === t.split('').sort().join('');
+};
+```
+
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(n)$ | **Space:** $O(1)$ (Fixed 26-slot array)
+- **Explanation:** English lowercase letters range from ASCII 97 (`'a'`) to 122 (`'z'`). Use a fixed 26-element array. Increment for characters in `s` and decrement for characters in `t`. All values must be `0`.
 
 ```javascript
 /**
@@ -198,27 +162,108 @@ var isAnagram = function(s, t) {
 
   return true;
 };
-
-// Test Cases:
-console.log(isAnagram("anagram", "nagaram")); // true
-console.log(isAnagram("rat", "car"));         // false
 ```
 
-**⚠️ Interview Pitfall / Pro-Tip**
-- **Sorting Shortcut:** `s.split('').sort().join('') === t.split('').sort().join('')` is a 1-line solution, but it takes $O(n \log n)$ time and $O(n)$ space. Interviewers expect the $O(n)$ time and $O(1)$ space frequency array.
+**⚠️ Edge Cases & Interview Gotchas**
+- **Length Mismatch Guard:** Always verify `if (s.length !== t.length) return false` on line 1 for an instant $O(1)$ fast-path exit.
 
 ---
 
-### 70. 🔴 P0 [Q] [LeetCode 387: First Unique Character in a String](https://leetcode.com/problems/first-unique-character-in-a-string/) — Count character frequencies in a string and find the first non-repeating character.
+### 69. 🔴 P0 [Q] [LeetCode 49: Group Anagrams](https://leetcode.com/problems/group-anagrams/)
 
-> **TL;DR:** [LeetCode 387](https://leetcode.com/problems/first-unique-character-in-a-string/) asks for the index of the first non-repeating character in $s$ (or `-1` if none exists). Count frequencies in a first pass, then return the index of the first character with `count === 1` in a second pass in $O(n)$ time and $O(1)$ space.
+**📜 Problem Statement & LeetCode Link**
+- **LeetCode Link:** [LeetCode 49: Group Anagrams](https://leetcode.com/problems/group-anagrams/)
+- **Description:** Given an array of strings `strs`, group the anagrams together in any order.
 
-**💡 Core Concept & Explanation**
-- **Pass 1:** Build a 26-element frequency array `count[s.charCodeAt(i) - 97]++`.
-- **Pass 2:** Iterate through the string from index $0$ to $n-1$. The first character where `count[s.charCodeAt(i) - 97] === 1` is our answer.
-- If the loop finishes without finding any unique character, return `-1`.
+**🧠 Solution Summary & Pattern Mnemonic**
+- **Pattern:** Canonical Key Hashing with Map.
+- **Mnemonic:** *"All anagrams share the same sorted canonical signature or frequency string."*
 
-**🛠️ Code / Visual Diagram / Table**
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(n^2 \cdot k)$ | **Space:** $O(n)$
+- **Explanation:** For every string, compare with all other unvisited strings using the $O(k)$ anagram check and group them into arrays. Nested comparisons cause quadratic $O(n^2)$ time.
+
+```javascript
+var groupAnagramsBrute = function(strs) {
+  const visited = new Array(strs.length).fill(false);
+  const result = [];
+
+  for (let i = 0; i < strs.length; i++) {
+    if (visited[i]) continue;
+    const group = [strs[i]];
+    visited[i] = true;
+
+    for (let j = i + 1; j < strs.length; j++) {
+      if (!visited[j] && isAnagram(strs[i], strs[j])) {
+        group.push(strs[j]);
+        visited[j] = true;
+      }
+    }
+    result.push(group);
+  }
+  return result;
+};
+```
+
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(n \cdot k \log k)$ | **Space:** $O(n \cdot k)$
+- **Explanation:** Sort each string's characters to create a canonical key (e.g. `"eat"`, `"tea"`, `"ate"` all produce key `"aet"`). Store words in a `Map<string, string[]>`.
+
+```javascript
+/**
+ * @param {string[]} strs
+ * @return {string[][]}
+ */
+var groupAnagrams = function(strs) {
+  const map = new Map();
+
+  for (const s of strs) {
+    // Generate canonical sorted key
+    const key = s.split('').sort().join('');
+
+    if (!map.has(key)) {
+      map.set(key, []);
+    }
+    map.get(key).push(s);
+  }
+
+  return Array.from(map.values());
+};
+```
+
+**⚠️ Edge Cases & Interview Gotchas**
+- **Alternative $O(n \cdot k)$ Optimal Key:** Instead of sorting characters, you can build a 26-count delimiter string (e.g., `#1#0#0...#1`) to achieve linear $O(n \cdot k)$ time. In practice on LeetCode, `s.split('').sort().join('')` runs faster in V8 due to small string lengths ($k \le 100$).
+
+---
+
+### 70. 🔴 P0 [Q] [LeetCode 387: First Unique Character in a String](https://leetcode.com/problems/first-unique-character-in-a-string/)
+
+**📜 Problem Statement & LeetCode Link**
+- **LeetCode Link:** [LeetCode 387: First Unique Character in a String](https://leetcode.com/problems/first-unique-character-in-a-string/)
+- **Description:** Given a string `s`, find the first non-repeating character in it and return its index. If it does not exist, return `-1`.
+
+**🧠 Solution Summary & Pattern Mnemonic**
+- **Pattern:** Two-Pass Frequency Counting.
+- **Mnemonic:** *"Count in pass 1; identify the earliest count of 1 in pass 2."*
+
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(n^2)$ | **Space:** $O(1)$
+- **Explanation:** Use built-in `s.indexOf(ch) === s.lastIndexOf(ch)`. For each character, both `indexOf` and `lastIndexOf` scan the entire string, creating an $O(n^2)$ nested loop.
+
+```javascript
+var firstUniqCharBrute = function(s) {
+  for (let i = 0; i < s.length; i++) {
+    if (s.indexOf(s[i]) === s.lastIndexOf(s[i])) {
+      return i;
+    }
+  }
+  return -1;
+};
+```
+
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(n)$ | **Space:** $O(1)$ (26 lowercase characters)
+- **Explanation:** Pass 1 populates a 26-slot integer array with frequencies. Pass 2 scans `s` from index 0; the first character with `count === 1` is returned.
 
 ```javascript
 /**
@@ -228,12 +273,12 @@ console.log(isAnagram("rat", "car"));         // false
 var firstUniqChar = function(s) {
   const count = new Array(26).fill(0);
 
-  // Pass 1: Build frequencies
+  // Pass 1: Build frequency table
   for (let i = 0; i < s.length; i++) {
     count[s.charCodeAt(i) - 97]++;
   }
 
-  // Pass 2: Find first character with count 1
+  // Pass 2: Find first character with frequency 1
   for (let i = 0; i < s.length; i++) {
     if (count[s.charCodeAt(i) - 97] === 1) {
       return i;
@@ -242,28 +287,158 @@ var firstUniqChar = function(s) {
 
   return -1;
 };
-
-// Test Cases:
-console.log(firstUniqChar("leetcode"));     // 0 ('l')
-console.log(firstUniqChar("loveleetcode")); // 2 ('v')
-console.log(firstUniqChar("aabb"));         // -1
 ```
 
-**⚠️ Interview Pitfall / Pro-Tip**
-- **Nested `indexOf` Trap:** `s.indexOf(ch) === s.lastIndexOf(ch)` inside a loop runs in $O(n^2)$ time! The two-pass frequency array runs in linear $O(n)$ time.
+**⚠️ Edge Cases & Interview Gotchas**
+- **All duplicates (`"aabb"`):** Loop finishes without returning, hitting `-1`.
+- **Single character (`"z"`):** Immediately returns index `0`.
 
 ---
 
-### 71. 🟠 P1 [Q] [LeetCode 151: Reverse Words in a String](https://leetcode.com/problems/reverse-words-in-a-string/) — Reverse the words in a sentence and handle multiple whitespace separators.
+### 71. 🟠 P1 [Q] [LeetCode 349: Intersection of Two Arrays](https://leetcode.com/problems/intersection-of-two-arrays/)
 
-> **TL;DR:** [LeetCode 151](https://leetcode.com/problems/reverse-words-in-a-string/) requires reversing the order of words in a string, trimming leading/trailing spaces, and reducing multiple spaces between words to a single space in $O(n)$ time.
+**📜 Problem Statement & LeetCode Link**
+- **LeetCode Link:** [LeetCode 349: Intersection of Two Arrays](https://leetcode.com/problems/intersection-of-two-arrays/)
+- **Description:** Given two integer arrays `nums1` and `nums2`, return an array of their intersection. Each element in the result must be unique.
 
-**💡 Core Concept & Explanation**
-1. **Sanitization:** `s.trim()` strips leading and trailing whitespace.
-2. **Whitespace Collapsing:** Splitting by regex `/\s+/` tokenizes words while cleanly collapsing any sequence of spaces, tabs, or newlines into distinct word tokens.
-3. **Reversal & Join:** Reverse the tokens array and join with a single space `' '`.
+**🧠 Solution Summary & Pattern Mnemonic**
+- **Pattern:** Set Membership & In-Place Deletion.
+- **Mnemonic:** *"Load smaller array into a Set; delete as you match to enforce uniqueness."*
 
-**🛠️ Code / Visual Diagram / Table**
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(n \cdot m)$ | **Space:** $O(n)$
+- **Explanation:** Filter `nums1` using `nums2.includes(x)`. Because `includes()` performs an $O(m)$ scan on every element, total time is quadratic $O(n \cdot m)$.
+
+```javascript
+var intersectionBrute = function(nums1, nums2) {
+  const matches = nums1.filter(x => nums2.includes(x));
+  return Array.from(new Set(matches));
+};
+```
+
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(n + m)$ | **Space:** $O(n)$
+- **Explanation:** Convert `nums1` into a `Set`. Iterate `nums2`: if an element exists in the set, push it to `result` and **delete it from the set immediately**. Deleting prevents duplicate entries without needing a second set!
+
+```javascript
+/**
+ * @param {number[]} nums1
+ * @param {number[]} nums2
+ * @return {number[]}
+ */
+var intersection = function(nums1, nums2) {
+  const set1 = new Set(nums1);
+  const result = [];
+
+  for (const num of nums2) {
+    if (set1.has(num)) {
+      result.push(num);
+      set1.delete(num); // Guarantees uniqueness in O(1)!
+    }
+  }
+
+  return result;
+};
+```
+
+**⚠️ Edge Cases & Interview Gotchas**
+- **Intersection with Duplicates (LC 350):** If duplicate counts matter (`[2, 2]` intersecting `[2, 2]` must yield `[2, 2]`), use a frequency map counter instead of a Set.
+
+---
+
+### 9.3 Strings & Two Pointers
+
+### 72. 🔴 P0 [Q] [LeetCode 125: Valid Palindrome](https://leetcode.com/problems/valid-palindrome/)
+
+**📜 Problem Statement & LeetCode Link**
+- **LeetCode Link:** [LeetCode 125: Valid Palindrome](https://leetcode.com/problems/valid-palindrome/)
+- **Description:** A phrase is a palindrome if, after converting all uppercase letters into lowercase letters and removing all non-alphanumeric characters, it reads the same forward and backward.
+
+**🧠 Solution Summary & Pattern Mnemonic**
+- **Pattern:** Two Pointers Inward Traversal.
+- **Mnemonic:** *"Meet in the middle while skipping non-alphanumerics."*
+
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(n)$ | **Space:** $O(n)$
+- **Explanation:** Strip non-alphanumerics with regex, lowercase, reverse string with `split('').reverse().join('')`, and check equality. Allocates multiple intermediate strings and arrays in heap memory.
+
+```javascript
+var isPalindromeBrute = function(s) {
+  const clean = s.toLowerCase().replace(/[^a-z0-9]/g, '');
+  return clean === clean.split('').reverse().join('');
+};
+```
+
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(n)$ | **Space:** $O(1)$
+- **Explanation:** Maintain two pointers `left = 0` and `right = s.length - 1`. Advance pointers past non-alphanumeric characters using ASCII comparisons, comparing lowercase characters without allocating extra strings.
+
+```javascript
+/**
+ * @param {string} s
+ * @return {boolean}
+ */
+var isPalindrome = function(s) {
+  let left = 0;
+  let right = s.length - 1;
+
+  function isAlphanumeric(code) {
+    return (
+      (code >= 48 && code <= 57) || // 0-9
+      (code >= 65 && code <= 90) || // A-Z
+      (code >= 97 && code <= 122)   // a-z
+    );
+  }
+
+  while (left < right) {
+    while (left < right && !isAlphanumeric(s.charCodeAt(left))) left++;
+    while (left < right && !isAlphanumeric(s.charCodeAt(right))) right--;
+
+    if (s[left].toLowerCase() !== s[right].toLowerCase()) {
+      return false;
+    }
+
+    left++;
+    right--;
+  }
+
+  return true;
+};
+```
+
+**⚠️ Edge Cases & Interview Gotchas**
+- **Empty string or all spaces (`"   "`):** Pointers bypass spaces and cross over, safely returning `true`.
+
+---
+
+### 73. 🟠 P1 [Q] [LeetCode 151: Reverse Words in a String](https://leetcode.com/problems/reverse-words-in-a-string/)
+
+**📜 Problem Statement & LeetCode Link**
+- **LeetCode Link:** [LeetCode 151: Reverse Words in a String](https://leetcode.com/problems/reverse-words-in-a-string/)
+- **Description:** Given an input string `s`, reverse the order of the words. Return a string of the words in reverse order concatenated by a single space.
+
+**🧠 Solution Summary & Pattern Mnemonic**
+- **Pattern:** Regex Tokenization & Reversal.
+- **Mnemonic:** *"Trim ends, split on whitespace chunks `/\s+/`, reverse, and join."*
+
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(n)$ | **Space:** $O(n)$
+- **Explanation:** Naively splitting by a single space `s.split(' ')` creates an array containing empty strings `""` whenever multiple spaces occur. Requires manual filtering loops.
+
+```javascript
+var reverseWordsNaive = function(s) {
+  const words = s.split(' ');
+  const filtered = [];
+  for (let i = words.length - 1; i >= 0; i--) {
+    if (words[i].length > 0) filtered.push(words[i]);
+  }
+  return filtered.join(' ');
+};
+```
+
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(n)$ | **Space:** $O(n)$
+- **Explanation:** `s.trim()` strips boundary spaces; regex `/\s+/` tokenizes words by collapsing arbitrary contiguous spaces in one pass. Reverse and join.
 
 ```javascript
 /**
@@ -273,358 +448,39 @@ console.log(firstUniqChar("aabb"));         // -1
 var reverseWords = function(s) {
   return s.trim().split(/\s+/).reverse().join(' ');
 };
-
-// Test Cases:
-console.log(reverseWords("the sky is blue"));          // "blue is sky the"
-console.log(reverseWords("  hello world  "));          // "world hello"
-console.log(reverseWords("a good   example"));         // "example good a"
 ```
 
-**⚠️ Interview Pitfall / Pro-Tip**
-- `s.split(' ')` on `"a   b"` returns `["a", "", "", "b"]` with empty strings! Always use regex `/\s+/` with `.trim()`.
-- If the interviewer requires an in-place $O(1)$ space solution (when input is given as a character array `char[]`), reverse the entire array first, then reverse each individual word in-place, and shift characters to collapse spaces.
+**⚠️ Edge Cases & Interview Gotchas**
+- **Multiple spaces between words (`"a   good   example"`):** `/\s+/` handles arbitrary spacing cleanly.
 
 ---
 
-### 9.3 Sliding Window & Stack
+### 74. 🟠 P1 [Q] [LeetCode 283: Move Zeroes](https://leetcode.com/problems/move-zeroes/)
 
-### 72. 🟠 P1 [Q] [LeetCode 20: Valid Parentheses](https://leetcode.com/problems/valid-parentheses/) — Check whether a string of brackets is valid using a stack.
+**📜 Problem Statement & LeetCode Link**
+- **LeetCode Link:** [LeetCode 283: Move Zeroes](https://leetcode.com/problems/move-zeroes/)
+- **Description:** Given an integer array `nums`, move all `0`'s to the end of it while maintaining the relative order of the non-zero elements. You must do this **in-place** without returning anything.
 
-> **TL;DR:** [LeetCode 20](https://leetcode.com/problems/valid-parentheses/) validates bracket matching for `'()[]{}'`. Push opening brackets onto an array stack; for closing brackets, pop from the stack and verify the pair matches. Return `true` if the stack is empty at the end.
+**🧠 Solution Summary & Pattern Mnemonic**
+- **Pattern:** Same-Direction Read/Write Pointers.
+- **Mnemonic:** *"Read every element; swap non-zeros forward into the write index."*
 
-**💡 Core Concept & Explanation**
-- **LIFO Stack Matching:** The most recently opened bracket must be closed first.
-- If string length is odd (`s.length % 2 !== 0`), it can never be valid—return `false` immediately ($O(1)$ fast path).
-- Map closing brackets to opening counterparts: `{ ')': '(', '}': '{', ']': '[' }`.
-- If a closing bracket is encountered and the popped element does not match, return `false`.
-
-**🛠️ Code / Visual Diagram / Table**
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(n)$ | **Space:** $O(n)$
+- **Explanation:** Filter all non-zeros into a new array, pad trailing zeros, and copy back into `nums`. Suboptimal because it violates the in-place $O(1)$ space requirement.
 
 ```javascript
-/**
- * @param {string} s
- * @return {boolean}
- */
-var isValid = function(s) {
-  if (s.length % 2 !== 0) return false;
-
-  const stack = [];
-  const map = {
-    ')': '(',
-    '}': '{',
-    ']': '['
-  };
-
-  for (let i = 0; i < s.length; i++) {
-    const ch = s[i];
-    if (map[ch]) {
-      // Closing bracket
-      const top = stack.pop();
-      if (top !== map[ch]) return false;
-    } else {
-      // Opening bracket
-      stack.push(ch);
-    }
-  }
-
-  return stack.length === 0;
+var moveZeroesBrute = function(nums) {
+  const temp = [];
+  for (const x of nums) if (x !== 0) temp.push(x);
+  while (temp.length < nums.length) temp.push(0);
+  for (let i = 0; i < nums.length; i++) nums[i] = temp[i];
 };
-
-// Test Cases:
-console.log(isValid("()"));     // true
-console.log(isValid("()[]{}")); // true
-console.log(isValid("(]"));     // false
-console.log(isValid("([)]"));   // false
 ```
 
-**⚠️ Interview Pitfall / Pro-Tip**
-- Don't forget `return stack.length === 0` at the end! If the input is `"((("`, no closing bracket is ever processed, so returning `true` without checking `stack.length === 0` is a classic bug.
-
----
-
-### 73. 🔴 P0 [Q] [LeetCode 3: Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/) — Find the longest substring without repeating characters using the dynamic sliding window pattern.
-
-> **TL;DR:** [LeetCode 3](https://leetcode.com/problems/longest-substring-without-repeating-characters/) asks for the length of the longest substring with zero duplicate characters. Use a sliding window with two pointers (`left` and `right`) and a `Map` storing character last-seen indices to achieve $O(n)$ time and $O(\min(n, \sigma))$ space.
-
-**💡 Core Concept & Explanation**
-- Pointers `[left, right]` define the active window.
-- When `s[right]` is already in `lastSeen`, jump `left` forward to `lastSeen.get(char) + 1`.
-- **Forward-Only Guard:** Use `left = Math.max(left, lastSeen.get(char) + 1)` so that `left` never moves backward if the duplicate was recorded outside the current window.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-/**
- * @param {string} s
- * @return {number}
- */
-var lengthOfLongestSubstring = function(s) {
-  let maxLength = 0;
-  let left = 0;
-  const lastSeen = new Map(); // char -> last seen index
-
-  for (let right = 0; right < s.length; right++) {
-    const char = s[right];
-
-    if (lastSeen.has(char)) {
-      // Jump left pointer forward past earlier duplicate (never backwards!)
-      left = Math.max(left, lastSeen.get(char) + 1);
-    }
-
-    lastSeen.set(char, right);
-    maxLength = Math.max(maxLength, right - left + 1);
-  }
-
-  return maxLength;
-};
-
-// Test Cases:
-console.log(lengthOfLongestSubstring("abcabcbb")); // 3 ("abc")
-console.log(lengthOfLongestSubstring("bbbbb"));    // 1 ("b")
-console.log(lengthOfLongestSubstring("pwwkew"));   // 3 ("wke")
-console.log(lengthOfLongestSubstring("abba"));     // 2 ("ab")
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- The `"abba"` trap: When reading the second `'a'` at index 3, `lastSeen.get('a')` is index 0. Without `Math.max(left, ...)`, `left` rewinds from index 2 back to 1, re-introducing the duplicate `'b'`!
-
----
-
-### 9.4 Arrays, Two Pointers & Hash Maps
-
-### 74. 🔴 P0 [Q] [LeetCode 215: Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/) — Find the largest and second-largest numbers in an array without sorting.
-
-> **TL;DR:** [LeetCode 215](https://leetcode.com/problems/kth-largest-element-in-an-array/) finds the $k$-th largest element (for $k=2$, the second largest). Maintain `max1` and `max2` initialized to `-Infinity` to find the largest and second-largest in a single $O(n)$ pass without sorting (which takes $O(n \log n)$).
-
-**💡 Core Concept & Explanation**
-- **Single-Pass Logic:**
-  - If `num > max1`: `max2 = max1; max1 = num;`
-  - Else if `num > max2 && num !== max1`: `max2 = num;`
-- **For arbitrary $k$ on LeetCode:** Use a Min-Heap of size $k$ in $O(n \log k)$ time, or Quickselect in $O(n)$ average time.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// 1. Classic Second-Largest Element (Single Pass O(n) Time, O(1) Space):
-function getSecondLargest(nums) {
-  if (nums.length < 2) return -1;
-  let max1 = -Infinity;
-  let max2 = -Infinity;
-
-  for (const num of nums) {
-    if (num > max1) {
-      max2 = max1;
-      max1 = num;
-    } else if (num > max2 && num !== max1) {
-      max2 = num;
-    }
-  }
-
-  return max2 === -Infinity ? -1 : max2;
-}
-
-// 2. LeetCode 215 Canonical Solution (Quickselect / Min-Heap):
-/**
- * @param {number[]} nums
- * @param {number} k
- * @return {number}
- */
-var findKthLargest = function(nums, k) {
-  // Using Quickselect algorithm (O(n) average time):
-  const targetIdx = nums.length - k;
-
-  function quickselect(left, right) {
-    const pivot = nums[right];
-    let p = left;
-    for (let i = left; i < right; i++) {
-      if (nums[i] <= pivot) {
-        [nums[p], nums[i]] = [nums[i], nums[p]];
-        p++;
-      }
-    }
-    [nums[p], nums[right]] = [nums[right], nums[p]];
-
-    if (p === targetIdx) return nums[p];
-    if (p < targetIdx) return quickselect(p + 1, right);
-    return quickselect(left, p - 1);
-  }
-
-  return quickselect(0, nums.length - 1);
-};
-
-console.log(getSecondLargest([12, 35, 1, 10, 34, 1])); // 34
-console.log(findKthLargest([3, 2, 1, 5, 6, 4], 2));    // 5
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Clarify whether "second largest" allows duplicates (`[10, 10, 9]` $\rightarrow$ is it `10` or `9`?). In LeetCode 215, it is based on sorted index (`10`); in strict distinct second-largest problems, `num !== max1` ensures distinctness.
-
----
-
-### 75. 🔴 P0 [Q] [LeetCode 1: Two Sum](https://leetcode.com/problems/two-sum/) — Solve Two Sum using a hash map, and explain why it beats the nested-loop approach.
-
-> **TL;DR:** [LeetCode 1](https://leetcode.com/problems/two-sum/) finds two indices whose values sum to `target`. A Hash Map stores `{ number -> index }`. For each number, check if `complement = target - num` is already present. Operates in $O(n)$ time and $O(n)$ space, beating brute-force $O(n^2)$.
-
-**💡 Core Concept & Explanation**
-- For each element `nums[i]`, we need `complement = target - nums[i]`.
-- Checking if `complement` exists in a Hash Map takes $O(1)$ average time.
-- Check before inserting to prevent using the same element twice.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-/**
- * @param {number[]} nums
- * @param {number} target
- * @return {number[]}
- */
-var twoSum = function(nums, target) {
-  const map = new Map(); // value -> index
-
-  for (let i = 0; i < nums.length; i++) {
-    const complement = target - nums[i];
-
-    if (map.has(complement)) {
-      return [map.get(complement), i];
-    }
-
-    map.set(nums[i], i);
-  }
-
-  return [];
-};
-
-// Test Cases:
-console.log(twoSum([2, 7, 11, 15], 9)); // [0, 1]
-console.log(twoSum([3, 2, 4], 6));       // [1, 2]
-console.log(twoSum([3, 3], 6));          // [0, 1]
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Don't use a two-pointer approach after sorting for LeetCode 1 unless you store original indices first, because `nums.sort()` alters the original index positions requested by the problem.
-
----
-
-### 76. 🟠 P1 [Q] [LeetCode 169: Majority Element](https://leetcode.com/problems/majority-element/) & [LeetCode 347: Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/) — Find the most frequent element in an array using a hash map.
-
-> **TL;DR:** [LeetCode 169](https://leetcode.com/problems/majority-element/) finds the element appearing more than $\lfloor n/2 \rfloor$ times using Boyer-Moore Voting in $O(n)$ time and $O(1)$ space. For general frequencies ([LeetCode 347](https://leetcode.com/problems/top-k-frequent-elements/)), use a frequency map and bucket sort in $O(n)$ time.
-
-**💡 Core Concept & Explanation**
-- **Boyer-Moore Voting Algorithm (LC 169):** Maintain a `candidate` and a `count`. When `count === 0`, pick the current number as `candidate`. Increment count if current number matches candidate, else decrement. The majority element is guaranteed to survive.
-- **Top K Frequent (LC 347):** Count frequencies with a `Map`, group elements by frequency into an array of buckets, and collect the top $k$ from the highest bucket downwards in $O(n)$ time.
-
-**🛠️ Code / Visual Diagram / Table**
-
-```javascript
-// LeetCode 169: Majority Element (Boyer-Moore Voting -> O(n) Time, O(1) Space)
-/**
- * @param {number[]} nums
- * @return {number}
- */
-var majorityElement = function(nums) {
-  let candidate = nums[0];
-  let count = 0;
-
-  for (const num of nums) {
-    if (count === 0) {
-      candidate = num;
-    }
-    count += (num === candidate ? 1 : -1);
-  }
-
-  return candidate;
-};
-
-// LeetCode 347: Top K Frequent Elements (Bucket Sort -> O(n) Time, O(n) Space)
-/**
- * @param {number[]} nums
- * @param {number} k
- * @return {number[]}
- */
-var topKFrequent = function(nums, k) {
-  const freq = new Map();
-  for (const n of nums) freq.set(n, (freq.get(n) || 0) + 1);
-
-  // Buckets where index = frequency:
-  const buckets = Array.from({ length: nums.length + 1 }, () => []);
-  for (const [num, count] of freq) {
-    buckets[count].push(num);
-  }
-
-  const result = [];
-  for (let i = buckets.length - 1; i >= 0 && result.length < k; i--) {
-    for (const num of buckets[i]) {
-      result.push(num);
-      if (result.length === k) break;
-    }
-  }
-
-  return result;
-};
-
-console.log(majorityElement([3, 2, 3]));       // 3
-console.log(topKFrequent([1, 1, 1, 2, 2, 3], 2)); // [1, 2]
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- For LeetCode 347, sorting map entries by frequency `[...map.entries()].sort((a,b) => b[1] - a[1])` takes $O(n \log n)$ time. Bucket sort achieves optimal $O(n)$ linear time.
-
----
-
-### 77. 🟠 P1 [Q] [LeetCode 268: Missing Number](https://leetcode.com/problems/missing-number/) — Find the missing number in an array containing 0 to n.
-
-> **TL;DR:** [LeetCode 268](https://leetcode.com/problems/missing-number/) finds the single missing number from $[0, n]$. Calculate Gauss's sum $S = \frac{n(n+1)}{2}$ and subtract array sum, or XOR all numbers from $0$ to $n$ with all array elements. Runs in $O(n)$ time and $O(1)$ space.
-
-**💡 Core Concept & Explanation**
-- **XOR Property ($x \oplus x = 0$):** Every number that appears in the array will cancel out with its corresponding index counterpart in the range $[0, n]$. The missing number has no duplicate and remains.
-- Completely immune to integer overflow.
-
-**🛠️ Syntax / Code Template**
-
-```javascript
-/**
- * @param {number[]} nums
- * @return {number}
- */
-var missingNumber = function(nums) {
-  let xor = nums.length; // Start with n
-
-  for (let i = 0; i < nums.length; i++) {
-    xor ^= i ^ nums[i]; // Pair each index with each array value
-  }
-
-  return xor;
-};
-
-// Math Sum Alternative:
-var missingNumberSum = function(nums) {
-  const n = nums.length;
-  const expectedSum = (n * (n + 1)) / 2;
-  const actualSum = nums.reduce((acc, x) => acc + x, 0);
-  return expectedSum - actualSum;
-};
-
-// Test Cases:
-console.log(missingNumber([3, 0, 1]));             // 2
-console.log(missingNumber([0, 1]));                // 2
-console.log(missingNumber([9,6,4,2,3,5,7,0,1]));   // 8
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- In LeetCode 268, the range is $[0, n]$ (length is $n$, numbers up to $n$). Notice `let xor = nums.length;` initializes `xor` with $n$, so all numbers $0..n$ are XORed across the $n$ loop steps.
-
----
-
-### 78. 🟠 P1 [Q] [LeetCode 283: Move Zeroes](https://leetcode.com/problems/move-zeroes/) — Move all zeros to the end of an array in place while preserving order.
-
-> **TL;DR:** [LeetCode 283](https://leetcode.com/problems/move-zeroes/) requires mutating `nums` in-place without returning anything (`void`). Maintain a `write` pointer. Whenever `nums[read]` is non-zero, swap `nums[write]` with `nums[read]` and increment `write`. Runs in $O(n)$ time and $O(1)$ space.
-
-**💡 Core Concept & Explanation**
-- `write` pointer tracks where the next non-zero number should go.
-- `read` pointer scans every element.
-- Swapping when `read !== write` guarantees all non-zeros stay in original order while zeros are pushed to the tail.
-
-**🛠️ Syntax / Code Template**
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(n)$ | **Space:** $O(1)$
+- **Explanation:** `write` pointer tracks where the next non-zero should land. `read` pointer scans. When `nums[read] !== 0`, swap `nums[write]` with `nums[read]` and increment `write`.
 
 ```javascript
 /**
@@ -645,82 +501,39 @@ var moveZeroes = function(nums) {
     }
   }
 };
-
-// Test Case:
-const arr = [0, 1, 0, 3, 12];
-moveZeroes(arr);
-console.log(arr); // [1, 3, 12, 0, 0] (Mutated in-place!)
 ```
 
-**⚠️ Interview Pitfall / Pro-Tip**
-- **Do not return anything!** LeetCode's test runner checks `nums` after calling `moveZeroes(nums)`. Returning an array or allocating a new array `[...nonZeroes, ...zeroes]` fails the $O(1)$ extra memory requirement.
+**⚠️ Edge Cases & Interview Gotchas**
+- **Do not return `nums`:** LeetCode verifies the modified array in-place. Returning a value is ignored, but allocating a copy fails memory bounds.
 
 ---
 
-### 79. 🟠 P1 [Q] [LeetCode 189: Rotate Array](https://leetcode.com/problems/rotate-array/) — Rotate an array by k positions in-place using the 3-step reversal algorithm.
+### 75. 🟠 P1 [Q] [LeetCode 88: Merge Sorted Array](https://leetcode.com/problems/merge-sorted-array/)
 
-> **TL;DR:** [LeetCode 189](https://leetcode.com/problems/rotate-array/) rotates `nums` right by $k$ steps in-place (`void`). Normalize $k = k \% n$. Reverse the entire array, reverse the first $k$ elements, and reverse the remaining $n - k$ elements in $O(n)$ time and $O(1)$ space.
+**📜 Problem Statement & LeetCode Link**
+- **LeetCode Link:** [LeetCode 88: Merge Sorted Array](https://leetcode.com/problems/merge-sorted-array/)
+- **Description:** Merge two sorted integer arrays `nums1` and `nums2` into `nums1` as one sorted array in-place. `nums1` has a length of $m + n$, where the last $n$ elements are set to `0`.
 
-**💡 Core Concept & Explanation**
-- **3-Step Reversal:**
-  1. $k = k \% n$ (handles $k > n$).
-  2. Reverse entire array: `[1,2,3,4,5,6,7]` $\to$ `[7,6,5,4,3,2,1]`
-  3. Reverse first $k$ items ($k=3$): `[5,6,7,4,3,2,1]`
-  4. Reverse remaining $n-k$ items: `[5,6,7,1,2,3,4]`
+**🧠 Solution Summary & Pattern Mnemonic**
+- **Pattern:** 3-Pointer Back-to-Front In-Place Merge.
+- **Mnemonic:** *"Start from the back where the empty space lives."*
 
-**🛠️ Syntax / Code Template**
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O((m + n) \log (m + n))$ | **Space:** $O(1)$
+- **Explanation:** Copy `nums2` into the tail of `nums1` and run `nums1.sort((a,b) => a-b)`. Suboptimal because it ignores the pre-sorted property of both input arrays.
 
 ```javascript
-/**
- * @param {number[]} nums
- * @param {number} k
- * @return {void} Do not return anything, modify nums in-place instead.
- */
-var rotate = function(nums, k) {
-  const n = nums.length;
-  k = k % n;
-  if (k === 0) return;
-
-  function reverse(arr, start, end) {
-    while (start < end) {
-      const temp = arr[start];
-      arr[start] = arr[end];
-      arr[end] = temp;
-      start++;
-      end--;
-    }
+var mergeBrute = function(nums1, m, nums2, n) {
+  for (let i = 0; i < n; i++) {
+    nums1[m + i] = nums2[i];
   }
-
-  // 1. Reverse whole array
-  reverse(nums, 0, n - 1);
-  // 2. Reverse first k elements
-  reverse(nums, 0, k - 1);
-  // 3. Reverse remaining n - k elements
-  reverse(nums, k, n - 1);
+  nums1.sort((a, b) => a - b);
 };
-
-// Test Case:
-const arr = [1, 2, 3, 4, 5, 6, 7];
-rotate(arr, 3);
-console.log(arr); // [5, 6, 7, 1, 2, 3, 4]
 ```
 
-**⚠️ Interview Pitfall / Pro-Tip**
-- `nums.unshift(...nums.splice(-k))` looks like an elegant one-liner, but `splice` allocates a new array and `unshift` re-indexes all elements in $O(n \cdot k)$ time, which times out on LeetCode with large inputs.
-
----
-
-### 9.5 Array Transformations & Recursion
-
-### 80. 🟠 P1 [Q] [LeetCode 88: Merge Sorted Array](https://leetcode.com/problems/merge-sorted-array/) — Merge two sorted arrays into nums1 in-place from back to front.
-
-> **TL;DR:** [LeetCode 88](https://leetcode.com/problems/merge-sorted-array/) merges `nums2` into `nums1` in-place (`void`). Because `nums1` has trailing zeros of length $m + n$, fill from the **back to front** using 3 pointers (`p1 = m - 1`, `p2 = n - 1`, `p = m + n - 1`) in $O(m + n)$ time and $O(1)$ space.
-
-**💡 Core Concept & Explanation**
-- Merging from front to back overwrites unread elements in `nums1`.
-- Merging from back to front places the largest elements into the unused zero slots at the end of `nums1`, requiring zero extra memory buffers!
-
-**🛠️ Syntax / Code Template**
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(m + n)$ | **Space:** $O(1)$
+- **Explanation:** Merging from the front overwrites unread elements in `nums1`. Merging from the **back** (`p = m + n - 1`) places the largest elements into the empty trailing buffer without overwriting.
 
 ```javascript
 /**
@@ -746,198 +559,223 @@ var merge = function(nums1, m, nums2, n) {
     p--;
   }
 };
-
-// Test Case:
-const nums1 = [1, 2, 3, 0, 0, 0];
-merge(nums1, 3, [2, 5, 6], 3);
-console.log(nums1); // [1, 2, 2, 3, 5, 6]
 ```
 
-**⚠️ Interview Pitfall / Pro-Tip**
-- The loop condition only needs `while (p2 >= 0)`. If `p2 < 0`, any remaining items in `nums1` are already in their correct sorted positions!
+**⚠️ Edge Cases & Interview Gotchas**
+- **Loop Condition:** Only `while (p2 >= 0)` is needed. If `p2 < 0`, remaining elements in `nums1` are already in their correct sorted positions.
 
 ---
 
-### 81. 🟠 P1 [Q] [LeetCode 349: Intersection of Two Arrays](https://leetcode.com/problems/intersection-of-two-arrays/) — Find the intersection of two arrays returning unique elements.
+### 9.4 Sliding Window
 
-> **TL;DR:** [LeetCode 349](https://leetcode.com/problems/intersection-of-two-arrays/) returns an array of unique intersection values. Store `nums1` in a `Set`. Iterate `nums2` and collect elements found in the set, deleting matched elements from the set to avoid duplicates. Runs in $O(n + m)$ time.
+### 76. 🔴 P0 [Q] [LeetCode 3: Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/)
 
-**💡 Core Concept & Explanation**
-- `set1.has(x)` is $O(1)$ average time.
-- Deleting `set1.delete(num)` upon discovery guarantees uniqueness without allocating a second `Set`.
+**📜 Problem Statement & LeetCode Link**
+- **LeetCode Link:** [LeetCode 3: Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/)
+- **Description:** Given a string `s`, find the length of the longest substring without duplicate characters.
 
-**🛠️ Syntax / Code Template**
+**🧠 Solution Summary & Pattern Mnemonic**
+- **Pattern:** Dynamic Sliding Window with Last-Seen Index Map.
+- **Mnemonic:** *"Expand right; on duplicate, jump left forward past its earlier position."*
+
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(n^2)$ | **Space:** $O(\min(n, \sigma))$
+- **Explanation:** Check all possible substrings starting at index $i$, using a `Set` to stop when a duplicate is found. Takes quadratic time.
 
 ```javascript
-/**
- * @param {number[]} nums1
- * @param {number[]} nums2
- * @return {number[]}
- */
-var intersection = function(nums1, nums2) {
-  const set1 = new Set(nums1);
-  const result = [];
-
-  for (const num of nums2) {
-    if (set1.has(num)) {
-      result.push(num);
-      set1.delete(num); // Prevents duplicates in result
+var lengthOfLongestSubstringBrute = function(s) {
+  let maxLen = 0;
+  for (let i = 0; i < s.length; i++) {
+    const seen = new Set();
+    for (let j = i; j < s.length; j++) {
+      if (seen.has(s[j])) break;
+      seen.add(s[j]);
+      maxLen = Math.max(maxLen, j - i + 1);
     }
   }
-
-  return result;
+  return maxLen;
 };
-
-// Test Cases:
-console.log(intersection([1, 2, 2, 1], [2, 2])); // [2]
-console.log(intersection([4, 9, 5], [9, 4, 9, 8, 4])); // [9, 4]
 ```
 
-**⚠️ Interview Pitfall / Pro-Tip**
-- If the problem is **LeetCode 350 (Intersection of Two Arrays II)** where duplicates must be preserved according to frequency, use a frequency counter `Map` rather than a `Set`.
-
----
-
-### 82. 🟠 P1 [Q] [LeetCode 2677: Chunk Array](https://leetcode.com/problems/chunk-array/) — Split an array into sub-arrays of size n.
-
-> **TL;DR:** [LeetCode 2677](https://leetcode.com/problems/chunk-array/) (part of 30 Days of JavaScript) requires splitting `arr` into chunks of `size`. Iterate with step `size`, using `arr.slice(i, i + size)` to extract chunks without mutating the input array in $O(n)$ time.
-
-**💡 Core Concept & Explanation**
-- `arr.slice(i, i + size)` extracts sub-arrays safely. If `i + size > arr.length`, `slice` stops at `arr.length`.
-- Returns an empty array `[]` if `arr` is empty.
-
-**🛠️ Syntax / Code Template**
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(n)$ | **Space:** $O(\min(n, \sigma))$
+- **Explanation:** Two pointers define the window `[left, right]`. Store character last-seen indices in a `Map`. When `s[right]` is encountered, jump `left` directly to `lastSeen.get(char) + 1` (using `Math.max` to guarantee `left` never moves backward).
 
 ```javascript
 /**
- * @param {Array} arr
- * @param {number} size
- * @return {Array}
- */
-var chunk = function(arr, size) {
-  const chunked = [];
-  for (let i = 0; i < arr.length; i += size) {
-    chunked.push(arr.slice(i, i + size));
-  }
-  return chunked;
-};
-
-// Test Cases:
-console.log(chunk([1, 2, 3, 4, 5], 1)); // [[1], [2], [3], [4], [5]]
-console.log(chunk([1, 9, 6, 3, 2], 3)); // [[1, 9, 6], [3, 2]]
-console.log(chunk([], 1));              // []
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- Avoid `arr.splice(0, size)` in a while loop! `splice` mutates and empties the original input array passed by the caller.
-
----
-
-### 83. 🟠 P1 [Q] [LeetCode 2625: Flatten Deeply Nested Array](https://leetcode.com/problems/flatten-deeply-nested-array/) — Flatten deeply nested arrays and objects into dot-notation keys.
-
-> **TL;DR:** [LeetCode 2625](https://leetcode.com/problems/flatten-deeply-nested-array/) flattens an array up to depth $n$. Recursively explore items: if an element is an array and current depth $< n$, recurse; otherwise push value directly. In frontend interviews, the object equivalent flattens nested objects into dot-notation keys (`{ a: { b: 1 } }` $\to$ `{ "a.b": 1 }`).
-
-**💡 Core Concept & Explanation**
-- **LeetCode 2625:** Takes `(arr, n)`. Traverses array, maintaining current recursion depth.
-- **Flatten Object Companion:** Recursively joins nested object keys with `.` until reaching primitives.
-
-**🛠️ Syntax / Code Template**
-
-```javascript
-// 1. LeetCode 2625: Flatten Deeply Nested Array up to depth n:
-/**
- * @param {Array} arr
- * @param {number} depth
- * @return {Array}
- */
-var flat = function(arr, n) {
-  if (n <= 0) return arr;
-  const result = [];
-
-  function helper(currentArr, currentDepth) {
-    for (const item of currentArr) {
-      if (Array.isArray(item) && currentDepth < n) {
-        helper(item, currentDepth + 1);
-      } else {
-        result.push(item);
-      }
-    }
-  }
-
-  helper(arr, 0);
-  return result;
-};
-
-// 2. Flatten Object (Frontend Interview Favorite):
-function flattenObject(obj, prefix = '', result = {}) {
-  for (const [key, value] of Object.entries(obj)) {
-    const newKey = prefix ? `${prefix}.${key}` : key;
-    if (typeof value === 'object' && value !== null && !Array.isArray(value) && Object.keys(value).length > 0) {
-      flattenObject(value, newKey, result);
-    } else {
-      result[newKey] = value;
-    }
-  }
-  return result;
-}
-
-console.log(flat([1, 2, 3, [4, 5, 6], [7, 8, [9, 10, 11], 12], [13, 14, 15]], 1));
-// [1, 2, 3, 4, 5, 6, 7, 8, [9, 10, 11], 12, 13, 14, 15]
-
-console.log(flattenObject({ a: { b: 1, c: { d: 2 } }, e: 3 }));
-// { "a.b": 1, "a.c.d": 2, "e": 3 }
-```
-
-**⚠️ Interview Pitfall / Pro-Tip**
-- For LeetCode 2625, writing `arr.flat(n)` passes the problem in modern runtimes, but interviewers explicitly test your recursive depth-tracking logic. Writing the custom helper proves you understand traversal and recursion boundaries.
-
----
-
-### 84. 🟠 P1 [Q] [LeetCode 509: Fibonacci Number](https://leetcode.com/problems/fibonacci-number/) — Compute Fibonacci recursively, iteratively, and with memoization, comparing time complexities.
-
-> **TL;DR:** [LeetCode 509](https://leetcode.com/problems/fibonacci-number/) calculates $F(n)$. Naive recursion is $O(2^n)$ exponential time. Memoization reduces it to $O(n)$ time and $O(n)$ space. Iterative bottom-up DP calculates $F(n)$ in $O(n)$ time and $O(1)$ space.
-
-**💡 Core Concept & Explanation**
-- Base cases: $F(0) = 0, F(1) = 1$.
-- Relation: $F(n) = F(n-1) + F(n-2)$.
-- Space Optimization: You only need the previous two numbers (`prev1` and `prev2`) to compute the current Fibonacci value, eliminating the need for an array table.
-
-**🛠️ Syntax / Code Template**
-
-```javascript
-/**
- * @param {number} n
+ * @param {string} s
  * @return {number}
  */
-var fib = function(n) {
-  if (n <= 1) return n;
+var lengthOfLongestSubstring = function(s) {
+  let maxLen = 0;
+  let left = 0;
+  const lastSeen = new Map(); // char -> last seen index
 
-  let prev2 = 0;
-  let prev1 = 1;
+  for (let right = 0; right < s.length; right++) {
+    const char = s[right];
 
-  for (let i = 2; i <= n; i++) {
-    const current = prev1 + prev2;
-    prev2 = prev1;
-    prev1 = current;
+    if (lastSeen.has(char)) {
+      // Jump left forward past duplicate (never backwards!)
+      left = Math.max(left, lastSeen.get(char) + 1);
+    }
+
+    lastSeen.set(char, right);
+    maxLen = Math.max(maxLen, right - left + 1);
   }
 
-  return prev1;
+  return maxLen;
 };
-
-// Test Cases:
-console.log(fib(2)); // 1
-console.log(fib(3)); // 2
-console.log(fib(4)); // 3
 ```
 
-| Approach | Time Complexity | Auxiliary Space | Call Stack Risk |
-| :--- | :--- | :--- | :--- |
-| **Naive Recursion** | $O(2^n)$ | $O(n)$ | High (`RangeError: Maximum call stack size exceeded`) |
-| **Memoized DP** | $O(n)$ | $O(n)$ | Moderate for large $n$ |
-| **Iterative DP (Optimal)** | **$O(n)$** | **$O(1)$** | **None** |
+**⚠️ Edge Cases & Interview Gotchas**
+- **The `"abba"` Trap:** When reaching the second `'a'` at index 3, `lastSeen.get('a')` is 0. Without `Math.max(left, ...)`, `left` rewinds from 2 back to 1, corrupting window integrity.
 
-**⚠️ Interview Pitfall / Pro-Tip**
-- Calling naive recursive `fib(50)` freezes JavaScript execution because it requires $\approx 2^{50} \approx 1.12 \times 10^{15}$ operations!
+---
+
+### 9.5 Stack & Queue
+
+### 77. 🟠 P1 [Q] [LeetCode 20: Valid Parentheses](https://leetcode.com/problems/valid-parentheses/)
+
+**📜 Problem Statement & LeetCode Link**
+- **LeetCode Link:** [LeetCode 20: Valid Parentheses](https://leetcode.com/problems/valid-parentheses/)
+- **Description:** Given a string `s` containing just the characters `'('`, `')'`, `'{'`, `'}'`, `'['` and `']'`, determine if the input string is valid.
+
+**🧠 Solution Summary & Pattern Mnemonic**
+- **Pattern:** LIFO Stack Matching.
+- **Mnemonic:** *"The most recently opened bracket must be closed first."*
+
+**🐢 Brute Force Approach**
+- **Complexity:** **Time:** $O(n^2)$ | **Space:** $O(n)$
+- **Explanation:** Repeatedly replace pairs `()`, `[]`, `{}` with empty strings until none remain. Replacing inside a loop takes quadratic time.
+
+```javascript
+var isValidBrute = function(s) {
+  let prevLen = -1;
+  while (s.length !== prevLen) {
+    prevLen = s.length;
+    s = s.replace('()', '').replace('[]', '').replace('{}', '');
+  }
+  return s.length === 0;
+};
+```
+
+**🚀 Optimal Approach**
+- **Complexity:** **Time:** $O(n)$ | **Space:** $O(n)$
+- **Explanation:** Odd length can never be valid ($O(1)$ guard). Push opening brackets to an array stack; for closing brackets, pop and verify matching pair. Return `stack.length === 0`.
+
+```javascript
+/**
+ * @param {string} s
+ * @return {boolean}
+ */
+var isValid = function(s) {
+  if (s.length % 2 !== 0) return false;
+
+  const stack = [];
+  const map = {
+    ')': '(',
+    '}': '{',
+    ']': '['
+  };
+
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (map[ch]) {
+      // Closing bracket: pop and compare
+      if (stack.pop() !== map[ch]) return false;
+    } else {
+      // Opening bracket: push to stack
+      stack.push(ch);
+    }
+  }
+
+  return stack.length === 0;
+};
+```
+
+**⚠️ Edge Cases & Interview Gotchas**
+- **Unclosed Brackets (`"((("`):** Loop finishes without mismatch, but `stack.length === 0` correctly evaluates to `false`.
+
+---
+
+### 78. 🟠 P1 [Q] [LeetCode 232: Implement Queue using Stacks](https://leetcode.com/problems/implement-queue-using-stacks/)
+
+**📜 Problem Statement & LeetCode Link**
+- **LeetCode Link:** [LeetCode 232: Implement Queue using Stacks](https://leetcode.com/problems/implement-queue-using-stacks/)
+- **Description:** Implement a first in first out (FIFO) queue using only two stacks. The implemented queue should support `push`, `pop`, `peek`, and `empty`.
+
+**🧠 Solution Summary & Pattern Mnemonic**
+- **Pattern:** Two Stacks (`inStack` & `outStack`) with Lazy Reversal.
+- **Mnemonic:** *"Push to inStack; transfer to outStack only when outStack is empty."*
+
+**🐢 Brute Force Approach**
+- **Complexity:** **Push:** $O(n)$ | **Pop:** $O(1)$
+- **Explanation:** On *every* push, dump all elements to a helper stack, push the new item, and dump everything back. Unnecessarily runs in $O(n)$ for every push.
+
+```javascript
+var MyQueueBrute = function() {
+  this.s1 = [];
+  this.s2 = [];
+};
+
+MyQueueBrute.prototype.push = function(x) {
+  while (this.s1.length > 0) this.s2.push(this.s1.pop());
+  this.s1.push(x);
+  while (this.s2.length > 0) this.s1.push(this.s2.pop());
+};
+MyQueueBrute.prototype.pop = function() { return this.s1.pop(); };
+MyQueueBrute.prototype.peek = function() { return this.s1[this.s1.length - 1]; };
+MyQueueBrute.prototype.empty = function() { return this.s1.length === 0; };
+```
+
+**🚀 Optimal Approach**
+- **Complexity:** **Push:** $O(1)$ | **Pop / Peek:** **Amortized $O(1)$** | **Space:** $O(n)$
+- **Explanation:** Maintain `inStack` and `outStack`. `push` always appends to `inStack` in $O(1)$. When `pop` or `peek` is called and `outStack` is empty, transfer all elements from `inStack` to `outStack`. Each element is pushed and popped between stacks at most twice!
+
+```javascript
+var MyQueue = function() {
+  this.inStack = [];
+  this.outStack = [];
+};
+
+/** 
+ * @param {number} x
+ * @return {void}
+ */
+MyQueue.prototype.push = function(x) {
+  this.inStack.push(x);
+};
+
+/**
+ * @return {number}
+ */
+MyQueue.prototype.pop = function() {
+  this.peek(); // Ensures outStack is loaded
+  return this.outStack.pop();
+};
+
+/**
+ * @return {number}
+ */
+MyQueue.prototype.peek = function() {
+  if (this.outStack.length === 0) {
+    while (this.inStack.length > 0) {
+      this.outStack.push(this.inStack.pop());
+    }
+  }
+  return this.outStack[this.outStack.length - 1];
+};
+
+/**
+ * @return {boolean}
+ */
+MyQueue.prototype.empty = function() {
+  return this.inStack.length === 0 && this.outStack.length === 0;
+};
+```
+
+**⚠️ Edge Cases & Interview Gotchas**
+- **Amortized Analysis:** Interviewers love asking why `peek()` is $O(1)$ amortized when the `while` loop runs in $O(n)$ in the worst case. Explain that every element enters `inStack` once and `outStack` once, totaling $\le 2$ operations per element across its lifetime.
 
 ---
 

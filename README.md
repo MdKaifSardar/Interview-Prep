@@ -8,7 +8,7 @@ Curated, high-yield interview preparation modules for Software Engineering, Full
 
 | Topic | Questions Sheet | Answers Master Key | Hands-On Lab | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| **🟨 JavaScript** | [Questions](file:///e:/CSE/interview%20prep/javascript/javascript-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/javascript/javascript-interview-answers.md) | — | ✅ Complete (84 Qs) |
+| **🟨 JavaScript** | [Questions](file:///e:/CSE/interview%20prep/javascript/javascript-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/javascript/javascript-interview-answers.md) | — | ✅ Complete (78 Qs) |
 | **🟡 JS Fundamentals for DSA** | — | — | [📖 Syntax Handbook](file:///e:/CSE/interview%20prep/js%20dsa%20fundamentals/js-dsa-revision-handbook.md) | ✅ Complete Reference |
 | **🟢 Node.js & Express.js** | [Questions](file:///e:/CSE/interview%20prep/nodejs/nodejs-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/nodejs/nodejs-interview-answers.md) | [🧪 Node Lab (24 Drills)](file:///e:/CSE/interview%20prep/nodejs/lab/README.md) | ✅ Complete (72 Qs) |
 | **🍃 MongoDB** | [Questions](file:///e:/CSE/interview%20prep/mongodb/mongodb-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/mongodb/mongodb-interview-answers.md) | — | ✅ Complete (100 Qs) |
@@ -36,7 +36,7 @@ Interview-Prep/
 │   ├── dsa-interview-answers.md           <-- Comprehensive 5-Part Answer Key
 │   └── revision_roadmap.txt               <-- Curated High-Yield Revision Roadmap
 ├── javascript/                            <-- JavaScript Language Module
-│   ├── javascript-interview-questions.md  <-- 84-Question Master List
+│   ├── javascript-interview-questions.md  <-- 78-Question Master List
 │   └── javascript-interview-answers.md    <-- Comprehensive 4-Part Answer Key
 ├── nodejs/                                <-- Node.js & Express.js Backend Module
 │   ├── nodejs-interview-questions.md      <-- 72-Question Master List

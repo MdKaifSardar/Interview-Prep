@@ -1,6 +1,6 @@
-# JavaScript Master Answer Key — Index (84 Questions)
+# JavaScript Master Answer Key — Index (78 Questions)
 
-Companion answer key to [javascript-interview-questions.md](javascript-interview-questions.md) covering all **84 pure JavaScript questions**. Every single answer strictly follows our standardized 4-part framework designed for rapid revision AND deep conceptual mastery:
+Companion answer key to [javascript-interview-questions.md](javascript-interview-questions.md) covering all **78 pure JavaScript questions**. Every single answer strictly follows our standardized 4-part framework designed for rapid revision AND deep conceptual mastery:
 1. **TL;DR:** 1–2 sentence summary for rapid recall.
 2. **💡 Core Concept & Explanation:** Intuitive breakdown of *why* and *how* the underlying mechanism works.
 3. **🛠️ Code / Visual Diagram / Table:** Working code snippet, polyfill function, ASCII flow, or comparative table.
@@ -24,9 +24,9 @@ Answers are split into one page per topic & pattern group so they load fast and 
 | 6 | [6. DOM, Storage, Web APIs & Modules](answers/06-dom-storage-web-apis-and-modules.md) | #46 – #51 | 6 |
 | 7 | [7. Output & Debugging Questions](answers/07-output-and-debugging-questions.md) | #52 – #58 | 7 |
 | 8 | [8. Coding Challenges (High-Yield Polyfills & Utilities)](answers/08-coding-challenges-and-polyfills.md) | #59 – #65 | 7 |
-| 9 | [9. DSA in JavaScript](answers/09-dsa-in-javascript.md) | #66 – #84 | 19 |
+| 9 | [9. DSA in JavaScript](answers/09-dsa-in-javascript.md) | #66 – #78 | 13 |
 
-**Total: 84 Questions**
+**Total: 78 Questions**
 
 ---
 

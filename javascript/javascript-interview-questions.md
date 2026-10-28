@@ -1,4 +1,4 @@
-# JavaScript Technical Interview Master List (84 Questions)
+# JavaScript Technical Interview Master List (78 Questions)
 
 **Track:** Fresher → 0–1 YOE → Junior Full Stack / Backend / Frontend / Startup
 
@@ -124,32 +124,26 @@
 
 ### Built-in Complexities & Structures
 66. 🔴 P0 [P] What are the time complexities of common JavaScript built-ins (push/pop vs shift/unshift, includes/indexOf, Map/Set lookups, sort, string concatenation), and why do they matter when solving problems?
-67. 🟠 P1 [Q] Implement a Stack and Queue in JavaScript: [LeetCode 232: Implement Queue using Stacks](https://leetcode.com/problems/implement-queue-using-stacks/) & [LeetCode 225: Implement Stack using Queues](https://leetcode.com/problems/implement-stack-using-queues/), and explain why shift() is inefficient for a queue.
 
-### Strings & Palindromes
-68. 🔴 P0 [Q] [LeetCode 125: Valid Palindrome](https://leetcode.com/problems/valid-palindrome/) — Reverse a string and check whether it is a palindrome, with and without built-in methods.
-69. 🔴 P0 [Q] [LeetCode 242: Valid Anagram](https://leetcode.com/problems/valid-anagram/) — Check whether two strings are anagrams.
-70. 🔴 P0 [Q] [LeetCode 387: First Unique Character in a String](https://leetcode.com/problems/first-unique-character-in-a-string/) — Count character frequencies in a string and find the first non-repeating character.
-71. 🟠 P1 [Q] [LeetCode 151: Reverse Words in a String](https://leetcode.com/problems/reverse-words-in-a-string/) — Reverse the words in a sentence and handle multiple whitespace separators.
+### Hash Maps & Frequency Counting
+67. 🔴 P0 [Q] [LeetCode 1: Two Sum](https://leetcode.com/problems/two-sum/) — Find two indices whose values sum to target using a hash map lookup vs brute-force nested loops.
+68. 🔴 P0 [Q] [LeetCode 242: Valid Anagram](https://leetcode.com/problems/valid-anagram/) — Check whether two strings are anagrams using a 26-element frequency array vs string sorting.
+69. 🔴 P0 [Q] [LeetCode 49: Group Anagrams](https://leetcode.com/problems/group-anagrams/) — Group an array of strings into anagram clusters using sorted string keys vs frequency string hashing in a Map.
+70. 🔴 P0 [Q] [LeetCode 387: First Unique Character in a String](https://leetcode.com/problems/first-unique-character-in-a-string/) — Find the index of the first non-repeating character using two-pass counting vs quadratic scanning.
+71. 🟠 P1 [Q] [LeetCode 349: Intersection of Two Arrays](https://leetcode.com/problems/intersection-of-two-arrays/) — Find the intersection of two arrays returning unique elements using a Set vs linear includes scan.
 
-### Sliding Window & Stack
-72. 🟠 P1 [Q] [LeetCode 20: Valid Parentheses](https://leetcode.com/problems/valid-parentheses/) — Check whether a string of brackets is valid using a stack.
-73. 🔴 P0 [Q] [LeetCode 3: Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/) — Find the longest substring without repeating characters using the dynamic sliding window pattern.
+### Strings & Two Pointers
+72. 🔴 P0 [Q] [LeetCode 125: Valid Palindrome](https://leetcode.com/problems/valid-palindrome/) — Check whether a string is a palindrome with two pointers and in-place ASCII character skips vs built-in reverse string allocations.
+73. 🟠 P1 [Q] [LeetCode 151: Reverse Words in a String](https://leetcode.com/problems/reverse-words-in-a-string/) — Reverse words in a string, trim whitespace, and reduce multiple spaces to a single space.
+74. 🟠 P1 [Q] [LeetCode 283: Move Zeroes](https://leetcode.com/problems/move-zeroes/) — Move all zeros to the end of an array in place while preserving order using read/write pointers vs extra array buffers.
+75. 🟠 P1 [Q] [LeetCode 88: Merge Sorted Array](https://leetcode.com/problems/merge-sorted-array/) — Merge two sorted arrays into nums1 in-place from back to front using 3 pointers vs array copy and sort.
 
-### Arrays, Two Pointers & Hash Maps
-74. 🔴 P0 [Q] [LeetCode 215: Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/) — Find the largest and second-largest numbers in an array without sorting.
-75. 🔴 P0 [Q] [LeetCode 1: Two Sum](https://leetcode.com/problems/two-sum/) — Solve Two Sum using a hash map, and explain why it beats the nested-loop approach.
-76. 🟠 P1 [Q] [LeetCode 169: Majority Element](https://leetcode.com/problems/majority-element/) & [LeetCode 347: Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/) — Find the most frequent element in an array using a hash map.
-77. 🟠 P1 [Q] [LeetCode 268: Missing Number](https://leetcode.com/problems/missing-number/) — Find the missing number in an array containing 0 to n using math sum and XOR.
-78. 🟠 P1 [Q] [LeetCode 283: Move Zeroes](https://leetcode.com/problems/move-zeroes/) — Move all zeros to the end of an array in place while preserving order.
-79. 🟠 P1 [Q] [LeetCode 189: Rotate Array](https://leetcode.com/problems/rotate-array/) — Rotate an array by k positions in-place using the 3-step reversal algorithm.
+### Sliding Window
+76. 🔴 P0 [Q] [LeetCode 3: Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/) — Find the longest substring without repeating characters using dynamic sliding window with Map index jumping vs brute-force substring scanning.
 
-### Array Transformations & Recursion
-80. 🟠 P1 [Q] [LeetCode 88: Merge Sorted Array](https://leetcode.com/problems/merge-sorted-array/) — Merge two sorted arrays into nums1 in-place from back to front.
-81. 🟠 P1 [Q] [LeetCode 349: Intersection of Two Arrays](https://leetcode.com/problems/intersection-of-two-arrays/) — Find the intersection of two arrays returning unique elements.
-82. 🟠 P1 [Q] [LeetCode 2677: Chunk Array](https://leetcode.com/problems/chunk-array/) — Split an array into sub-arrays of size n.
-83. 🟠 P1 [Q] [LeetCode 2625: Flatten Deeply Nested Array](https://leetcode.com/problems/flatten-deeply-nested-array/) — Flatten deeply nested arrays and objects into dot-notation keys.
-84. 🟠 P1 [Q] [LeetCode 509: Fibonacci Number](https://leetcode.com/problems/fibonacci-number/) — Compute Fibonacci recursively, iteratively, and with memoization, comparing time complexities.
+### Stack & Queue
+77. 🟠 P1 [Q] [LeetCode 20: Valid Parentheses](https://leetcode.com/problems/valid-parentheses/) — Check whether a string of brackets is valid using a LIFO array stack vs quadratic string replacement.
+78. 🟠 P1 [Q] [LeetCode 232: Implement Queue using Stacks](https://leetcode.com/problems/implement-queue-using-stacks/) — Implement a FIFO queue using two LIFO array stacks with amortized O(1) operations.
 
 ---
 
