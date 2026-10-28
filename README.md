@@ -9,12 +9,14 @@ Curated, high-yield interview preparation modules for Software Engineering, Full
 | Topic | Questions Sheet | Answers Master Key | Hands-On Lab | Status |
 | :--- | :--- | :--- | :--- | :--- |
 | **🟨 JavaScript** | [Questions](file:///e:/CSE/interview%20prep/javascript/javascript-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/javascript/javascript-interview-answers.md) | — | ✅ Complete (84 Qs) |
+| **🟡 JS Fundamentals for DSA** | [Questions](file:///e:/CSE/interview%20prep/js%20dsa%20fundamentals/js-dsa-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/js%20dsa%20fundamentals/js-dsa-interview-answers.md) | [📖 Syntax Handbook](file:///e:/CSE/interview%20prep/js%20dsa%20fundamentals/js-dsa-syntax-handbook.md) | ✅ Complete (50 Qs) |
 | **🟢 Node.js & Express.js** | [Questions](file:///e:/CSE/interview%20prep/nodejs/nodejs-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/nodejs/nodejs-interview-answers.md) | [🧪 Node Lab (24 Drills)](file:///e:/CSE/interview%20prep/nodejs/lab/README.md) | ✅ Complete (72 Qs) |
 | **🍃 MongoDB** | [Questions](file:///e:/CSE/interview%20prep/mongodb/mongodb-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/mongodb/mongodb-interview-answers.md) | — | ✅ Complete (100 Qs) |
 | **🗄️ Relational DBMS Architecture** | [Questions](file:///e:/CSE/interview%20prep/dbms/dbms-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/dbms/dbms-interview-answers.md) | — | ✅ Complete (70 Qs) |
 | **📊 SQL & Query Engineering** | [Questions](file:///e:/CSE/interview%20prep/sql/sql-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/sql/sql-interview-answers.md) | — | ✅ Complete (80 Qs) |
 | **⚛️ React & Next.js (Full-Stack)** | [Questions](file:///e:/CSE/interview%20prep/react/react-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/react/react-interview-answers.md) | [🧪 React Lab (20 Drills)](file:///e:/CSE/interview%20prep/react/lab/README.md) | ✅ Complete (75 Qs) |
 | **⚡ Data Structures & Algorithms** | [Questions](file:///e:/CSE/interview%20prep/dsa/dsa-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/dsa/dsa-interview-answers.md) | — | ✅ Complete (91 Core + 21 Bonus Qs) |
+| **🔵 C++ Fundamentals & STL** | — | — | [📖 Syntax Handbook](file:///e:/CSE/interview%20prep/cpp%20fundamentals/cpp-revision-handbook.md) | ✅ Complete Reference |
 
 ---
 
@@ -23,6 +25,15 @@ Curated, high-yield interview preparation modules for Software Engineering, Full
 ```
 Interview-Prep/
 ├── README.md                              <-- Root sitemap & overview
+├── cpp fundamentals/                      <-- C++ & STL Syntax Revision Handbook
+│   ├── context.txt
+│   └── cpp-revision-handbook.md           <-- Pure C++ STL Syntax & Container Reference
+├── js dsa fundamentals/                   <-- JavaScript Fundamentals for DSA Module
+│   ├── context.txt
+│   ├── js-dsa-syntax-handbook.md          <-- Algorithmic JS Quick-Reference Handbook
+│   ├── js-dsa-interview-questions.md      <-- 50-Question Master List
+│   ├── js-dsa-interview-answers.md        <-- Master Navigation Index
+│   └── answers/                           <-- 10 Paginated Topic Guides (Q01–Q50)
 ├── dsa/                                   <-- Data Structures & Algorithms Module
 │   ├── dsa-interview-questions.md         <-- 112-Question Master List (91 Core + 21 Bonus)
 │   ├── dsa-interview-answers.md           <-- Comprehensive 5-Part Answer Key

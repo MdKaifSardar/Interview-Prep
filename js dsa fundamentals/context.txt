@@ -1,0 +1,27 @@
+TASK: Create a Pure JavaScript Fundamentals for DSA & Problem Solving Revision Handbook & Master Q&A Module.
+
+GOAL
+Provide a clean, focused, pure fundamental JavaScript revision handbook and 50-question master key specifically tailored for solving Data Structures & Algorithms (DSA) problems, LeetCode rounds, and CoderPad live coding interviews in JavaScript.
+
+This module is completely separate from general web/full-stack JavaScript topics (DOM, CSS, browser APIs, frameworks). It focuses exclusively on algorithmic syntax, V8 engine mechanics, numerical precision, string manipulation, matrix/grid handling, custom sorting, Map/Set semantics, binary search templates, heaps, recursion call-stack limits, and time/space complexity of built-ins.
+
+DOCUMENT FORMAT & REQUIREMENTS
+- Cheat-sheet style handbook (`js-dsa-syntax-handbook.md`) for rapid pre-interview review.
+- Master question list (`js-dsa-interview-questions.md`) with 50 high-yield questions categorized into 10 modules.
+- Paginated answers (`answers/01-...md` through `10-...md`) strictly following the standardized 4-part framework:
+  1. TL;DR
+  2. 💡 Core Concept & Explanation
+  3. 🛠️ Syntax / Code Template
+  4. ⚠️ LeetCode / Interview Pitfall
+
+CORE TOPIC MODULES
+1. Numbers, Math & Floating-Point Precision
+2. Strings, ASCII & Character Manipulation
+3. Arrays, 2D Matrices & Grid Traversal
+4. Sorting & Custom Comparators
+5. Hash Maps & Hash Sets (Map & Set)
+6. Stacks, Queues & Deques
+7. Heaps & Priority Queues in JavaScript
+8. Two Pointers, Sliding Window & Binary Search
+9. Trees, Graphs & Recursion/Backtracking
+10. Bit Manipulation & Built-In Complexity
