@@ -71,7 +71,7 @@ console.timeEnd('pointer'); // ~1ms!
 - **Explanation:** Use two nested loops to check every possible pair `(i, j)` where $j > i$. Suboptimal because checking pairs takes quadratic time.
 
 ```javascript
-var twoSumBrute = function(nums, target) {
+var twoSum = function(nums, target) {
   for (let i = 0; i < nums.length; i++) {
     for (let j = i + 1; j < nums.length; j++) {
       if (nums[i] + nums[j] === target) {
@@ -130,7 +130,7 @@ var twoSum = function(nums, target) {
 - **Explanation:** Split both strings into arrays, sort alphabetically, and compare joined strings. Correct, but sorting takes $O(n \log n)$ time and creates unnecessary array copies.
 
 ```javascript
-var isAnagramBrute = function(s, t) {
+var isAnagram = function(s, t) {
   if (s.length !== t.length) return false;
   return s.split('').sort().join('') === t.split('').sort().join('');
 };
@@ -184,7 +184,7 @@ var isAnagram = function(s, t) {
 - **Explanation:** For every string, compare with all other unvisited strings using the $O(k)$ anagram check and group them into arrays. Nested comparisons cause quadratic $O(n^2)$ time.
 
 ```javascript
-var groupAnagramsBrute = function(strs) {
+var groupAnagrams = function(strs) {
   const visited = new Array(strs.length).fill(false);
   const result = [];
 
@@ -251,7 +251,7 @@ var groupAnagrams = function(strs) {
 - **Explanation:** Use built-in `s.indexOf(ch) === s.lastIndexOf(ch)`. For each character, both `indexOf` and `lastIndexOf` scan the entire string, creating an $O(n^2)$ nested loop.
 
 ```javascript
-var firstUniqCharBrute = function(s) {
+var firstUniqChar = function(s) {
   for (let i = 0; i < s.length; i++) {
     if (s.indexOf(s[i]) === s.lastIndexOf(s[i])) {
       return i;
@@ -310,7 +310,7 @@ var firstUniqChar = function(s) {
 - **Explanation:** Filter `nums1` using `nums2.includes(x)`. Because `includes()` performs an $O(m)$ scan on every element, total time is quadratic $O(n \cdot m)$.
 
 ```javascript
-var intersectionBrute = function(nums1, nums2) {
+var intersection = function(nums1, nums2) {
   const matches = nums1.filter(x => nums2.includes(x));
   return Array.from(new Set(matches));
 };
@@ -363,7 +363,7 @@ var intersection = function(nums1, nums2) {
 - **Explanation:** Strip non-alphanumerics with regex, lowercase, reverse string with `split('').reverse().join('')`, and check equality. Allocates multiple intermediate strings and arrays in heap memory.
 
 ```javascript
-var isPalindromeBrute = function(s) {
+var isPalindrome = function(s) {
   const clean = s.toLowerCase().replace(/[^a-z0-9]/g, '');
   return clean === clean.split('').reverse().join('');
 };
@@ -426,7 +426,7 @@ var isPalindrome = function(s) {
 - **Explanation:** Naively splitting by a single space `s.split(' ')` creates an array containing empty strings `""` whenever multiple spaces occur. Requires manual filtering loops.
 
 ```javascript
-var reverseWordsNaive = function(s) {
+var reverseWords = function(s) {
   const words = s.split(' ');
   const filtered = [];
   for (let i = words.length - 1; i >= 0; i--) {
@@ -470,7 +470,7 @@ var reverseWords = function(s) {
 - **Explanation:** Filter all non-zeros into a new array, pad trailing zeros, and copy back into `nums`. Suboptimal because it violates the in-place $O(1)$ space requirement.
 
 ```javascript
-var moveZeroesBrute = function(nums) {
+var moveZeroes = function(nums) {
   const temp = [];
   for (const x of nums) if (x !== 0) temp.push(x);
   while (temp.length < nums.length) temp.push(0);
@@ -523,7 +523,7 @@ var moveZeroes = function(nums) {
 - **Explanation:** Copy `nums2` into the tail of `nums1` and run `nums1.sort((a,b) => a-b)`. Suboptimal because it ignores the pre-sorted property of both input arrays.
 
 ```javascript
-var mergeBrute = function(nums1, m, nums2, n) {
+var merge = function(nums1, m, nums2, n) {
   for (let i = 0; i < n; i++) {
     nums1[m + i] = nums2[i];
   }
@@ -583,7 +583,7 @@ var merge = function(nums1, m, nums2, n) {
 - **Explanation:** Check all possible substrings starting at index $i$, using a `Set` to stop when a duplicate is found. Takes quadratic time.
 
 ```javascript
-var lengthOfLongestSubstringBrute = function(s) {
+var lengthOfLongestSubstring = function(s) {
   let maxLen = 0;
   for (let i = 0; i < s.length; i++) {
     const seen = new Set();
@@ -649,7 +649,7 @@ var lengthOfLongestSubstring = function(s) {
 - **Explanation:** Repeatedly replace pairs `()`, `[]`, `{}` with empty strings until none remain. Replacing inside a loop takes quadratic time.
 
 ```javascript
-var isValidBrute = function(s) {
+var isValid = function(s) {
   let prevLen = -1;
   while (s.length !== prevLen) {
     prevLen = s.length;
@@ -713,19 +713,19 @@ var isValid = function(s) {
 - **Explanation:** On *every* push, dump all elements to a helper stack, push the new item, and dump everything back. Unnecessarily runs in $O(n)$ for every push.
 
 ```javascript
-var MyQueueBrute = function() {
+var MyQueue = function() {
   this.s1 = [];
   this.s2 = [];
 };
 
-MyQueueBrute.prototype.push = function(x) {
+MyQueue.prototype.push = function(x) {
   while (this.s1.length > 0) this.s2.push(this.s1.pop());
   this.s1.push(x);
   while (this.s2.length > 0) this.s1.push(this.s2.pop());
 };
-MyQueueBrute.prototype.pop = function() { return this.s1.pop(); };
-MyQueueBrute.prototype.peek = function() { return this.s1[this.s1.length - 1]; };
-MyQueueBrute.prototype.empty = function() { return this.s1.length === 0; };
+MyQueue.prototype.pop = function() { return this.s1.pop(); };
+MyQueue.prototype.peek = function() { return this.s1[this.s1.length - 1]; };
+MyQueue.prototype.empty = function() { return this.s1.length === 0; };
 ```
 
 **🚀 Optimal Approach**
