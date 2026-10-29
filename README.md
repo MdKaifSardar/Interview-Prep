@@ -17,6 +17,7 @@ Curated, high-yield interview preparation modules for Software Engineering, Full
 | **⚛️ React & Next.js (Full-Stack)** | [Questions](file:///e:/CSE/interview%20prep/react/react-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/react/react-interview-answers.md) | [🧪 React Lab (20 Drills)](file:///e:/CSE/interview%20prep/react/lab/README.md) | ✅ Complete (75 Qs) |
 | **⚡ Data Structures & Algorithms** | [Questions](file:///e:/CSE/interview%20prep/dsa/dsa-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/dsa/dsa-interview-answers.md) | — | ✅ Complete (91 Core + 21 Bonus Qs) |
 | **🔵 C++ Fundamentals & STL** | — | — | [📖 Syntax Handbook](file:///e:/CSE/interview%20prep/cpp%20fundamentals/cpp-revision-handbook.md) | ✅ Complete Reference |
+| **🗃️ SQL Fundamentals & Syntax** | — | — | [📖 Syntax Handbook](file:///e:/CSE/interview%20prep/sql%20fundamentals/sql-revision-handbook.md) | ✅ Complete Reference |
 
 ---
 
@@ -31,6 +32,9 @@ Interview-Prep/
 ├── js dsa fundamentals/                   <-- JavaScript Fundamentals for DSA Module
 │   ├── context.txt
 │   └── js-dsa-revision-handbook.md        <-- Pure Algorithmic JS Syntax & Complexity Reference
+├── sql fundamentals/                      <-- SQL Fundamentals Pre-Interview Revision Handbook
+│   ├── context.txt
+│   └── sql-revision-handbook.md           <-- Pure SQL Query Syntax & Window Functions Reference
 ├── dsa/                                   <-- Data Structures & Algorithms Module
 │   ├── dsa-interview-questions.md         <-- 112-Question Master List (91 Core + 21 Bonus)
 │   ├── dsa-interview-answers.md           <-- Comprehensive 5-Part Answer Key

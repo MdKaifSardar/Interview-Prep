@@ -1,0 +1,22 @@
+TASK: Create a Pure SQL Fundamentals & Core Query Syntax Revision Handbook.
+
+GOAL
+Provide a clean, focused, pure fundamental SQL revision handbook. This document contains NO lengthy academic database theory or multi-page essays. It is strictly a high-signal reference manual for SQL syntax, logical query execution order, join mechanics, three-valued NULL logic, window functions, conditional aggregations, set operations, and classic pre-interview traps.
+
+DOCUMENT FORMAT & REQUIREMENTS
+- Cheat-sheet style for rapid review before writing SQL in a technical interview.
+- Organized by core functional concepts (from basic execution order to window analytics).
+- For every concept: provide syntax pattern, mental model, concise example query with tabular output, and explicit "Don't Forget" gotchas.
+- Pure basics and must-knows with zero vendor trivia or unnecessary jargon.
+
+CORE SECTIONS
+1. The True SQL Execution Order (Lexical vs Physical Execution)
+2. Three-Valued Logic, NULLs & Safe Coalescing (`IS NULL`, `NOT IN`, `COALESCE`, `NULLIF`)
+3. Filtering, Pattern Matching & Sorting (`WHERE`, `LIKE`, `IN`, `ORDER BY`, `LIMIT`)
+4. Aggregations & The Golden Rule of `GROUP BY` (`COUNT(*)`, `AVG`, `HAVING`)
+5. Complete JOIN Mechanics & Mental Models (`INNER`, `LEFT`, `RIGHT`, `FULL`, `CROSS`, `SELF`)
+6. Subqueries vs Common Table Expressions (`EXISTS` vs `IN`, Correlated, `WITH`)
+7. Window Functions — Ranking, Offsets & Running Totals (`ROW_NUMBER`, `RANK`, `DENSE_RANK`, `LAG`, `LEAD`)
+8. Conditional Logic, Pivoting & Data Cleaning (`CASE WHEN`, Pivoting, String & Date Helpers)
+9. Set Operations (`UNION` vs `UNION ALL`, `INTERSECT`, `EXCEPT` / `MINUS`)
+10. DDL, DML & Schema Integrity Quick Reference (`TRUNCATE` vs `DELETE`, Constraints, Cascades)
