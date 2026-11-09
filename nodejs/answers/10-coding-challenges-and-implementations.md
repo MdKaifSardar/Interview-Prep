@@ -1,10 +1,10 @@
-[⬅️ Previous: 10 · Output & Debugging](10-output-and-debugging-questions.md) &nbsp;|&nbsp; [📋 Index](../nodejs-interview-answers.md) &nbsp;|&nbsp; ⏭️ (end)
+[⬅️ Previous: 09 · Performance & Testing](09-performance-production-and-testing.md) &nbsp;|&nbsp; [📋 Index](../nodejs-interview-answers.md) &nbsp;|&nbsp; ⏭️ (end)
 
 ---
 
 ## Coding Challenges
 
-### 64. 🔴 P0 [Q] Build a CRUD REST API in Express with routing, input validation, error handling, and correct status codes.
+### 58. 🔴 P0 [Q] Build a CRUD REST API in Express with routing, input validation, error handling, and correct status codes.
 
 ```javascript
 const express = require('express');
@@ -34,7 +34,7 @@ app.delete('/api/items/:id', (req, res) => {
 
 ---
 
-### 65. 🔴 P0 [Q] Write a request-logging middleware that records the method, URL, status code, and response time.
+### 59. 🔴 P0 [Q] Write a request-logging middleware that records the method, URL, status code, and response time.
 
 ```javascript
 function requestLogger(req, res, next) {
@@ -53,7 +53,7 @@ app.use(requestLogger);
 
 ---
 
-### 66. 🔴 P0 [Q] Write JWT authentication middleware that protects routes and returns 401 for missing or invalid tokens.
+### 60. 🔴 P0 [Q] Write JWT authentication middleware that protects routes and returns 401 for missing or invalid tokens.
 
 ```javascript
 const jwt = require('jsonwebtoken');
@@ -74,7 +74,7 @@ function authenticateToken(req, res, next) {
 
 ---
 
-### 67. 🔴 P0 [Q] Write a centralized error-handling middleware with a custom `AppError` class.
+### 61. 🔴 P0 [Q] Write a centralized error-handling middleware with a custom `AppError` class.
 
 ```javascript
 class AppError extends Error {
@@ -98,7 +98,7 @@ app.use((err, req, res, next) => {
 
 ---
 
-### 68. 🟠 P1 [Q] Implement an in-memory rate-limiting middleware (fixed window).
+### 62. 🟠 P1 [Q] Implement an in-memory rate-limiting middleware (fixed window).
 
 ```javascript
 function rateLimiter(limit = 100, windowMs = 15 * 60 * 1000) {
@@ -129,7 +129,7 @@ function rateLimiter(limit = 100, windowMs = 15 * 60 * 1000) {
 
 ---
 
-### 69. 🟠 P1 [Q] Write an `asyncHandler` wrapper for Express 4.
+### 63. 🟠 P1 [Q] Write an `asyncHandler` wrapper for Express 4.
 
 ```javascript
 const asyncHandler = (fn) => (req, res, next) => {
@@ -145,7 +145,7 @@ app.get('/data', asyncHandler(async (req, res) => {
 
 ---
 
-### 70. 🟠 P1 [Q] Stream a large file to the client without loading it into memory.
+### 64. 🟠 P1 [Q] Stream a large file to the client without loading it into memory.
 
 ```javascript
 const fs = require('fs');
@@ -161,7 +161,7 @@ app.get('/download-large-log', (req, res) => {
 
 ---
 
-### 71. 🟠 P1 [Q] Implement `promisify()` from scratch.
+### 65. 🟠 P1 [Q] Implement `promisify()` from scratch.
 
 ```javascript
 function customPromisify(fn) {
@@ -178,7 +178,7 @@ function customPromisify(fn) {
 
 ---
 
-### 72. 🟠 P1 [Q] Implement an in-memory cache with a TTL for an expensive endpoint.
+### 66. 🟠 P1 [Q] Implement an in-memory cache with a TTL for an expensive endpoint.
 
 ```javascript
 function createTTLCache(ttlMs = 60000) {
@@ -203,4 +203,5 @@ function createTTLCache(ttlMs = 60000) {
 
 ---
 
-[⬅️ Previous: 10 · Output & Debugging](10-output-and-debugging-questions.md) &nbsp;|&nbsp; [📋 Index](../nodejs-interview-answers.md) &nbsp;|&nbsp; ⏭️ (end)
+[⬅️ Previous: 09 · Performance & Testing](09-performance-production-and-testing.md) &nbsp;|&nbsp; [📋 Index](../nodejs-interview-answers.md) &nbsp;|&nbsp; ⏭️ (end)
+

@@ -1,4 +1,4 @@
-[⬅️ Previous: 08 · Auth & Security](08-authentication-security-and-best-practices.md) &nbsp;|&nbsp; [📋 Index](../nodejs-interview-answers.md) &nbsp;|&nbsp; [Next: 10 · Output & Debugging ➡️](10-output-and-debugging-questions.md)
+[⬅️ Previous: 08 · Auth & Security](08-authentication-security-and-best-practices.md) &nbsp;|&nbsp; [📋 Index](../nodejs-interview-answers.md) &nbsp;|&nbsp; [Next: 10 · Coding Challenges ➡️](10-coding-challenges-and-implementations.md)
 
 ---
 
@@ -35,6 +35,26 @@ In V8, memory is categorized into:
 4. Comparison View:
    Select Snapshot 3 -> Switch perspective to "Comparison" against Snapshot 1.
    Filter by "# Delta" and "Size Delta" -> Sort by "Retained Size" to find objects that failed to garbage collect.
+```
+
+**Real-Time Production Event Loop Lag Monitoring (`node:perf_hooks`)**
+Rather than waiting for a memory or CPU crash in production, monitor event loop lag continuously:
+
+```javascript
+const { monitorEventLoopDelay } = require('node:perf_hooks');
+
+// Samples event loop delay every 20ms
+const histogram = monitorEventLoopDelay({ resolution: 20 });
+histogram.enable();
+
+// Export metrics to Prometheus or APM (alert if p99 lag exceeds 50ms)
+setInterval(() => {
+  const p99LagMs = histogram.percentile(99) / 1e6; // Convert nanoseconds to milliseconds
+  if (p99LagMs > 50) {
+    console.warn(`[EVENT_LOOP_WARNING] P99 Event Loop Delay is ${p99LagMs.toFixed(2)}ms!`);
+  }
+  histogram.reset();
+}, 5000);
 ```
 
 **⚠️ Interview Pitfall / Pro-Tip**
@@ -360,8 +380,19 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 
-app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'healthy', uptime: process.uptime() });
+// Liveness Probe: Checks if the Node.js event loop is alive (DO NOT check DB here!)
+app.get('/healthz', (req, res) => {
+  res.status(200).json({ status: 'ok', uptime: process.uptime() });
+});
+
+// Readiness Probe: Checks if downstream dependencies (DB, Redis) are healthy to accept traffic
+app.get('/ready', async (req, res) => {
+  try {
+    // await db.ping();
+    res.status(200).json({ status: 'ready', database: 'connected' });
+  } catch (err) {
+    res.status(503).json({ status: 'unavailable', database: 'disconnected' });
+  }
 });
 
 app.post('/api/users', (req, res) => {
@@ -403,7 +434,8 @@ describe('API Integration Test Suite', () => {
 
 **⚠️ Interview Pitfall / Pro-Tip**
 - **The Open Handle Trap (`EADDRINUSE`):** If you call `app.listen(3000)` inside `app.js`, running Jest with 4 parallel test workers will attempt to bind 4 instances to port 3000 simultaneously, crashing with `EADDRINUSE: address already in use`. Furthermore, active open TCP server handles prevent Jest and the Node test runner from exiting cleanly. Always separate `app.js` and `server.js`.
+- **The Cascading Outage Health Check Trap:** Never check your database inside a Kubernetes **Liveness** probe (`/healthz`). If your database has a temporary latency spike, the liveness probe fails, causing Kubernetes to immediately kill and restart every Node.js container across your entire cluster at the exact same time &mdash; causing a catastrophic cascading system outage. Keep `/healthz` simple (is the event loop running?), and reserve database connectivity checks for the **Readiness** probe (`/ready`).
 
 ---
 
-[⬅️ Previous: 08 · Auth & Security](08-authentication-security-and-best-practices.md) &nbsp;|&nbsp; [📋 Index](../nodejs-interview-answers.md) &nbsp;|&nbsp; [Next: 10 · Output & Debugging ➡️](10-output-and-debugging-questions.md)
+[⬅️ Previous: 08 · Auth & Security](08-authentication-security-and-best-practices.md) &nbsp;|&nbsp; [📋 Index](../nodejs-interview-answers.md) &nbsp;|&nbsp; [Next: 10 · Coding Challenges ➡️](10-coding-challenges-and-implementations.md)

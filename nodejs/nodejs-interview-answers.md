@@ -1,6 +1,6 @@
-# Node.js & Express.js Master Answer Key — Index (72 Questions)
+# Node.js & Express.js Master Answer Key — Index (66 Questions)
 
-Companion answer key to [nodejs-interview-questions.md](nodejs-interview-questions.md) covering all **72 questions**. Every answer strictly follows our standardized 4-part framework designed for rapid revision AND deep conceptual mastery:
+Companion answer key to [nodejs-interview-questions.md](nodejs-interview-questions.md) covering all **66 questions**. Every answer strictly follows our standardized 4-part framework designed for rapid revision AND deep conceptual mastery:
 1. **TL;DR:** 1–2 sentence summary for rapid recall.
 2. **💡 Core Concept & Explanation:** Intuitive breakdown of *why* and *how* the underlying mechanism works.
 3. **🛠️ Code / Visual Diagram / Table:** Working code snippet, architecture diagram, or comparative table.
@@ -25,10 +25,9 @@ Answers are split into one page per section so they load fast and are easy to dr
 | 7 | [7. REST API Design & Architecture](answers/07-rest-api-design-and-architecture.md) | #38 – #43 | 6 |
 | 8 | [8. Authentication, Authorization & Security](answers/08-authentication-security-and-best-practices.md) | #44 – #50 | 7 |
 | 9 | [9. Performance, Production Readiness & Testing](answers/09-performance-production-and-testing.md) | #51 – #57 | 7 |
-| 10 | [10. Output & Debugging Questions](answers/10-output-and-debugging-questions.md) | #58 – #63 | 6 |
-| 11 | [11. Coding Challenges & Machine Coding Utilities](answers/11-coding-challenges-and-implementations.md) | #64 – #72 | 9 |
+| 10 | [10. Coding Challenges & Machine Coding Utilities](answers/10-coding-challenges-and-implementations.md) | #58 – #66 | 9 |
 
-**Total: 72 Questions**
+**Total: 66 Questions**
 
 ---
 
@@ -38,4 +37,4 @@ Answers are split into one page per section so they load fast and are easy to dr
 - **Event Loop & Concurrency Drill:** Focus on [02 · Event Loop](answers/02-event-loop-and-asynchronous-internals.md) and [04 · Streams & Concurrency](answers/04-streams-concurrency-and-error-handling.md).
 - **Express & REST API Mastery:** Focus on [05 · Express Fundamentals](answers/05-express-fundamentals-and-routing.md), [06 · Middleware](answers/06-middleware-architecture.md), and [07 · REST API Design](answers/07-rest-api-design-and-architecture.md).
 - **Production Backend Security & Scale:** Focus on [08 · Security](answers/08-authentication-security-and-best-practices.md) and [09 · Performance & Production](answers/09-performance-production-and-testing.md).
-- **Machine Coding / Output Round:** Focus on [10 · Output & Debugging Questions](answers/10-output-and-debugging-questions.md) and [11 · Coding Challenges](answers/11-coding-challenges-and-implementations.md).
+- **Machine Coding Round:** Focus on [10 · Coding Challenges & Machine Coding Utilities](answers/10-coding-challenges-and-implementations.md).

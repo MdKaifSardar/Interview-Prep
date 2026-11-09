@@ -1,4 +1,4 @@
-# Node.js + Express.js Technical Interview Master List (72 Questions)
+# Node.js + Express.js Technical Interview Master List (66 Questions)
 
 **Track:** Fresher → 0–1 YOE → Junior Full Stack / Backend / Startup
 
@@ -106,26 +106,17 @@
 
 57. 🟠 P1 [Q] How do you test an Express API (supertest with node:test or Jest), and why should the app be exported separately from app.listen()?
 
-## Output & Debugging Questions
-
-58. 🔴 P0 [Q] Predict the output of code that mixes process.nextTick(), Promises, setImmediate(), and setTimeout(), and explain the order.
-59. 🟠 P1 [Q] Predict whether setTimeout(fn, 0) or setImmediate() runs first in the main module versus inside an I/O callback, and explain why.
-60. 🔴 P0 [Q] Find and fix the bug in an Express route that sends a response twice ("Cannot set headers after they are sent").
-61. 🔴 P0 [Q] Find and fix the bug where an error in an async route hangs the request or crashes the process in Express 4, and explain what Express 5 changes.
-62. 🟠 P1 [Q] Find and fix the bug where a middleware never calls next() or is registered in the wrong order.
-63. 🟠 P1 [Q] Find and fix a route that blocks the event loop with synchronous or CPU-heavy work.
-
 ## Coding Challenges
 
-64. 🔴 P0 [Q] Build a CRUD REST API in Express with routing, input validation, error handling, and correct status codes.
-65. 🔴 P0 [Q] Write a request-logging middleware that records the method, URL, status code, and response time.
-66. 🔴 P0 [Q] Write JWT authentication middleware that protects routes and returns 401 for missing or invalid tokens.
-67. 🔴 P0 [Q] Write a centralized error-handling middleware with a custom AppError class.
-68. 🟠 P1 [Q] Implement an in-memory rate-limiting middleware (fixed window or token bucket).
-69. 🟠 P1 [Q] Write an asyncHandler wrapper for Express 4 and explain why Express 5 doesn't need it.
-70. 🟠 P1 [Q] Stream a large file to the client, or process a large CSV line by line, without loading it into memory.
-71. 🟠 P1 [Q] Implement promisify() from scratch.
-72. 🟠 P1 [Q] Implement an in-memory cache with a TTL for an expensive endpoint.
+58. 🔴 P0 [Q] Build a CRUD REST API in Express with routing, input validation, error handling, and correct status codes.
+59. 🔴 P0 [Q] Write a request-logging middleware that records the method, URL, status code, and response time.
+60. 🔴 P0 [Q] Write JWT authentication middleware that protects routes and returns 401 for missing or invalid tokens.
+61. 🔴 P0 [Q] Write a centralized error-handling middleware with a custom AppError class.
+62. 🟠 P1 [Q] Implement an in-memory rate-limiting middleware (fixed window or token bucket).
+63. 🟠 P1 [Q] Write an asyncHandler wrapper for Express 4 and explain why Express 5 doesn't need it.
+64. 🟠 P1 [Q] Stream a large file to the client, or process a large CSV line by line, without loading it into memory.
+65. 🟠 P1 [Q] Implement promisify() from scratch.
+66. 🟠 P1 [Q] Implement an in-memory cache with a TTL for an expensive endpoint.
 
 ---
 
@@ -133,5 +124,5 @@
 
 - **Core Interview Fast-Sweep:** all 🔴 P0 questions (Node architecture, Event Loop, Modules, Streams, Express routing and middleware, REST, Auth)
 - **Full Coverage:** 🔴 P0 + 🟠 P1
-- **Machine Coding / Output Round:** Focus on the Output & Debugging Questions and Coding Challenges sections
+- **Machine Coding Round:** Focus on the Coding Challenges section
 - **Express API Round:** Focus on the Express Fundamentals, Middleware, REST API Design, and Authentication & Security sections
