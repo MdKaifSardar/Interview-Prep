@@ -32,6 +32,7 @@ Answers are split into one page per section so they load fast and are easy to dr
 ## 🧭 Revision Modes
 
 - **Core Fast-Sweep (P0 Only):** All 🔴 P0 questions (Execution Order, NULL Logic, Aggregation, All JOINs, Anti-Joins, CTEs, Window Ranking & Offsets, Upserts, SARGability, Keyset Pagination).
+- **LeetCode Practice Drills (0 Duplicates):** Practice the hands-on problems in [Must-Practice LeetCode SQL](sql-must-practice-leetcode.md).
 - **SQL Problem Solving Round:** Focus on [Section 2 · Aggregation](answers/02-aggregations-grouping-and-filtering.md), [Section 3 · JOINs](answers/03-joins-and-multi-table-queries.md), [Section 4 · CTEs](answers/04-subqueries-and-common-table-expressions.md), and [Section 5 · Window Functions](answers/05-window-functions-ranking-and-offsets.md).
 - **Sequential Analytics & Running Calculations:** Focus on [Section 6 · Running Frames](answers/06-window-functions-running-aggregates-and-frames.md) and [Section 7 · Pivoting](answers/07-conditional-logic-pivoting-and-transforms.md).
 - **Performance & Optimization Round:** Focus on [Section 8 · Set Operations & Query Optimization](answers/08-set-operations-and-query-optimization.md).

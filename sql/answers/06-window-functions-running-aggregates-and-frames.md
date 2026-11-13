@@ -6,6 +6,7 @@
 
 ### 26. 🔴 P0 [Q] How do you compute a running cumulative total (Running Sum) partitioned by category and ordered by transaction date?
 
+> **LeetCode Reference:** [LC 534: Game Play Analysis III](https://leetcode.com/problems/game-play-analysis-iii/) [MEDIUM]  
 > **TL;DR:** Use `SUM(amount) OVER (PARTITION BY category_id ORDER BY transaction_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)`.
 
 #### 💡 Core Concept & Explanation
@@ -36,6 +37,7 @@ ORDER BY category_id, order_date;
 
 ### 27. 🔴 P0 [Q] How do you compute a 7-day or 30-day moving average using `ROWS BETWEEN 6 PRECEDING AND CURRENT ROW`?
 
+> **LeetCode Reference:** [LC 1321: Restaurant Growth](https://leetcode.com/problems/restaurant-growth/) [MEDIUM]  
 > **TL;DR:** Use `AVG(metric) OVER (ORDER BY date_col ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)`. A 7-day rolling window consists of the current day plus the preceding 6 rows.
 
 #### 💡 Core Concept & Explanation
@@ -104,6 +106,7 @@ ORDER BY department_id, salary DESC;
 
 ### 29. 🔴 P0 [Q] Write a query to calculate Month-over-Month (MoM) revenue percentage growth using `LAG()`.
 
+> **LeetCode Reference:** [LC 1193: Monthly Transactions I](https://leetcode.com/problems/monthly-transactions-i/) [MEDIUM]  
 > **TL;DR:** Aggregate monthly revenue using `DATE_TRUNC('month', order_date)`, retrieve the prior month's revenue using `LAG()`, and calculate `((current - prior) / prior) * 100.0`.
 
 #### 💡 Core Concept & Explanation
@@ -157,6 +160,7 @@ ORDER BY sales_month;
 
 ### 30. 🔴 P0 [Q] Write a query to solve the classic Gaps and Islands problem: Identify consecutive active login streaks for each user.
 
+> **LeetCode Reference:** [LC 1285: Continuous Ranges](https://leetcode.com/problems/find-the-start-and-end-number-of-continuous-ranges/) & [LC 1454: Active Users](https://leetcode.com/problems/active-users/) [MEDIUM]  
 > **TL;DR:** Deduplicate active dates per user, compute a sequential `ROW_NUMBER()` ordered by date, subtract the row number (as an interval in days) from the login date to form an invariant group identifier (`date - row_num`), and group by that identifier to calculate streak lengths.
 
 #### 💡 Core Concept & Explanation

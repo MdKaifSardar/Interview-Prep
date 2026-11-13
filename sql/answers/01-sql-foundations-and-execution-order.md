@@ -160,6 +160,7 @@ ORDER BY (score IS NULL) ASC, score DESC;
 
 ### 5. 🔴 P0 [Q] Write a query to find all duplicate records based on email address and return their occurrence counts.
 
+> **LeetCode Reference:** [LC 182: Duplicate Emails](https://leetcode.com/problems/duplicate-emails/) [EASY]  
 > **TL;DR:** Group the table by the duplicate candidate column using `GROUP BY email`, then filter for groups with more than one record using `HAVING COUNT(*) > 1`.
 
 #### 💡 Core Concept & Explanation

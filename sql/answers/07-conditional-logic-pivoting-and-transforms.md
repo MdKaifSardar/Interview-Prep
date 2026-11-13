@@ -37,6 +37,7 @@ FROM students;
 
 ### 32. 🔴 P0 [Q] How do you pivot rows into columns in standard SQL without vendor-specific keywords using conditional aggregation?
 
+> **LeetCode Reference:** [LC 1179: Reformat Department Table](https://leetcode.com/problems/reformat-department-table/) [EASY]  
 > **TL;DR:** Combine `GROUP BY` with conditional aggregation: for each desired column, apply `SUM(CASE WHEN category = 'X' THEN amount ELSE 0 END) AS x_amount`.
 
 #### 💡 Core Concept & Explanation
@@ -154,6 +155,7 @@ FROM users;
 
 ### 35. 🔴 P0 [Q] Write a query to pivot monthly sales totals into 12 distinct month columns (`Jan`, `Feb`, ..., `Dec`) for each product category.
 
+> **LeetCode Reference:** [LC 1179: Reformat Department Table](https://leetcode.com/problems/reformat-department-table/) [EASY]  
 > **TL;DR:** Group by `category_id`, and write 12 conditional `SUM(CASE WHEN EXTRACT(MONTH FROM order_date) = X THEN amount ELSE 0 END)` expressions.
 
 #### 💡 Core Concept & Explanation

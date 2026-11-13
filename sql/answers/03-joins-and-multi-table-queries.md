@@ -130,6 +130,7 @@ LEFT JOIN employees m ON e.manager_id = m.id;
 
 ### 14. 🔴 P0 [Q] What is an Anti-Join, and how do `LEFT JOIN ... WHERE right.id IS NULL`, `NOT EXISTS`, and `NOT IN` compare in performance and NULL handling?
 
+> **LeetCode Reference:** [LC 183: Customers Who Never Order](https://leetcode.com/problems/customers-who-never-order/) [EASY]  
 > **TL;DR:** An Anti-Join returns rows from table A that have no matching records in table B. `NOT EXISTS` is generally the safest and fastest because it short-circuits on the first match and handles `NULL` values cleanly. `NOT IN` fails and returns 0 rows if table B contains even one `NULL`. `LEFT JOIN ... IS NULL` is an alternative that modern query optimizers often convert into an anti-semi-join plan.
 
 #### 💡 Core Concept & Explanation
@@ -174,6 +175,7 @@ WHERE u.id NOT IN (
 
 ### 15. 🔴 P0 [Q] Write a query to find all employees who earn a higher salary than their direct manager using a `SELF JOIN`.
 
+> **LeetCode Reference:** [LC 181: Employees Earning More Than Their Managers](https://leetcode.com/problems/employees-earning-more-than-their-managers/) [EASY]  
 > **TL;DR:** Join `employees e` (subordinates) with `employees m` (managers) on `e.manager_id = m.id`, and filter where `e.salary > m.salary`.
 
 #### 💡 Core Concept & Explanation

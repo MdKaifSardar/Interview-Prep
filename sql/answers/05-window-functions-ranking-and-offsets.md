@@ -48,6 +48,7 @@ FROM employees;
 
 ### 22. 🔴 P0 [Q] Explain the exact differences between `ROW_NUMBER()`, `RANK()`, and `DENSE_RANK()` when duplicate values/ties occur.
 
+> **LeetCode Reference:** [LC 178: Rank Scores](https://leetcode.com/problems/rank-scores/) [MEDIUM]  
 > **TL;DR:**
 > - `ROW_NUMBER()` assigns sequential, unique integers ($1, 2, 3, 4$), breaking ties arbitrarily.
 > - `RANK()` assigns identical numbers to ties and **skips** subsequent ranks ($1, 2, 2, 4$).
@@ -88,6 +89,7 @@ FROM exam_results;
 
 ### 23. 🔴 P0 [Q] How do offset window functions `LAG()` and `LEAD()` work, and how do you supply custom default fallback values for boundary rows?
 
+> **LeetCode Reference:** [LC 180: Consecutive Numbers](https://leetcode.com/problems/consecutive-numbers/) [MEDIUM]  
 > **TL;DR:** `LAG(col, offset, default)` fetches a column value from $offset$ rows **before** the current row. `LEAD(col, offset, default)` fetches from $offset$ rows **after**. Both accept an optional 3rd argument to replace the default `NULL` on boundary rows.
 
 #### 💡 Core Concept & Explanation
@@ -136,6 +138,7 @@ FROM daily_metrics;
 
 ### 24. 🔴 P0 [Q] Write a query to find the top 2 highest-paid employees in each department, properly handling ties.
 
+> **LeetCode Reference:** [LC 185: Department Top Three Salaries](https://leetcode.com/problems/department-top-three-salaries/) [HARD]  
 > **TL;DR:** Partition by `department_id`, order by `salary DESC` inside `DENSE_RANK()`, wrap in a CTE, and filter `WHERE rnk <= 2`.
 
 #### 💡 Core Concept & Explanation
@@ -177,6 +180,7 @@ ORDER BY Department, Salary DESC, Employee;
 
 ### 25. 🔴 P0 [Q] Write a query to find the N-th highest salary in a company across all departments without using `LIMIT` or `OFFSET`.
 
+> **LeetCode Reference:** [LC 176: Second Highest Salary](https://leetcode.com/problems/second-highest-salary/) & [LC 177: Nth Highest Salary](https://leetcode.com/problems/nth-highest-salary/) [MEDIUM]  
 > **TL;DR:** Compute `DENSE_RANK() OVER (ORDER BY salary DESC)` across the distinct set of salaries, wrap in a subquery or CTE, and filter where `rnk = N`.
 
 #### 💡 Core Concept & Explanation

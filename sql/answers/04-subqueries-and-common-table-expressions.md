@@ -159,6 +159,7 @@ SELECT n FROM NumberSeries;
 
 ### 20. 🔴 P0 [Q] Write a recursive CTE to traverse an employee organizational chart and compute the management depth/level for every employee from the CEO downwards.
 
+> **LeetCode Reference:** [LC 1270: All People Report to the Given Manager](https://leetcode.com/problems/all-people-report-to-the-given-manager/) [MEDIUM]  
 > **TL;DR:** Start with the CEO (`manager_id IS NULL`) at `level = 1` as the Anchor Member. In the Recursive Member, join `employees` to the CTE on `e.manager_id = cte.id` and increment `level + 1`.
 
 #### 💡 Core Concept & Explanation
