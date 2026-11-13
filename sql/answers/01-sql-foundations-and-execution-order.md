@@ -39,6 +39,8 @@ WHERE (price * quantity) > 1000;
 
 ---
 
+---
+
 ### 2. 🔴 P0 [Q] What is Three-Valued Logic in SQL (`TRUE`, `FALSE`, `UNKNOWN`), and why does `col = NULL` evaluate to `UNKNOWN` instead of `TRUE`?
 
 > **TL;DR:** SQL uses Three-Valued Logic (3VL) where boolean expressions evaluate to `TRUE`, `FALSE`, or `UNKNOWN`. `NULL` represents missing or indeterminate information, so comparing anything to `NULL` using `=` returns `UNKNOWN`. To test for NULL, you must use `IS NULL` or `IS NOT NULL`.
@@ -86,6 +88,8 @@ SELECT * FROM candidates WHERE referral_code != 'REF100' OR referral_code IS NUL
 
 ---
 
+---
+
 ### 3. 🔴 P0 [Q] What is `DISTINCT`, how does the database engine eliminate duplicate rows internally, and what is its performance penalty?
 
 > **TL;DR:** `DISTINCT` filters duplicate tuples across all projected columns. The database engine executes deduplication either via **Hash Aggregate** (building an in-memory hash table) or **Sort Unique** (sorting the dataset and scanning consecutive matches), both of which require substantial CPU and memory.
@@ -111,6 +115,8 @@ FROM customers;
 
 #### ⚠️ Interview Pitfall / Pro-Tip
 - Senior interviewers look for developers using `DISTINCT` as a band-aid to hide flawed `JOIN` logic (e.g. a 1-to-many join creating unwanted duplicate rows). If an API query returns duplicates, fix the join condition or use `EXISTS` rather than masking the bug with an expensive `DISTINCT`.
+
+---
 
 ---
 
@@ -150,77 +156,9 @@ ORDER BY (score IS NULL) ASC, score DESC;
 
 ---
 
-### 5. 🔴 P0 [Q] How does pagination work using `LIMIT` and `OFFSET`, and why does deep offset pagination (`OFFSET 100000`) degrade database performance?
-
-> **TL;DR:** `OFFSET N LIMIT M` forces the database engine to scan and evaluate $N + M$ rows from the disk or index, discarding the first $N$ rows and returning only $M$. At high offsets (e.g., page 5,000), disk I/O and CPU overhead become catastrophic ($O(N)$ latency).
-
-#### 💡 Core Concept & Explanation
-When a query requests `OFFSET 100000 LIMIT 20`, the database cannot magically jump to row 100,001 because rows vary in physical size, MVCC visibility, and deletion states. The engine must read, parse, sort, and discard all 100,000 preceding rows.
-- **The Optimal Alternative — Keyset Pagination (Seek Method):** Instead of counting offsets, the client sends the cursor value of the last seen primary key or timestamp. The database executes an $O(\log N)$ B-Tree index seek directly: `WHERE id > :last_seen_id ORDER BY id ASC LIMIT 20`.
-
-#### 🛠️ Code / Visual Diagram / Table
-
-```
-Offset Pagination (Catastrophic for deep pages):
-[Scan 100,000 rows] ──> Discard ──> [Keep 20 rows] (Scanned: 100,020 rows)
-
-Keyset Seek Pagination (Instant):
-B-Tree Root ──> Binary Search Seek(id > 89412) ──> [Take next 20 rows] (Scanned: 20 rows)
-```
-
-```sql
--- Slow Offset Pagination (Scans 100,020 rows)
-SELECT id, title, created_at
-FROM posts
-ORDER BY id ASC
-LIMIT 20 OFFSET 100000;
-
--- Fast Keyset Pagination (Scans 20 rows via Index Seek)
-SELECT id, title, created_at
-FROM posts
-WHERE id > 100000
-ORDER BY id ASC
-LIMIT 20;
-```
-
-#### ⚠️ Interview Pitfall / Pro-Tip
-- Keyset pagination also eliminates **page drift** (records being skipped or duplicated when new rows are inserted or deleted while a user navigates from page 1 to page 2).
-
 ---
 
-### 6. 🟠 P1 [Q] How do pattern matching operators (`LIKE`, `ILIKE`, `SIMILAR TO`, Regex) work, and how do wildcard positions affect index utilization?
-
-> **TL;DR:** `LIKE` is case-sensitive; `ILIKE` is case-insensitive. A wildcard at the start (`%term`) or middle (`%term%`) invalidates standard B-Tree indexes and forces a Full Table Scan. A prefix search (`term%`) can leverage standard B-Tree index range scans.
-
-#### 💡 Core Concept & Explanation
-B-Trees sort characters lexicographically from left to right. When searching for `LIKE 'John%'`, the engine knows the exact lower bound (`John`) and upper bound (`Johp`), allowing an efficient $O(\log N)$ range scan. But when searching for `LIKE '%son'`, any character sequence could precede the suffix, rendering the B-Tree index ordering useless.
-
-#### 🛠️ Code / Visual Diagram / Table
-
-| Pattern | Index Seek Possible? | Execution Mechanism |
-|---|---|---|
-| `LIKE 'Alex%'` | ✅ Yes | B-Tree Range Scan |
-| `LIKE '%Alex'` | ❌ No (Unless Reverse Index exists) | Full Table Scan |
-| `LIKE '%Alex%'` | ❌ No (Requires Trigram GIN/GiST index) | Full Table Scan |
-| `ILIKE 'alex%'` | ❌ No (Requires expression index on `LOWER(col)`) | Full Table Scan |
-
-```sql
--- Prefix query leveraging standard B-Tree index:
-SELECT id, email FROM users WHERE email LIKE 'admin%';
-
--- Accelerating substring search '%term%' in PostgreSQL with Trigram index:
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
-CREATE INDEX idx_users_email_trgm ON users USING GIN (email gin_trgm_ops);
-
-SELECT id, email FROM users WHERE email ILIKE '%support%'; -- Index Scan via GIN!
-```
-
-#### ⚠️ Interview Pitfall / Pro-Tip
-- Avoid writing `WHERE LOWER(email) = LOWER(:input)` without an expression index (`CREATE INDEX idx_lower_email ON users(LOWER(email))`). Applying a function to an indexed column destroys SARGability.
-
----
-
-### 7. 🔴 P0 [Q] Write a query to find all duplicate records based on email address and return their occurrence counts.
+### 5. 🔴 P0 [Q] Write a query to find all duplicate records based on email address and return their occurrence counts.
 
 > **TL;DR:** Group the table by the duplicate candidate column using `GROUP BY email`, then filter for groups with more than one record using `HAVING COUNT(*) > 1`.
 
@@ -274,53 +212,6 @@ ORDER BY u.email, u.created_at;
 - Remember that `COUNT(*)` counts rows containing `NULL`s, while `COUNT(email)` ignores `NULL`s. If a table contains multiple rows with `NULL` in the email column, `GROUP BY email HAVING COUNT(*) > 1` will include `NULL` as a duplicate group. If `NULL` is an allowed non-duplicate state, add `WHERE email IS NOT NULL` before grouping.
 
 ---
-
-### 8. 🟠 P1 [Q] Write a query to filter rows matching multiple boolean conditions where some column values are nullable, avoiding common three-valued logic bugs.
-
-> **TL;DR:** When filtering nullable flags or optional foreign keys, always protect boolean predicates using explicit `IS NULL` conditions or `COALESCE(column, default_value)` to prevent `UNKNOWN` evaluation from silently dropping desired rows.
-
-#### 💡 Core Concept & Explanation
-If an employee table has an `is_active` boolean flag where `NULL` means pending review, a naive query like `WHERE is_active != TRUE` will NOT return rows where `is_active IS NULL`, because `NULL != TRUE` evaluates to `UNKNOWN`.
-
-#### 🛠️ Code / Visual Diagram / Table
-
-```sql
--- Schema
-CREATE TABLE subscriptions (
-    id INT PRIMARY KEY,
-    user_id INT,
-    is_auto_renew BOOLEAN, -- Can be TRUE, FALSE, or NULL
-    discount_code VARCHAR(20) -- Can be string or NULL
-);
-
-INSERT INTO subscriptions VALUES
-(1, 101, TRUE, 'SAVE20'),
-(2, 102, FALSE, NULL),
-(3, 103, NULL, 'WELCOME'),
-(4, 104, FALSE, 'EXPIRED');
-
--- Problem: Select all subscriptions that do NOT have auto-renew enabled AND do not use code 'SAVE20'
-
--- BUGGY QUERY: Excludes id 3 because (is_auto_renew != TRUE) evaluates to UNKNOWN!
-SELECT * FROM subscriptions 
-WHERE is_auto_renew != TRUE AND discount_code != 'SAVE20';
--- Returned: id 2, 4 only (misses id 3!)
-
--- CORRECT ROBUST QUERY (Using COALESCE or IS NULL):
-SELECT * FROM subscriptions
-WHERE COALESCE(is_auto_renew, FALSE) = FALSE
-  AND (discount_code != 'SAVE20' OR discount_code IS NULL);
-
--- Output:
--- | id | user_id | is_auto_renew | discount_code |
--- |----|---------|---------------|---------------|
--- | 2  | 102     | FALSE         | NULL          |
--- | 3  | 103     | NULL          | WELCOME       |
--- | 4  | 104     | FALSE         | EXPIRED       |
-```
-
-#### ⚠️ Interview Pitfall / Pro-Tip
-- In PostgreSQL, you can use `IS DISTINCT FROM`: `WHERE is_auto_renew IS DISTINCT FROM TRUE`. `IS DISTINCT FROM` treats `NULL` as a known distinct entity and safely returns `TRUE` when comparing `NULL` with `TRUE`.
 
 ---
 

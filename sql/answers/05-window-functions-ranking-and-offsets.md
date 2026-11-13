@@ -1,10 +1,10 @@
-[⬅️ Previous: 04 · Subqueries & CTEs](04-subqueries-and-common-table-expressions.md) &nbsp;|&nbsp; [📋 Index](../sql-interview-answers.md) &nbsp;|&nbsp; [Next: 06 · Window Running Aggregates ➡️](06-window-functions-running-aggregates-and-frames.md)
+[⬅️ Previous: 04 · Subqueries & CTEs](04-subqueries-and-common-table-expressions.md) &nbsp;|&nbsp; [📋 Index](../sql-interview-answers.md) &nbsp;|&nbsp; [Next: 06 · Running Frames & Gaps/Islands ➡️](06-window-functions-running-aggregates-and-frames.md)
 
 ---
 
 ## 5. Window Functions — Ranking, Offsets & Partitions
 
-### 33. 🔴 P0 [C] What are Window Functions in SQL, how does `OVER (PARTITION BY ... ORDER BY ...)` differ from `GROUP BY`, and why don't window functions collapse rows?
+### 21. 🔴 P0 [C] What are Window Functions in SQL, how does `OVER (PARTITION BY ... ORDER BY ...)` differ from `GROUP BY`, and why don't window functions collapse rows?
 
 > **TL;DR:** Window Functions perform calculations across a set of table rows related to the current row, but unlike `GROUP BY`, they **do not collapse** rows into a single summary tuple. Each input row retains its distinct individual identity while gaining access to partition-level aggregates and rankings.
 
@@ -44,7 +44,9 @@ FROM employees;
 
 ---
 
-### 34. 🔴 P0 [Q] Explain the exact differences between `ROW_NUMBER()`, `RANK()`, and `DENSE_RANK()` when duplicate values/ties occur.
+---
+
+### 22. 🔴 P0 [Q] Explain the exact differences between `ROW_NUMBER()`, `RANK()`, and `DENSE_RANK()` when duplicate values/ties occur.
 
 > **TL;DR:**
 > - `ROW_NUMBER()` assigns sequential, unique integers ($1, 2, 3, 4$), breaking ties arbitrarily.
@@ -82,49 +84,9 @@ FROM exam_results;
 
 ---
 
-### 35. 🟠 P1 [Q] What does `NTILE(n)` do, and how do you use it to divide data into quartiles (top 25%) or deciles (top 10%)?
-
-> **TL;DR:** `NTILE(n)` divides an ordered partition as equally as possible into $n$ numbered buckets (from $1$ to $n$). It is used to segment users into percentiles, quartiles (`NTILE(4)`), or deciles (`NTILE(10)`).
-
-#### 💡 Core Concept & Explanation
-If you have 10 rows and call `NTILE(4)`:
-The first 2 buckets receive $\lceil 10 / 4 \rceil = 3$ rows, and the remaining 2 buckets receive $2$ rows:
-- Bucket 1: 3 rows (Top quartile)
-- Bucket 2: 3 rows
-- Bucket 3: 2 rows
-- Bucket 4: 2 rows
-
-#### 🛠️ Code / Visual Diagram / Table
-
-```sql
--- Segment customers into spending quartiles:
-WITH CustomerSpend AS (
-    SELECT 
-        customer_id, 
-        SUM(order_amount) AS total_spend,
-        NTILE(4) OVER(ORDER BY SUM(order_amount) DESC) AS spend_quartile
-    FROM orders
-    GROUP BY customer_id
-)
-SELECT 
-    customer_id,
-    total_spend,
-    spend_quartile,
-    CASE spend_quartile
-        WHEN 1 THEN 'Tier 1: Top 25% (Whale)'
-        WHEN 2 THEN 'Tier 2: High Value'
-        WHEN 3 THEN 'Tier 3: Moderate'
-        WHEN 4 THEN 'Tier 4: Low Value'
-    END AS tier_label
-FROM CustomerSpend;
-```
-
-#### ⚠️ Interview Pitfall / Pro-Tip
-- Remember that `NTILE(n)` distributes leftover remainder rows to the lowest-numbered buckets first (bucket 1, then bucket 2, etc.).
-
 ---
 
-### 36. 🔴 P0 [Q] How do offset window functions `LAG()` and `LEAD()` work, and how do you supply custom default fallback values for boundary rows?
+### 23. 🔴 P0 [Q] How do offset window functions `LAG()` and `LEAD()` work, and how do you supply custom default fallback values for boundary rows?
 
 > **TL;DR:** `LAG(col, offset, default)` fetches a column value from $offset$ rows **before** the current row. `LEAD(col, offset, default)` fetches from $offset$ rows **after**. Both accept an optional 3rd argument to replace the default `NULL` on boundary rows.
 
@@ -170,49 +132,9 @@ FROM daily_metrics;
 
 ---
 
-### 37. 🟠 P1 [Q] What are `FIRST_VALUE()`, `LAST_VALUE()`, and `NTH_VALUE()`, and why does `LAST_VALUE()` return the current row instead of the partition's last row without an explicit frame clause?
-
-> **TL;DR:** `FIRST_VALUE()` returns the first value in the window frame. `LAST_VALUE()` returns the last. Without an explicit frame clause, SQL defaults to `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`, so `LAST_VALUE()` stops at the current row! To make it inspect the entire partition, you must add `ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING`.
-
-#### 💡 Core Concept & Explanation
-This is one of the most notorious gotchas in SQL interviews.
-When an `ORDER BY` is present inside an `OVER` clause, the default window frame is:
-`RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`
-Therefore, as the engine steps through each row, the "last row of the frame" is simply the current row itself!
-
-#### 🛠️ Code / Visual Diagram / Table
-
-```sql
--- INCORRECT (Common Trap): LAST_VALUE just returns the current employee's salary!
-SELECT 
-    name, salary,
-    LAST_VALUE(salary) OVER(ORDER BY salary) AS wrong_lowest
-FROM employees;
-
--- CORRECT: Explicitly expand frame to UNBOUNDED FOLLOWING
-SELECT 
-    name, salary,
-    FIRST_VALUE(salary) OVER(
-        ORDER BY salary DESC 
-        ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
-    ) AS highest_salary,
-    LAST_VALUE(salary) OVER(
-        ORDER BY salary DESC 
-        ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
-    ) AS lowest_salary,
-    NTH_VALUE(salary, 2) OVER(
-        ORDER BY salary DESC 
-        ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
-    ) AS second_highest_salary
-FROM employees;
-```
-
-#### ⚠️ Interview Pitfall / Pro-Tip
-- Whenever writing `LAST_VALUE()` or `NTH_VALUE()`, always append `ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING`. Highlighting this gotcha proves advanced SQL mastery to interviewers.
-
 ---
 
-### 38. 🔴 P0 [Q] Write a query to find the top 2 highest-paid employees in each department, properly handling ties.
+### 24. 🔴 P0 [Q] Write a query to find the top 2 highest-paid employees in each department, properly handling ties.
 
 > **TL;DR:** Partition by `department_id`, order by `salary DESC` inside `DENSE_RANK()`, wrap in a CTE, and filter `WHERE rnk <= 2`.
 
@@ -251,7 +173,9 @@ ORDER BY Department, Salary DESC, Employee;
 
 ---
 
-### 39. 🔴 P0 [Q] Write a query to find the N-th highest salary in a company across all departments without using `LIMIT` or `OFFSET`.
+---
+
+### 25. 🔴 P0 [Q] Write a query to find the N-th highest salary in a company across all departments without using `LIMIT` or `OFFSET`.
 
 > **TL;DR:** Compute `DENSE_RANK() OVER (ORDER BY salary DESC)` across the distinct set of salaries, wrap in a subquery or CTE, and filter where `rnk = N`.
 
@@ -286,116 +210,6 @@ SELECT
 
 ---
 
-### 40. 🔴 P0 [Q] Write a query to calculate Month-over-Month (MoM) revenue percentage growth using `LAG()`.
-
-> **TL;DR:** Aggregate monthly revenue using `DATE_TRUNC('month', order_date)`, retrieve the prior month's revenue using `LAG()`, and calculate `((current - prior) / prior) * 100.0`.
-
-#### 💡 Core Concept & Explanation
-Month-over-month (MoM) growth is a core KPI in product and financial analytics:
-$$\text{MoM Growth \%} = \frac{\text{Current Month} - \text{Prior Month}}{\text{Prior Month}} \times 100$$
-Using `NULLIF(prior_month, 0)` protects against division by zero in inaugural or stagnant months.
-
-#### 🛠️ Code / Visual Diagram / Table
-
-```sql
-WITH MonthlyRevenue AS (
-    SELECT 
-        DATE_TRUNC('month', order_date)::DATE AS sales_month,
-        SUM(amount) AS monthly_revenue
-    FROM orders
-    GROUP BY DATE_TRUNC('month', order_date)::DATE
-),
-RevenueWithPrior AS (
-    SELECT 
-        sales_month,
-        monthly_revenue,
-        LAG(monthly_revenue) OVER(ORDER BY sales_month) AS prior_month_revenue
-    FROM MonthlyRevenue
-)
-SELECT 
-    sales_month,
-    monthly_revenue,
-    prior_month_revenue,
-    ROUND(
-        100.0 * (monthly_revenue - prior_month_revenue) 
-        / NULLIF(prior_month_revenue, 0),
-        2
-    ) AS mom_growth_pct
-FROM RevenueWithPrior
-ORDER BY sales_month;
-
--- Output:
--- | sales_month | monthly_revenue | prior_month_revenue | mom_growth_pct |
--- |-------------|-----------------|---------------------|----------------|
--- | 2026-01-01  | $100,000        | NULL                | NULL           |
--- | 2026-02-01  | $125,000        | $100,000            | +25.00%        |
--- | 2026-03-01  | $110,000        | $125,000            | -12.00%        |
-```
-
-#### ⚠️ Interview Pitfall / Pro-Tip
-- Always aggregate monthly sums in the first CTE before applying `LAG()`. Applying `LAG()` directly over unaggregated raw order rows will compare individual orders rather than monthly totals!
-
 ---
 
-### 41. 🔴 P0 [Q] Write a query to solve the classic Gaps and Islands problem: Identify consecutive active login streaks for each user.
-
-> **TL;DR:** Deduplicate active dates per user, compute a sequential `ROW_NUMBER()` ordered by date, subtract the row number (as an interval in days) from the login date to form an invariant group identifier (`date - row_num`), and group by that identifier to calculate streak lengths.
-
-#### 💡 Core Concept & Explanation
-Why does `login_date - ROW_NUMBER() * INTERVAL '1 day'` work?
-If dates are strictly consecutive:
-- March 10 - Day 1 = March 9
-- March 11 - Day 2 = March 9
-- March 12 - Day 3 = March 9
-Notice that the resulting date difference remains constant (`March 9`) throughout any uninterrupted sequence (an "Island")! As soon as a day is skipped (a "Gap"), the subtraction jumps to a new constant baseline date.
-
-#### 🛠️ Code / Visual Diagram / Table
-
-```sql
--- Schema
-CREATE TABLE user_logins (
-    user_id INT,
-    login_date DATE
-);
-
-INSERT INTO user_logins VALUES
-(1, '2026-03-01'),
-(1, '2026-03-02'),
-(1, '2026-03-03'), -- Streak 1: 3 days
-(1, '2026-03-05'),
-(1, '2026-03-06'); -- Streak 2: 2 days
-
--- Solution Query:
-WITH DistinctLogins AS (
-    SELECT DISTINCT user_id, login_date 
-    FROM user_logins
-),
-GroupedStreaks AS (
-    SELECT 
-        user_id,
-        login_date,
-        login_date - (ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY login_date) * INTERVAL '1 day') AS streak_island_group
-    FROM DistinctLogins
-)
-SELECT 
-    user_id,
-    MIN(login_date) AS streak_start_date,
-    MAX(login_date) AS streak_end_date,
-    COUNT(*) AS consecutive_days
-FROM GroupedStreaks
-GROUP BY user_id, streak_island_group
-ORDER BY user_id, streak_start_date;
-
--- Output:
--- | user_id | streak_start_date | streak_end_date | consecutive_days |
--- |---------|-------------------|-----------------|------------------|
--- | 1       | 2026-03-01        | 2026-03-03      | 3                |
--- | 1       | 2026-03-05        | 2026-03-06      | 2                |
-```
-
-#### ⚠️ Interview Pitfall / Pro-Tip
-- Deduplicate first using `SELECT DISTINCT user_id, login_date`! If a user logs in 3 times on the same calendar day, row numbers will increment while the date remains identical, breaking the consecutive mathematical alignment.
-
----
-
-[⬅️ Previous: 04 · Subqueries & CTEs](04-subqueries-and-common-table-expressions.md) &nbsp;|&nbsp; [📋 Index](../sql-interview-answers.md) &nbsp;|&nbsp; [Next: 06 · Window Running Aggregates ➡️](06-window-functions-running-aggregates-and-frames.md)
+[⬅️ Previous: 04 · Subqueries & CTEs](04-subqueries-and-common-table-expressions.md) &nbsp;|&nbsp; [📋 Index](../sql-interview-answers.md) &nbsp;|&nbsp; [Next: 06 · Running Frames & Gaps/Islands ➡️](06-window-functions-running-aggregates-and-frames.md)

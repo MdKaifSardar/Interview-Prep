@@ -4,7 +4,7 @@
 
 ## 4. Subqueries & Common Table Expressions (CTEs)
 
-### 25. 🔴 P0 [C] What is the difference between a Non-Correlated Subquery and a Correlated Subquery, and how does the engine execute them?
+### 16. 🔴 P0 [C] What is the difference between a Non-Correlated Subquery and a Correlated Subquery, and how does the engine execute them?
 
 > **TL;DR:** A Non-Correlated Subquery is completely independent of the outer query; it executes once, caches its result, and passes it to the outer query. A Correlated Subquery references columns from the outer query table; it conceptually executes once per row processed by the outer query ($O(N \times M)$ naive complexity).
 
@@ -35,7 +35,9 @@ For each row in Outer Table:
 
 ---
 
-### 26. 🔴 P0 [Q] What is the difference between `EXISTS` and `IN` operators, and why does `NOT IN` fail completely if the subquery returns even a single `NULL` value?
+---
+
+### 17. 🔴 P0 [Q] What is the difference between `EXISTS` and `IN` operators, and why does `NOT IN` fail completely if the subquery returns even a single `NULL` value?
 
 > **TL;DR:** `IN` compares values against a concrete list of literal values and evaluates every item. `EXISTS` tests boolean existence and short-circuits as soon as a single matching row is located. `NOT IN` evaluates to `UNKNOWN` (dropping all rows) if the candidate list contains any `NULL`, whereas `NOT EXISTS` handles `NULL`s gracefully.
 
@@ -67,36 +69,9 @@ WHERE NOT EXISTS (
 
 ---
 
-### 27. 🟠 P1 [C] Distinguish Scalar Subqueries, Row Subqueries, and Table-Derived Subqueries, and where each can be placed in a SQL statement.
-
-> **TL;DR:** A Scalar Subquery returns exactly 1 row and 1 column (usable anywhere a literal value is expected). A Row Subquery returns 1 row with multiple columns (usable in tuple comparisons). A Table Subquery returns multiple rows and columns (usable in the `FROM` or `JOIN` clause).
-
-#### 💡 Core Concept & Explanation
-- **Scalar Subquery:** Can be placed in `SELECT` projections, `WHERE` expressions, or `CASE` branches:
-  `SELECT name, (SELECT MAX(salary) FROM employees) - salary AS gap FROM employees;`
-  *(Throws runtime error if the subquery returns more than 1 row!)*
-- **Row Subquery (Tuple comparison):**
-  `SELECT * FROM employees WHERE (dept_id, role) = (SELECT dept_id, role FROM top_performers WHERE id = 101);`
-- **Table-Derived Subquery:** Placed in the `FROM` clause; must always have an explicit alias:
-  `SELECT * FROM (SELECT dept_id, AVG(salary) AS avg_sal FROM employees GROUP BY dept_id) AS dept_averages;`
-
-#### 🛠️ Code / Visual Diagram / Table
-
-```sql
--- Scalar subquery in SELECT projection:
-SELECT 
-    e.name,
-    e.salary,
-    ROUND(e.salary / (SELECT SUM(salary) FROM employees) * 100, 2) AS pct_of_total_payroll
-FROM employees e;
-```
-
-#### ⚠️ Interview Pitfall / Pro-Tip
-- Be careful with scalar subqueries in `SELECT` projections on large tables: if the scalar subquery is correlated with the outer row, it will execute $N$ times, severely bottlenecking query throughput.
-
 ---
 
-### 28. 🔴 P0 [Q] What is a Common Table Expression (CTE, `WITH` clause), and what advantages does it provide over nested subqueries?
+### 18. 🔴 P0 [Q] What is a Common Table Expression (CTE, `WITH` clause), and what advantages does it provide over nested subqueries?
 
 > **TL;DR:** A CTE is a temporary, named result set defined at the beginning of a SQL query using the `WITH` keyword. CTEs drastically improve readability by eliminating deep nesting, allowing self-referencing (Recursive CTEs), and enabling the same named dataset to be referenced multiple times within a single query.
 
@@ -133,43 +108,9 @@ ORDER BY hsc.total_spent DESC;
 
 ---
 
-### 29. 🟡 P2 [C] What is a CTE Optimization Fence, and how do database query planners handle inlining vs materializing CTEs (Postgres 12+ behavior)?
-
-> **TL;DR:** An Optimization Fence prevents the query planner from rearranging or pushing predicates across query boundaries. In older PostgreSQL (<12), CTEs were always materialized (evaluated completely in isolation). In PostgreSQL 12+, CTEs are inlined by default like subqueries, allowing index pushdown, unless `AS MATERIALIZED` is explicitly specified.
-
-#### 💡 Core Concept & Explanation
-When a query planner inlines a CTE, it merges the CTE's SQL directly into the outer query:
-`WITH active_users AS (SELECT * FROM users WHERE active = TRUE) SELECT * FROM active_users WHERE country = 'IN';`
-With inlining, the planner rewrites this into: `SELECT * FROM users WHERE active = TRUE AND country = 'IN'`. If a composite index on `(active, country)` exists, the engine performs an index seek.
-If the CTE is materialized, the engine extracts *all* active users across the globe into temporary memory first, and then filters for India—wasting massive amounts of RAM and I/O.
-
-#### 🛠️ Code / Visual Diagram / Table
-
-```sql
--- Explicitly controlling CTE materialization in PostgreSQL 12+:
-
--- 1. Inlined by default (Optimizer pushes outer filters down):
-WITH non_materialized_example AS (
-    SELECT id, name, department_id FROM employees
-)
-SELECT * FROM non_materialized_example WHERE id = 42; 
--- Execution: Index seek on employees.id = 42!
-
--- 2. Forced materialization (Optimizer evaluates completely once):
-WITH expensive_stats AS MATERIALIZED (
-    SELECT department_id, AVG(salary) AS avg_s 
-    FROM employees 
-    GROUP BY department_id
-)
-SELECT * FROM expensive_stats WHERE department_id = 10;
-```
-
-#### ⚠️ Interview Pitfall / Pro-Tip
-- When is `MATERIALIZED` useful? If a CTE performs an expensive calculation and is joined multiple times in the outer query, materializing it guarantees it is computed only once rather than re-evaluated on each join branch.
-
 ---
 
-### 30. 🔴 P0 [Q] What is a Recursive CTE, what are its 4 mandatory components (Anchor, UNION ALL, Recursive Member, Termination), and how does it execute?
+### 19. 🔴 P0 [Q] What is a Recursive CTE, what are its 4 mandatory components (Anchor, UNION ALL, Recursive Member, Termination), and how does it execute?
 
 > **TL;DR:** A Recursive CTE is a CTE that references its own name to iteratively process hierarchical, nested, or graph-like data. It consists of: (1) **Anchor Member** (base query), (2) **`UNION ALL`** separator, (3) **Recursive Member** (references CTE name), and (4) **Termination Condition** (produces empty set to stop loop).
 
@@ -214,61 +155,9 @@ SELECT n FROM NumberSeries;
 
 ---
 
-### 31. 🔴 P0 [Q] Write a query to find all employees whose salary is above the average salary of their respective department using a correlated subquery and a CTE.
-
-> **TL;DR:** Compare each employee's salary against their department average, implemented via both a correlated subquery and a CTE with a join.
-
-#### 💡 Core Concept & Explanation
-This problem tests whether you can evaluate values relative to their grouping context without using window functions. Both approaches are valuable in interviews.
-
-#### 🛠️ Code / Visual Diagram / Table
-
-```sql
--- Schema
-CREATE TABLE employees (
-    id INT PRIMARY KEY,
-    name VARCHAR(50),
-    department_id INT,
-    salary NUMERIC(10, 2)
-);
-
--- Approach 1: Using Common Table Expression (CTE) - Clean & Linear
-WITH DeptAverage AS (
-    SELECT department_id, AVG(salary) AS avg_dept_salary
-    FROM employees
-    GROUP BY department_id
-)
-SELECT 
-    e.id, 
-    e.name, 
-    e.department_id, 
-    e.salary,
-    ROUND(da.avg_dept_salary, 2) AS dept_avg_salary
-FROM employees e
-JOIN DeptAverage da ON e.department_id = da.department_id
-WHERE e.salary > da.avg_dept_salary
-ORDER BY e.department_id, e.salary DESC;
-
--- Approach 2: Correlated Subquery
-SELECT 
-    e.id, 
-    e.name, 
-    e.department_id, 
-    e.salary
-FROM employees e
-WHERE e.salary > (
-    SELECT AVG(sub.salary)
-    FROM employees sub
-    WHERE sub.department_id = e.department_id
-);
-```
-
-#### ⚠️ Interview Pitfall / Pro-Tip
-- Approach 1 (CTE Join) is generally faster because the department average is computed in a single aggregation pass and joined via a hash join, whereas Approach 2 (naive correlated subquery) re-evaluates the department average for every single employee row in un-optimized engines.
-
 ---
 
-### 32. 🔴 P0 [Q] Write a recursive CTE to traverse an employee organizational chart and compute the management depth/level for every employee from the CEO downwards.
+### 20. 🔴 P0 [Q] Write a recursive CTE to traverse an employee organizational chart and compute the management depth/level for every employee from the CEO downwards.
 
 > **TL;DR:** Start with the CEO (`manager_id IS NULL`) at `level = 1` as the Anchor Member. In the Recursive Member, join `employees` to the CTE on `e.manager_id = cte.id` and increment `level + 1`.
 

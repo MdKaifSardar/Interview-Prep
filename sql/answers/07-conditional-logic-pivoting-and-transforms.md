@@ -1,10 +1,10 @@
-[⬅️ Previous: 06 · Window Running Aggregates](06-window-functions-running-aggregates-and-frames.md) &nbsp;|&nbsp; [📋 Index](../sql-interview-answers.md) &nbsp;|&nbsp; [Next: 08 · Set Operations & Upserts ➡️](08-set-operations-upserts-and-dml-mechanics.md)
+[⬅️ Previous: 06 · Running Frames & Gaps/Islands](06-window-functions-running-aggregates-and-frames.md) &nbsp;|&nbsp; [📋 Index](../sql-interview-answers.md) &nbsp;|&nbsp; [Next: 08 · Set Operations & Optimization ➡️](08-set-operations-and-query-optimization.md)
 
 ---
 
 ## 7. Conditional Logic, Pivoting & Data Transformation
 
-### 50. 🔴 P0 [Q] What is the difference between a Simple `CASE` expression and a Searched `CASE WHEN` expression, and what is their short-circuit evaluation order?
+### 31. 🔴 P0 [Q] What is the difference between a Simple `CASE` expression and a Searched `CASE WHEN` expression, and what is their short-circuit evaluation order?
 
 > **TL;DR:** Simple `CASE` compares an expression against exact discrete values (`CASE status WHEN 1 THEN 'A' END`). Searched `CASE WHEN` evaluates full arbitrary boolean predicates (`CASE WHEN price > 100 AND in_stock = TRUE THEN 'A' END`). Both evaluate branches sequentially and short-circuit at the first matching `TRUE` condition.
 
@@ -33,7 +33,9 @@ FROM students;
 
 ---
 
-### 51. 🔴 P0 [Q] How do you pivot rows into columns in standard SQL without vendor-specific keywords using conditional aggregation?
+---
+
+### 32. 🔴 P0 [Q] How do you pivot rows into columns in standard SQL without vendor-specific keywords using conditional aggregation?
 
 > **TL;DR:** Combine `GROUP BY` with conditional aggregation: for each desired column, apply `SUM(CASE WHEN category = 'X' THEN amount ELSE 0 END) AS x_amount`.
 
@@ -75,74 +77,9 @@ ORDER BY year;
 
 ---
 
-### 52. 🟠 P1 [Q] How do you unpivot columns into rows using `UNION ALL` or `CROSS JOIN LATERAL` in relational SQL?
-
-> **TL;DR:** To unpivot columns (e.g. `phone1`, `phone2`) into separate rows, either use `UNION ALL` selecting each column subset, or use a `CROSS JOIN LATERAL (VALUES ...)` construct in modern PostgreSQL.
-
-#### 💡 Core Concept & Explanation
-Normalizing wide, flat tables into tall relational schemas often requires unpivoting.
-`UNION ALL` is universal and compatible with all SQL engines.
-
-#### 🛠️ Code / Visual Diagram / Table
-
-```sql
--- Source table with flat columns:
--- | emp_id | mobile_phone | work_phone   |
--- |--------|--------------|--------------|
--- | 101    | 555-0100     | 555-0101     |
-
--- Approach 1: Universal ANSI SQL with UNION ALL
-SELECT emp_id, 'mobile' AS phone_type, mobile_phone AS phone_number
-FROM employees WHERE mobile_phone IS NOT NULL
-UNION ALL
-SELECT emp_id, 'work' AS phone_type, work_phone AS phone_number
-FROM employees WHERE work_phone IS NOT NULL;
-
--- Approach 2: PostgreSQL CROSS JOIN LATERAL (Single table scan!)
-SELECT e.emp_id, u.phone_type, u.phone_number
-FROM employees e
-CROSS JOIN LATERAL (
-    VALUES 
-        ('mobile', e.mobile_phone),
-        ('work', e.work_phone)
-) AS u(phone_type, phone_number)
-WHERE u.phone_number IS NOT NULL;
-```
-
-#### ⚠️ Interview Pitfall / Pro-Tip
-- Highlight that Approach 2 (`CROSS JOIN LATERAL VALUES`) scans the underlying table **once**, whereas Approach 1 (`UNION ALL`) scans the underlying table $K$ times (where $K$ is the number of unpivoted columns).
-
 ---
 
-### 53. 🟠 P1 [Q] What are the most common string manipulation functions in SQL (`CONCAT`, `CONCAT_WS`, `SUBSTRING`, `SPLIT_PART`, `TRIM`, `REPLACE`)?
-
-> **TL;DR:** `CONCAT_WS` joins strings with a delimiter, skipping `NULL`s. `SUBSTRING(str, start, length)` extracts slices. `SPLIT_PART(str, delim, n)` extracts the $n$-th token. `TRIM` removes whitespace. `REPLACE(str, from, to)` swaps substrings.
-
-#### 💡 Core Concept & Explanation
-String cleaning is essential when processing messy user inputs, URLs, and legacy text columns.
-- `CONCAT('A', NULL, 'B')` in PostgreSQL returns `'AB'`; but `A || NULL` in standard SQL returns `NULL`!
-- `CONCAT_WS(',', 'A', NULL, 'B')` stands for "Concatenate With Separator" and safely returns `'A,B'`.
-
-#### 🛠️ Code / Visual Diagram / Table
-
-```sql
-SELECT 
-    email,
-    -- Extract domain from email (e.g. 'john@gmail.com' -> 'gmail.com'):
-    SPLIT_PART(email, '@', 2) AS domain_name,
-    -- Format full name:
-    CONCAT_WS(' ', TRIM(first_name), TRIM(last_name)) AS full_name,
-    -- Mask credit card:
-    CONCAT('****-****-****-', RIGHT(card_number, 4)) AS masked_card
-FROM customer_profiles;
-```
-
-#### ⚠️ Interview Pitfall / Pro-Tip
-- Remember that in standard SQL, **1-based indexing** applies (`SUBSTRING(str, 1, 3)`), unlike JavaScript or Python which are 0-based.
-
----
-
-### 54. 🔴 P0 [Q] What is the difference between `COALESCE` and `NULLIF`, and how do you use them to prevent division-by-zero errors (`1 / NULLIF(x, 0)`)?
+### 33. 🔴 P0 [Q] What is the difference between `COALESCE` and `NULLIF`, and how do you use them to prevent division-by-zero errors (`1 / NULLIF(x, 0)`)?
 
 > **TL;DR:** `COALESCE(val1, val2, ...)` returns the first non-null argument in the list. `NULLIF(val1, val2)` returns `NULL` if `val1 == val2`, otherwise returns `val1`. Combining them as `val / NULLIF(denom, 0)` converts zero divisors to `NULL`, preventing query crashes.
 
@@ -175,7 +112,9 @@ FROM ad_campaigns;
 
 ---
 
-### 55. 🔴 P0 [Q] How do date-time manipulation functions work (`DATE_TRUNC`, `EXTRACT`, `DATEDIFF`, interval math), and how do you calculate user age from birthdate?
+---
+
+### 34. 🔴 P0 [Q] How do date-time manipulation functions work (`DATE_TRUNC`, `EXTRACT`, `DATEDIFF`, interval math), and how do you calculate user age from birthdate?
 
 > **TL;DR:** `DATE_TRUNC('month', date)` rounds a timestamp down to the start of the specified interval. `EXTRACT(YEAR FROM date)` pulls out numerical calendar parts. User age is calculated using `AGE(current_date, birth_date)` in PostgreSQL or `TIMESTAMPDIFF(YEAR, birth_date, CURDATE())` in MySQL.
 
@@ -211,7 +150,9 @@ FROM users;
 
 ---
 
-### 56. 🔴 P0 [Q] Write a query to pivot monthly sales totals into 12 distinct month columns (`Jan`, `Feb`, ..., `Dec`) for each product category.
+---
+
+### 35. 🔴 P0 [Q] Write a query to pivot monthly sales totals into 12 distinct month columns (`Jan`, `Feb`, ..., `Dec`) for each product category.
 
 > **TL;DR:** Group by `category_id`, and write 12 conditional `SUM(CASE WHEN EXTRACT(MONTH FROM order_date) = X THEN amount ELSE 0 END)` expressions.
 
@@ -248,44 +189,6 @@ ORDER BY Total_Annual_Sales DESC;
 
 ---
 
-### 57. 🟠 P1 [Q] Write a query to classify users into loyalty tiers (`Bronze`, `Silver`, `Gold`, `Platinum`) based on purchase frequency and total lifetime spend.
-
-> **TL;DR:** Aggregate order count and total spend per customer, then wrap in a searched `CASE WHEN` evaluating multi-dimensional tier criteria.
-
-#### 💡 Core Concept & Explanation
-Real-world customer relationship management (CRM) segments users by both monetary spend (M) and frequency of transactions (F).
-
-#### 🛠️ Code / Visual Diagram / Table
-
-```sql
-WITH CustomerLifetimeMetrics AS (
-    SELECT 
-        c.id AS customer_id,
-        c.name AS customer_name,
-        COUNT(o.id) AS total_orders,
-        COALESCE(SUM(o.amount), 0) AS lifetime_spend
-    FROM customers c
-    LEFT JOIN orders o ON c.id = o.customer_id
-    GROUP BY c.id, c.name
-)
-SELECT 
-    customer_id,
-    customer_name,
-    total_orders,
-    lifetime_spend,
-    CASE 
-        WHEN lifetime_spend >= 10000 AND total_orders >= 20 THEN 'Platinum'
-        WHEN lifetime_spend >= 5000  OR  total_orders >= 10 THEN 'Gold'
-        WHEN lifetime_spend >= 1000  OR  total_orders >= 3  THEN 'Silver'
-        ELSE 'Bronze'
-    END AS loyalty_tier
-FROM CustomerLifetimeMetrics
-ORDER BY lifetime_spend DESC;
-```
-
-#### ⚠️ Interview Pitfall / Pro-Tip
-- Notice how `LEFT JOIN` is essential here: customers who signed up but haven't made their first order yet are categorized as `'Bronze'`, rather than disappearing from the customer database!
-
 ---
 
-[⬅️ Previous: 06 · Window Running Aggregates](06-window-functions-running-aggregates-and-frames.md) &nbsp;|&nbsp; [📋 Index](../sql-interview-answers.md) &nbsp;|&nbsp; [Next: 08 · Set Operations & Upserts ➡️](08-set-operations-upserts-and-dml-mechanics.md)
+[⬅️ Previous: 06 · Running Frames & Gaps/Islands](06-window-functions-running-aggregates-and-frames.md) &nbsp;|&nbsp; [📋 Index](../sql-interview-answers.md) &nbsp;|&nbsp; [Next: 08 · Set Operations & Optimization ➡️](08-set-operations-and-query-optimization.md)

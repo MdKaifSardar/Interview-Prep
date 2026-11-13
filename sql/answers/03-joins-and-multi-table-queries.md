@@ -4,7 +4,7 @@
 
 ## 3. Comprehensive JOIN Mechanics & Complex Multi-Table Queries
 
-### 17. 🔴 P0 [C] Explain the visual mechanics and return sets of all SQL JOIN types: `INNER JOIN`, `LEFT JOIN`, `RIGHT JOIN`, `FULL OUTER JOIN`, and `CROSS JOIN`.
+### 11. 🔴 P0 [C] Explain the visual mechanics and return sets of all SQL JOIN types: `INNER JOIN`, `LEFT JOIN`, `RIGHT JOIN`, `FULL OUTER JOIN`, and `CROSS JOIN`.
 
 > **TL;DR:** `INNER JOIN` returns only matching rows from both tables. `LEFT JOIN` returns all rows from the left table plus matching rows from the right (or `NULL` if unmatched). `RIGHT JOIN` is the mirror. `FULL OUTER JOIN` returns all rows from both tables, filling unmatched sides with `NULL`. `CROSS JOIN` produces the Cartesian product of all rows ($M \times N$).
 
@@ -34,7 +34,9 @@ CROSS JOIN:        [(1, 2), (1, 3), (2, 2), (2, 3)]
 
 ---
 
-### 18. 🔴 P0 [Q] What is the critical difference between placing a filter condition in the `ON` clause versus the `WHERE` clause during a `LEFT JOIN` (The Outer Join Nullification Trap)?
+---
+
+### 12. 🔴 P0 [Q] What is the critical difference between placing a filter condition in the `ON` clause versus the `WHERE` clause during a `LEFT JOIN` (The Outer Join Nullification Trap)?
 
 > **TL;DR:** In a `LEFT JOIN`, conditions in the `ON` clause determine which right-table rows to match while preserving all left-table rows. Conditions in the `WHERE` clause filter rows **after** the join has been completed; if a `WHERE` condition checks a right-table column without `OR col IS NULL`, it discards unmatched rows and silently converts the `LEFT JOIN` into an `INNER JOIN`!
 
@@ -78,7 +80,9 @@ WHERE o.status = 'completed';
 
 ---
 
-### 19. 🔴 P0 [Q] What is a `SELF JOIN`, and how is it used to model hierarchical and sequential relationships within a single table?
+---
+
+### 13. 🔴 P0 [Q] What is a `SELF JOIN`, and how is it used to model hierarchical and sequential relationships within a single table?
 
 > **TL;DR:** A `SELF JOIN` is a join of a table to itself by assigning two distinct aliases (e.g. `employees e JOIN employees m`). It is commonly used to query adjacency list hierarchies (Employee $\rightarrow$ Manager) or compare adjacent chronological events.
 
@@ -122,7 +126,9 @@ LEFT JOIN employees m ON e.manager_id = m.id;
 
 ---
 
-### 20. 🔴 P0 [Q] What is an Anti-Join, and how do `LEFT JOIN ... WHERE right.id IS NULL`, `NOT EXISTS`, and `NOT IN` compare in performance and NULL handling?
+---
+
+### 14. 🔴 P0 [Q] What is an Anti-Join, and how do `LEFT JOIN ... WHERE right.id IS NULL`, `NOT EXISTS`, and `NOT IN` compare in performance and NULL handling?
 
 > **TL;DR:** An Anti-Join returns rows from table A that have no matching records in table B. `NOT EXISTS` is generally the safest and fastest because it short-circuits on the first match and handles `NULL` values cleanly. `NOT IN` fails and returns 0 rows if table B contains even one `NULL`. `LEFT JOIN ... IS NULL` is an alternative that modern query optimizers often convert into an anti-semi-join plan.
 
@@ -164,51 +170,9 @@ WHERE u.id NOT IN (
 
 ---
 
-### 21. 🟠 P1 [Q] What is a `CROSS JOIN` (Cartesian Product), and what are its practical use cases (e.g. generating calendar date grids)?
-
-> **TL;DR:** `CROSS JOIN` pairs every row of Table A with every row of Table B ($M \times N$ tuples). It is practically used to generate complete multi-dimensional grids (e.g. every store $\times$ every day of the month) to populate missing reporting zeroes.
-
-#### 💡 Core Concept & Explanation
-When reporting metrics like "Daily Sales per Store", if Store 4 made 0 sales on March 3rd, a simple `GROUP BY store_id, sale_date` omits Store 4 entirely on that date.
-By performing a `CROSS JOIN` between a list of all stores and a calendar date series, we generate an unbroken baseline grid. We then `LEFT JOIN` the real transaction table against this grid, ensuring days with no sales display as $0 instead of disappearing.
-
-#### 🛠️ Code / Visual Diagram / Table
-
-```sql
--- Generating a Date Grid and Reporting Daily Store Revenue:
-WITH calendar AS (
-    SELECT generate_series(
-        '2026-03-01'::date, 
-        '2026-03-07'::date, 
-        '1 day'::interval
-    )::date AS report_date
-),
-all_stores AS (
-    SELECT id AS store_id, name AS store_name FROM stores
-),
-grid AS (
-    SELECT s.store_id, s.store_name, c.report_date
-    FROM all_stores s
-    CROSS JOIN calendar c -- Generates all store x date pairs
-)
-SELECT 
-    g.store_name,
-    g.report_date,
-    COALESCE(SUM(s.sale_amount), 0) AS total_revenue
-FROM grid g
-LEFT JOIN sales s 
-    ON g.store_id = s.store_id 
-   AND g.report_date = s.sale_date::date
-GROUP BY g.store_name, g.report_date
-ORDER BY g.store_name, g.report_date;
-```
-
-#### ⚠️ Interview Pitfall / Pro-Tip
-- An unintentional `CROSS JOIN` happens when a developer forgets the `ON` clause in an implicit join: `SELECT * FROM tableA, tableB`. If table A has 100,000 rows and table B has 100,000 rows, this generates 10,000,000,000 tuples, locking the database engine. Always use explicit ANSI JOIN syntax (`JOIN ... ON ...`).
-
 ---
 
-### 22. 🔴 P0 [Q] Write a query to find all employees who earn a higher salary than their direct manager using a `SELF JOIN`.
+### 15. 🔴 P0 [Q] Write a query to find all employees who earn a higher salary than their direct manager using a `SELF JOIN`.
 
 > **TL;DR:** Join `employees e` (subordinates) with `employees m` (managers) on `e.manager_id = m.id`, and filter where `e.salary > m.salary`.
 
@@ -249,93 +213,6 @@ WHERE e.salary > m.salary;
 - Ensure you join on `e.manager_id = m.id` and NOT `e.id = m.manager_id`. Inverting this join condition checks managers earning more than their subordinates instead!
 
 ---
-
-### 23. 🔴 P0 [Q] Write a query to find all customers who have never placed an order using both `LEFT JOIN ... IS NULL` and `NOT EXISTS`.
-
-> **TL;DR:** Identify unmatched customer primary keys that do not exist in the foreign keys of the orders table.
-
-#### 💡 Core Concept & Explanation
-This is LeetCode #183 ("Customers Who Never Order").
-In production databases, providing both approaches demonstrates depth in query writing and optimization awareness.
-
-#### 🛠️ Code / Visual Diagram / Table
-
-```sql
--- Schema
-CREATE TABLE customers (id INT PRIMARY KEY, name VARCHAR(50));
-CREATE TABLE orders (id INT PRIMARY KEY, customer_id INT);
-
-INSERT INTO customers VALUES (1, 'Joe'), (2, 'Henry'), (3, 'Sam'), (4, 'Max');
-INSERT INTO orders VALUES (1, 3), (2, 1);
-
--- Approach 1: NOT EXISTS (Optimal execution)
-SELECT c.name AS Customers
-FROM customers c
-WHERE NOT EXISTS (
-    SELECT 1 
-    FROM orders o 
-    WHERE o.customer_id = c.id
-);
-
--- Approach 2: LEFT JOIN ... WHERE IS NULL
-SELECT c.name AS Customers
-FROM customers c
-LEFT JOIN orders o ON c.id = o.customer_id
-WHERE o.id IS NULL;
-
--- Output:
--- | Customers |
--- |-----------|
--- | Henry     |
--- | Max       |
-```
-
-#### ⚠️ Interview Pitfall / Pro-Tip
-- In Approach 2, filter on `WHERE o.id IS NULL` (the primary key of the orders table) rather than a nullable order column like `o.discount_code IS NULL`. Checking a nullable column causes false positives!
-
----
-
-### 24. 🟠 P1 [Q] Write a query to find asymmetric pairs (e.g., users who follow someone who does not follow them back).
-
-> **TL;DR:** Perform a `LEFT JOIN` on the social follow table where `f1.follower_id = f2.following_id` and `f1.following_id = f2.follower_id`, then filter where `f2.follower_id IS NULL`.
-
-#### 💡 Core Concept & Explanation
-In social networks like Twitter/GitHub, following relationships are directed edges. If User A follows User B, a reciprocal follow requires an entry where User B follows User A. By attempting to join the reciprocal relationship on inverted keys, any missing reverse follow produces `NULL`.
-
-#### 🛠️ Code / Visual Diagram / Table
-
-```sql
-CREATE TABLE follows (
-    follower_id INT,
-    following_id INT,
-    PRIMARY KEY (follower_id, following_id)
-);
-
-INSERT INTO follows VALUES
-(1, 2), -- 1 follows 2
-(2, 1), -- 2 follows 1 (Mutual)
-(1, 3), -- 1 follows 3
-(3, 4); -- 3 follows 4
-
--- Query: Users who follow someone who does not follow them back
-SELECT 
-    f1.follower_id AS user_id,
-    f1.following_id AS unreciprocated_followee_id
-FROM follows f1
-LEFT JOIN follows f2 
-    ON f1.follower_id = f2.following_id 
-   AND f1.following_id = f2.follower_id
-WHERE f2.follower_id IS NULL;
-
--- Output:
--- | user_id | unreciprocated_followee_id |
--- |---------|----------------------------|
--- | 1       | 3                          |
--- | 3       | 4                          |
-```
-
-#### ⚠️ Interview Pitfall / Pro-Tip
-- Notice how clean the inverted join condition is: `ON f1.follower_id = f2.following_id AND f1.following_id = f2.follower_id`. Make sure to emphasize composite primary key indexing on `(follower_id, following_id)` to keep this self-join fast.
 
 ---
 
