@@ -23,7 +23,7 @@
 7. 🔴 P0 [C] What is the difference between `COUNT(*)`, `COUNT(column)`, `COUNT(1)`, and `COUNT(DISTINCT column)` in execution and NULL handling?
 8. 🔴 P0 [Q] How does multi-column `GROUP BY` work, and why must every column in the `SELECT` list either appear in `GROUP BY` or inside an aggregate function?
 9. 🔴 P0 [Q] What is Conditional Aggregation, and how do you use `CASE WHEN` inside `SUM()` or `COUNT()` to compute pivot metrics in a single table scan?
-10. 🔴 P0 [Q] Write a query to calculate the average, minimum, maximum salary, and employee headcount for each department.
+10. 🔴 P0 [Q] Write a query to calculate the average, minimum, maximum salary, and employee headcount for each department. — [LC 1075: Project Employees I](https://leetcode.com/problems/project-employees-i/) / [Local Lab 01](lab/exercises/01_department_salary_stats/README.md)
 ## Comprehensive JOIN Mechanics & Complex Multi-Table Queries
 
 11. 🔴 P0 [C] Explain the visual mechanics and return sets of all SQL JOIN types: `INNER JOIN`, `LEFT JOIN`, `RIGHT JOIN`, `FULL OUTER JOIN`, and `CROSS JOIN`.
@@ -37,7 +37,7 @@
 17. 🔴 P0 [Q] What is the difference between `EXISTS` and `IN` operators, and why does `NOT IN` fail completely if the subquery returns even a single `NULL` value?
 18. 🔴 P0 [Q] What is a Common Table Expression (CTE, `WITH` clause), and what advantages does it provide over nested subqueries?
 19. 🔴 P0 [Q] What is a Recursive CTE, what are its 4 mandatory components (Anchor, UNION ALL, Recursive Member, Termination), and how does it execute?
-20. 🔴 P0 [Q] Write a recursive CTE to traverse an employee organizational chart and compute the management depth/level for every employee from the CEO downwards. — [LC 1270: All People Report to Given Manager](https://leetcode.com/problems/all-people-report-to-the-given-manager/)
+20. 🔴 P0 [Q] Write a recursive CTE to traverse an employee organizational chart and compute the management depth/level for every employee from the CEO downwards. — [LC 1270 (Premium)](https://leetcode.com/problems/all-people-report-to-the-given-manager/) / [Local Lab 02](lab/exercises/02_recursive_org_chart/README.md)
 ## Window Functions — Ranking, Offsets & Partitions
 
 21. 🔴 P0 [C] What are Window Functions in SQL, how does `OVER (PARTITION BY ... ORDER BY ...)` differ from `GROUP BY`, and why don't window functions collapse rows?
@@ -47,18 +47,18 @@
 25. 🔴 P0 [Q] Write a query to find the N-th highest salary in a company across all departments without using `LIMIT` or `OFFSET`. — [LC 176: Second Highest Salary](https://leetcode.com/problems/second-highest-salary/) & [LC 177: Nth Highest Salary](https://leetcode.com/problems/nth-highest-salary/)
 ## Window Functions — Running Aggregates & Sequential Patterns
 
-26. 🔴 P0 [Q] How do you compute a running cumulative total (Running Sum) partitioned by category and ordered by transaction date? — [LC 534: Game Play Analysis III](https://leetcode.com/problems/game-play-analysis-iii/)
+26. 🔴 P0 [Q] How do you compute a running cumulative total (Running Sum) partitioned by category and ordered by transaction date? — [LC 534 (Premium)](https://leetcode.com/problems/game-play-analysis-iii/) / [Local Lab 03](lab/exercises/03_running_cumulative_sum/README.md)
 27. 🔴 P0 [Q] How do you compute a 7-day or 30-day moving average using `ROWS BETWEEN 6 PRECEDING AND CURRENT ROW`? — [LC 1321: Restaurant Growth](https://leetcode.com/problems/restaurant-growth/)
 28. 🟠 P1 [Q] How do you compute the percentage contribution of each row to the total partition sum using window aggregation?
 29. 🔴 P0 [Q] Write a query to calculate Month-over-Month (MoM) revenue percentage growth using `LAG()`. — [LC 1193: Monthly Transactions I](https://leetcode.com/problems/monthly-transactions-i/)
-30. 🔴 P0 [Q] Write a query to solve the classic Gaps and Islands problem: Identify consecutive active login streaks for each user. — [LC 1285: Continuous Ranges](https://leetcode.com/problems/find-the-start-and-end-number-of-continuous-ranges/) & [LC 1454: Active Users](https://leetcode.com/problems/active-users/)
+30. 🔴 P0 [Q] Write a query to solve the classic Gaps and Islands problem: Identify consecutive active login streaks for each user. — [LC 1285 / 1454 (Premium)](https://leetcode.com/problems/find-the-start-and-end-number-of-continuous-ranges/) / [Local Lab 04](lab/exercises/04_gaps_and_islands_streaks/README.md)
 ## Conditional Logic, Pivoting & Data Transformation
 
 31. 🔴 P0 [Q] What is the difference between a Simple `CASE` expression and a Searched `CASE WHEN` expression, and what is their short-circuit evaluation order?
 32. 🔴 P0 [Q] How do you pivot rows into columns in standard SQL without vendor-specific keywords using conditional aggregation? — [LC 1179: Reformat Department Table](https://leetcode.com/problems/reformat-department-table/)
 33. 🔴 P0 [Q] What is the difference between `COALESCE` and `NULLIF`, and how do you use them to prevent division-by-zero errors (`1 / NULLIF(x, 0)`)?
 34. 🔴 P0 [Q] How do date-time manipulation functions work (`DATE_TRUNC`, `EXTRACT`, `DATEDIFF`, interval math), and how do you calculate user age from birthdate?
-35. 🔴 P0 [Q] Write a query to pivot monthly sales totals into 12 distinct month columns (`Jan`, `Feb`, ..., `Dec`) for each product category. — [LC 1179: Reformat Department Table](https://leetcode.com/problems/reformat-department-table/)
+35. 🔴 P0 [Q] Write a query to pivot monthly sales totals into 12 distinct month columns (`Jan`, `Feb`, ..., `Dec`) for each product category. — [LC 1179: Reformat Department Table](https://leetcode.com/problems/reformat-department-table/) / [Local Lab 05](lab/exercises/05_twelve_month_financial_pivot/README.md)
 ## Set Operations, DML & Query Performance Optimization
 
 36. 🔴 P0 [C] What is the difference between `UNION` and `UNION ALL`, why is `UNION ALL` significantly faster, and what are the schema union compatibility requirements?

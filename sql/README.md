@@ -9,6 +9,7 @@ Comprehensive, production-grade interview preparation guide covering practical S
 - **Questions Master Sheet:** [sql-interview-questions.md](sql-interview-questions.md) (40 Questions)
 - **Master Answer Key (Index):** [sql-interview-answers.md](sql-interview-answers.md) (Paginated 8-section breakdown)
 - **Must-Practice LeetCode SQL (Highest ROI):** [sql-must-practice-leetcode.md](sql-must-practice-leetcode.md) (Curated problem blueprints with 0 duplicates)
+- **Interactive Practice Lab:** [lab/README.md](lab/README.md) (Local in-memory drills for paywalled & missing LeetCode questions)
 
 ---
 

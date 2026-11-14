@@ -152,6 +152,8 @@ Output Table:
 
 ### 10. 🔴 P0 [Q] Write a query to calculate the average, minimum, maximum salary, and employee headcount for each department.
 
+> **LeetCode Equivalent:** [LC 1075: Project Employees I](https://leetcode.com/problems/project-employees-i/) [EASY]  
+> **Interactive Practice Lab:** [SQL Lab Drill 01 (Department Salary Stats)](../lab/exercises/01_department_salary_stats/README.md)  
 > **TL;DR:** Join `departments` to `employees` using a `LEFT JOIN` (to preserve departments with zero employees), then aggregate using `COUNT(e.id)`, `AVG(e.salary)`, `MIN(e.salary)`, and `MAX(e.salary)`.
 
 #### 💡 Core Concept & Explanation
