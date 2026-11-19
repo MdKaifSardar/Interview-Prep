@@ -9,6 +9,9 @@ Interview_Prep_Tracker.xlsx
 *.env.local
 *.env
 
+# Editor settings
+.vscode/
+
 # Dependencies & Build artifacts
 node_modules/
 .next/

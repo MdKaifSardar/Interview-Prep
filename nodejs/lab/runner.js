@@ -19,9 +19,12 @@ function printHelp(drills) {
   console.log('       NODE.JS TECHNICAL INTERVIEW DRILLS RUNNER       ');
   console.log('======================================================');
   console.log('Usage:');
-  console.log('  node runner.js <drill-number-or-name>   Run tests for a single drill');
-  console.log('  node runner.js all                     Run tests for all drills');
-  console.log('  node runner.js list                    List all available drills\n');
+  console.log('  node runner.js <drill-number-or-name>              Run tests for starter.js');
+  console.log('  node runner.js <drill-number-or-name> --solution   Run tests for solution.js');
+  console.log('  node runner.js all [--solution]                    Run tests for all drills');
+  console.log('  node runner.js list                                List all available drills\n');
+  console.log('Flags:');
+  console.log('  --solution, -s    Validate solution.js instead of starter.js\n');
   console.log('Available Drills:');
   drills.forEach((drill, idx) => {
     console.log(`  [${String(idx + 1).padStart(2, '0')}] ${drill}`);
@@ -32,18 +35,26 @@ function printHelp(drills) {
 const args = process.argv.slice(2);
 const drills = getDrills();
 
-if (args.length === 0 || args[0] === 'list' || args[0] === '--help') {
+const isSolution = args.includes('--solution') || args.includes('-s');
+const cleanArgs = args.filter(a => a !== '--solution' && a !== '-s');
+
+if (cleanArgs.length === 0 || cleanArgs[0] === 'list' || cleanArgs[0] === '--help') {
   printHelp(drills);
   process.exit(0);
 }
 
-const target = args[0].toLowerCase();
+const target = cleanArgs[0].toLowerCase();
+const testEnv = { ...process.env };
+if (isSolution) {
+  testEnv.TEST_SOLUTION = '1';
+}
 
 if (target === 'all') {
-  console.log('\n🚀 Running validation across ALL Node.js drills...\n');
-  const res = spawnSync('node', ['--test', 'exercises/**/test.js'], {
+  console.log(`\n🚀 Running validation across ALL drills [Target: ${isSolution ? 'solution.js' : 'starter.js'}]...\n`);
+  const res = spawnSync('node', ['--test', '--test-reporter=spec', 'exercises/**/test.js'], {
     stdio: 'inherit',
-    cwd: __dirname
+    cwd: __dirname,
+    env: testEnv
   });
   process.exit(res.status || 0);
 }
@@ -62,10 +73,11 @@ if (!matched) {
   process.exit(1);
 }
 
-console.log(`\n🧪 Testing Drill: ${matched}...\n`);
+console.log(`\n🧪 Testing Drill: ${matched} [Target: ${isSolution ? 'solution.js' : 'starter.js'}]...\n`);
 const testPath = path.join('exercises', matched, 'test.js');
-const res = spawnSync('node', ['--test', testPath], {
+const res = spawnSync('node', ['--test', '--test-reporter=spec', testPath], {
   stdio: 'inherit',
-  cwd: __dirname
+  cwd: __dirname,
+  env: testEnv
 });
 process.exit(res.status || 0);

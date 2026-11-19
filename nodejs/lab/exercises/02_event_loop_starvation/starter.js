@@ -5,9 +5,17 @@
  * @param {number} chunkSize
  * @returns {Promise<number>}
  */
-function chunkedSum(numbers, chunkSize) {
-  // TODO: Implement chunked iteration yielding with setImmediate
-  return Promise.resolve(0);
-}
 
+const { setImmediate } = require('node:timers/promises');
+
+async function chunkedSum(numbers, chunkSize) {
+    let total = 0;
+    for (let index = 0; index < numbers.length; index++) {
+      total += numbers[index];
+      if (index > 0 && index % chunkSize === 0) {
+        await setImmediate(); // Safe! No arguments needed
+      }
+    }
+    return total;
+}
 module.exports = { chunkedSum };

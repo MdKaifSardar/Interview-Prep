@@ -6,6 +6,7 @@ const { collectExecutionOrder } = require(target);
 
 test('NODE-01: Microtasks execute before macrotasks in correct order', async () => {
   const order = await collectExecutionOrder();
+  console.log('\n  📊 Observed Execution Order:\n ', order, '\n');
   assert.strictEqual(order[0], 'sync', 'Synchronous code should run first');
   assert.strictEqual(order[1], 'nextTick', 'process.nextTick should run before Promise microtasks');
   assert.strictEqual(order[2], 'promise', 'Promise microtasks should run after nextTick');

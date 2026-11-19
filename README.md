@@ -18,6 +18,7 @@ Curated, high-yield interview preparation modules for Software Engineering, Full
 | **⚡ Data Structures & Algorithms** | [Questions](file:///e:/CSE/interview%20prep/dsa/dsa-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/dsa/dsa-interview-answers.md) | — | ✅ Complete (91 Core + 21 Bonus Qs) |
 | **🔵 C++ Fundamentals & STL** | — | — | [📖 Syntax Handbook](file:///e:/CSE/interview%20prep/cpp%20fundamentals/cpp-revision-handbook.md) | ✅ Complete Reference |
 | **🗃️ SQL Fundamentals & Syntax** | — | — | [📖 Syntax Handbook](file:///e:/CSE/interview%20prep/sql%20fundamentals/sql-revision-handbook.md) | ✅ Complete Reference |
+| **☕ Java & OOP** | [Questions](file:///e:/CSE/interview%20prep/java/java-oop-interview-questions.md) | — | — | ✅ Complete (40 Qs) |
 
 ---
 
@@ -54,6 +55,9 @@ Interview-Prep/
 ├── sql/                                   <-- SQL & Query Engineering Module
 │   ├── sql-interview-questions.md         <-- 80-Question Master List
 │   └── sql-interview-answers.md           <-- Comprehensive 4-Part Answer Key
+├── java/                                  <-- Java & OOP Module
+│   ├── README.md                          <-- Module Overview & Sitemap
+│   └── java-oop-interview-questions.md    <-- 40-Question Master List
 └── react/                                 <-- React & Next.js Full-Stack Module
     ├── react-interview-questions.md       <-- 75-Question Master List
     └── react-interview-answers.md         <-- Comprehensive 4-Part Answer Key
