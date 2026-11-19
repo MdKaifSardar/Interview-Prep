@@ -1,4 +1,4 @@
-# SQL Technical Interview Module (40 Questions)
+# SQL Technical Interview Module (70 Questions)
 
 Comprehensive, production-grade interview preparation guide covering practical SQL query writing, set-based logic, window functions, recursive CTEs, index SARGability, and query plan optimization.
 
@@ -6,9 +6,9 @@ Comprehensive, production-grade interview preparation guide covering practical S
 
 ## 📚 Core Resources
 
-- **Questions Master Sheet:** [sql-interview-questions.md](sql-interview-questions.md) (40 Questions)
-- **Master Answer Key (Index):** [sql-interview-answers.md](sql-interview-answers.md) (Paginated 8-section breakdown)
-- **Must-Practice LeetCode SQL (Highest ROI):** [sql-must-practice-leetcode.md](sql-must-practice-leetcode.md) (Curated problem blueprints with 0 duplicates)
+- **Questions Master Sheet:** [sql-interview-questions.md](sql-interview-questions.md) (70 Questions)
+- **Master Answer Key (Index):** [sql-interview-answers.md](sql-interview-answers.md) (Paginated 10-section breakdown)
+- **Must-Practice LeetCode SQL (Highest ROI):** [sql-must-practice-leetcode.md](sql-must-practice-leetcode.md) (Curated problem blueprints for Sections 9 & 10)
 - **Interactive Practice Lab:** [lab/README.md](lab/README.md) (Local in-memory drills for paywalled & missing LeetCode questions)
 
 ---
@@ -25,5 +25,7 @@ Comprehensive, production-grade interview preparation guide covering practical S
 | 06 | [6. Window Functions — Running Aggregates & Sequential Patterns](answers/06-window-functions-running-aggregates-and-frames.md) | #26 – #30 | 5 |
 | 07 | [7. Conditional Logic, Pivoting & Data Transformation](answers/07-conditional-logic-pivoting-and-transforms.md) | #31 – #35 | 5 |
 | 08 | [8. Set Operations, DML & Query Performance Optimization](answers/08-set-operations-and-query-optimization.md) | #36 – #40 | 5 |
+| 09 | [9. Fundamental Screening & Warm-Up Blueprints](sql-must-practice-leetcode.md#part-2-15-fundamental-screening--warm-up-blueprints-questions-4155) | #41 – #55 | 15 |
+| 10 | [10. Advanced High-ROI LeetCode Blueprints](sql-must-practice-leetcode.md#part-3-15-high-roi-advanced-leetcode-blueprints-questions-5670) | #56 – #70 | 15 |
 
-**Total: 40 Questions**
+**Total: 70 Questions**

@@ -13,7 +13,7 @@ Curated, high-yield interview preparation modules for Software Engineering, Full
 | **🟢 Node.js & Express.js** | [Questions](file:///e:/CSE/interview%20prep/nodejs/nodejs-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/nodejs/nodejs-interview-answers.md) | [🧪 Node Lab (24 Drills)](file:///e:/CSE/interview%20prep/nodejs/lab/README.md) | ✅ Complete (72 Qs) |
 | **🍃 MongoDB** | [Questions](file:///e:/CSE/interview%20prep/mongodb/mongodb-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/mongodb/mongodb-interview-answers.md) | — | ✅ Complete (100 Qs) |
 | **🗄️ Relational DBMS Architecture** | [Questions](file:///e:/CSE/interview%20prep/dbms/dbms-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/dbms/dbms-interview-answers.md) | — | ✅ Complete (70 Qs) |
-| **📊 SQL & Query Engineering** | [Questions](file:///e:/CSE/interview%20prep/sql/sql-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/sql/sql-interview-answers.md) | — | ✅ Complete (80 Qs) |
+| **📊 SQL & Query Engineering** | [Questions](file:///e:/CSE/interview%20prep/sql/sql-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/sql/sql-interview-answers.md) | [🧪 SQL Lab (5 Drills)](file:///e:/CSE/interview%20prep/sql/lab/README.md) | ✅ Complete (70 Qs) |
 | **⚛️ React & Next.js (Full-Stack)** | [Questions](file:///e:/CSE/interview%20prep/react/react-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/react/react-interview-answers.md) | [🧪 React Lab (20 Drills)](file:///e:/CSE/interview%20prep/react/lab/README.md) | ✅ Complete (75 Qs) |
 | **⚡ Data Structures & Algorithms** | [Questions](file:///e:/CSE/interview%20prep/dsa/dsa-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/dsa/dsa-interview-answers.md) | — | ✅ Complete (91 Core + 21 Bonus Qs) |
 | **🔵 C++ Fundamentals & STL** | — | — | [📖 Syntax Handbook](file:///e:/CSE/interview%20prep/cpp%20fundamentals/cpp-revision-handbook.md) | ✅ Complete Reference |
@@ -53,8 +53,9 @@ Interview-Prep/
 │   ├── dbms-interview-questions.md        <-- 70-Question Master List
 │   └── dbms-interview-answers.md          <-- Comprehensive 4-Part Answer Key
 ├── sql/                                   <-- SQL & Query Engineering Module
-│   ├── sql-interview-questions.md         <-- 80-Question Master List
-│   └── sql-interview-answers.md           <-- Comprehensive 4-Part Answer Key
+│   ├── sql-interview-questions.md         <-- 70-Question Master List
+│   ├── sql-interview-answers.md           <-- Comprehensive 10-Section Answer Key
+│   └── sql-must-practice-leetcode.md      <-- Curated LeetCode Practice Bank (Sections 9 & 10)
 ├── java/                                  <-- Java & OOP Module
 │   ├── README.md                          <-- Module Overview & Sitemap
 │   └── java-oop-interview-questions.md    <-- 40-Question Master List
