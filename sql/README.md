@@ -6,7 +6,8 @@ Comprehensive, production-grade interview preparation guide covering practical S
 
 ## 📚 Core Resources
 
-- **Questions Master Sheet:** [sql-interview-questions.md](sql-interview-questions.md) (70 Questions)
+- **Syntax & Fundamentals Handbook:** [sql-revision-handbook.md](sql-revision-handbook.md) (10-Chapter rapid pre-interview syntax reference)
+- **Questions Master Sheet:** [sql-interview-questions.md](sql-interview-questions.md) (70 Questions: Core + LeetCode Warm-Ups & Advanced)
 - **Master Answer Key (Index):** [sql-interview-answers.md](sql-interview-answers.md) (Paginated 10-section breakdown)
 - **Interactive Practice Lab:** [lab/README.md](lab/README.md) (Local in-memory drills for paywalled & missing LeetCode questions)
 

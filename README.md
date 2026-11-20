@@ -13,11 +13,10 @@ Curated, high-yield interview preparation modules for Software Engineering, Full
 | **🟢 Node.js & Express.js** | [Questions](file:///e:/CSE/interview%20prep/nodejs/nodejs-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/nodejs/nodejs-interview-answers.md) | [🧪 Node Lab (24 Drills)](file:///e:/CSE/interview%20prep/nodejs/lab/README.md) | ✅ Complete (72 Qs) |
 | **🍃 MongoDB** | [Questions](file:///e:/CSE/interview%20prep/mongodb/mongodb-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/mongodb/mongodb-interview-answers.md) | — | ✅ Complete (100 Qs) |
 | **🗄️ Relational DBMS Architecture** | [Questions](file:///e:/CSE/interview%20prep/dbms/dbms-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/dbms/dbms-interview-answers.md) | — | ✅ Complete (70 Qs) |
-| **📊 SQL & Query Engineering** | [Questions](file:///e:/CSE/interview%20prep/sql/sql-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/sql/sql-interview-answers.md) | [🧪 SQL Lab (5 Drills)](file:///e:/CSE/interview%20prep/sql/lab/README.md) | ✅ Complete (70 Qs) |
+| **📊 SQL & Query Engineering** | [Questions](file:///e:/CSE/interview%20prep/sql/sql-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/sql/sql-interview-answers.md) | [📖 Syntax Handbook](file:///e:/CSE/interview%20prep/sql/sql-revision-handbook.md) &nbsp;•&nbsp; [🧪 Lab (5 Drills)](file:///e:/CSE/interview%20prep/sql/lab/README.md) | ✅ Complete (70 Qs) |
 | **⚛️ React & Next.js (Full-Stack)** | [Questions](file:///e:/CSE/interview%20prep/react/react-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/react/react-interview-answers.md) | [🧪 React Lab (20 Drills)](file:///e:/CSE/interview%20prep/react/lab/README.md) | ✅ Complete (75 Qs) |
 | **⚡ Data Structures & Algorithms** | [Questions](file:///e:/CSE/interview%20prep/dsa/dsa-interview-questions.md) | [Master Answer Key](file:///e:/CSE/interview%20prep/dsa/dsa-interview-answers.md) | — | ✅ Complete (91 Core + 21 Bonus Qs) |
 | **🔵 C++ Fundamentals & STL** | — | — | [📖 Syntax Handbook](file:///e:/CSE/interview%20prep/cpp%20fundamentals/cpp-revision-handbook.md) | ✅ Complete Reference |
-| **🗃️ SQL Fundamentals & Syntax** | — | — | [📖 Syntax Handbook](file:///e:/CSE/interview%20prep/sql%20fundamentals/sql-revision-handbook.md) | ✅ Complete Reference |
 | **☕ Java & OOP** | [Questions](file:///e:/CSE/interview%20prep/java/java-oop-interview-questions.md) | — | — | ✅ Complete (40 Qs) |
 
 ---
@@ -33,9 +32,6 @@ Interview-Prep/
 ├── js dsa fundamentals/                   <-- JavaScript Fundamentals for DSA Module
 │   ├── context.txt
 │   └── js-dsa-revision-handbook.md        <-- Pure Algorithmic JS Syntax & Complexity Reference
-├── sql fundamentals/                      <-- SQL Fundamentals Pre-Interview Revision Handbook
-│   ├── context.txt
-│   └── sql-revision-handbook.md           <-- Pure SQL Query Syntax & Window Functions Reference
 ├── dsa/                                   <-- Data Structures & Algorithms Module
 │   ├── dsa-interview-questions.md         <-- 112-Question Master List (91 Core + 21 Bonus)
 │   ├── dsa-interview-answers.md           <-- Comprehensive 5-Part Answer Key
@@ -53,6 +49,7 @@ Interview-Prep/
 │   ├── dbms-interview-questions.md        <-- 70-Question Master List
 │   └── dbms-interview-answers.md          <-- Comprehensive 4-Part Answer Key
 ├── sql/                                   <-- SQL & Query Engineering Module
+│   ├── sql-revision-handbook.md           <-- Pure SQL Syntax & Pre-Interview Handbook
 │   ├── sql-interview-questions.md         <-- 70-Question Master List
 │   └── sql-interview-answers.md           <-- Comprehensive 10-Section Answer Key (incl. Warm-Ups & Advanced)
 ├── java/                                  <-- Java & OOP Module
