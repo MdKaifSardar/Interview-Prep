@@ -1,4 +1,4 @@
-[⬅️ Previous: 07 · Conditional Logic & Pivoting](07-conditional-logic-pivoting-and-transforms.md) &nbsp;|&nbsp; [📋 Index](../sql-interview-answers.md) &nbsp;|&nbsp; ⏭️ (end)
+[⬅️ Previous: 07 · Conditional Logic & Pivoting](07-conditional-logic-pivoting-and-transforms.md) &nbsp;|&nbsp; [📋 Index](../sql-interview-answers.md) &nbsp;|&nbsp; [Next: 09 · Fundamental LeetCode Blueprints ➡️](09-fundamental-screening-and-warmup-blueprints.md)
 
 ---
 
@@ -173,4 +173,4 @@ LIMIT 20;
 
 ---
 
-[⬅️ Previous: 07 · Conditional Logic & Pivoting](07-conditional-logic-pivoting-and-transforms.md) &nbsp;|&nbsp; [📋 Index](../sql-interview-answers.md) &nbsp;|&nbsp; ⏭️ (end)
+[⬅️ Previous: 07 · Conditional Logic & Pivoting](07-conditional-logic-pivoting-and-transforms.md) &nbsp;|&nbsp; [📋 Index](../sql-interview-answers.md) &nbsp;|&nbsp; [Next: 09 · Fundamental LeetCode Blueprints ➡️](09-fundamental-screening-and-warmup-blueprints.md)
